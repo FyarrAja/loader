@@ -220,14 +220,21 @@ objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
 pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(65, 155, 240))
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(30, 115, 235))
 pcall(chilliSetProperty, objects.obj3, "Enabled", true)
 pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj3, "Thickness", 1.5)
-pcall(chilliSetProperty, objects.obj3, "Transparency", 0.45)
+pcall(chilliSetProperty, objects.obj3, "Thickness", 1.2)
+pcall(chilliSetProperty, objects.obj3, "Transparency", 0.35)
 objects.obj3.Parent = objects.obj2
 
--- Halftone Texture Layer (Framewisp Asset 125799959634008, replaces old brick studs)
+-- Strict Window Size Limit Constraint (Min 380x270, Max 700x510)
+local windowLimit = Instance.new("UISizeConstraint")
+pcall(chilliSetProperty, windowLimit, "Name", "WindowSizeLimits")
+pcall(chilliSetProperty, windowLimit, "MinSize", Vector2.new(380, 270))
+pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(700, 510))
+windowLimit.Parent = objects.obj2
+
+-- Multi-Asset Background Layer 1: Halftone Dot Matrix (Asset 125799959634008)
 objects.obj2_studs = Instance.new("ImageLabel")
 pcall(chilliSetProperty, objects.obj2_studs, "Name", "HalftoneBackground")
 pcall(chilliSetProperty, objects.obj2_studs, "Archivable", true)
@@ -236,34 +243,33 @@ pcall(chilliSetProperty, objects.obj2_studs, "Active", false)
 pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj2_studs, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0.5,0,0.5,0))
 pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
 pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://125799959634008")
-pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(150, 195, 255))
-pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.85)
+pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(30, 115, 235))
+pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.88)
 pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Tile)
-pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.new(0,85,0,85))
+pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.new(0,80,0,80))
 pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
 local studs_corner = Instance.new("UICorner")
 pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 14))
 studs_corner.Parent = objects.obj2_studs
 objects.obj2_studs.Parent = objects.obj2
 
--- Halftone Corner Bold Accent (Framewisp Asset 101344938838576)
+-- Multi-Asset Background Layer 2: Halftone Corner Bold Accent (Asset 101344938838576)
 local obj2_cornerAccent = Instance.new("ImageLabel")
 pcall(chilliSetProperty, obj2_cornerAccent, "Name", "BgCornerHalftone")
 pcall(chilliSetProperty, obj2_cornerAccent, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, obj2_cornerAccent, "BorderSizePixel", 0)
 pcall(chilliSetProperty, obj2_cornerAccent, "AnchorPoint", Vector2.new(1, 1))
 pcall(chilliSetProperty, obj2_cornerAccent, "Position", UDim2.new(1, 0, 1, 0))
-pcall(chilliSetProperty, obj2_cornerAccent, "Size", UDim2.new(0.48, 0, 0.48, 0))
+pcall(chilliSetProperty, obj2_cornerAccent, "Size", UDim2.new(0.50, 0, 0.50, 0))
 pcall(chilliSetProperty, obj2_cornerAccent, "Image", "rbxassetid://101344938838576")
-pcall(chilliSetProperty, obj2_cornerAccent, "ImageColor3", Color3.fromRGB(90, 175, 255))
-pcall(chilliSetProperty, obj2_cornerAccent, "ImageTransparency", 0.82)
+pcall(chilliSetProperty, obj2_cornerAccent, "ImageColor3", Color3.fromRGB(25, 95, 210))
+pcall(chilliSetProperty, obj2_cornerAccent, "ImageTransparency", 0.80)
 pcall(chilliSetProperty, obj2_cornerAccent, "ScaleType", Enum.ScaleType.Fit)
 pcall(chilliSetProperty, obj2_cornerAccent, "ZIndex", 1)
 local corner_accent_c = Instance.new("UICorner")
@@ -271,17 +277,17 @@ pcall(chilliSetProperty, corner_accent_c, "CornerRadius", UDim.new(0, 14))
 corner_accent_c.Parent = obj2_cornerAccent
 obj2_cornerAccent.Parent = objects.obj2
 
--- Background Top Sheen Accent (Framewisp Asset 89768752694629)
+-- Multi-Asset Background Layer 3: Top Sheen Glow (Asset 89768752694629)
 local obj2_topSheen = Instance.new("ImageLabel")
 pcall(chilliSetProperty, obj2_topSheen, "Name", "BgTopSheen")
 pcall(chilliSetProperty, obj2_topSheen, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, obj2_topSheen, "BorderSizePixel", 0)
 pcall(chilliSetProperty, obj2_topSheen, "AnchorPoint", Vector2.new(0, 0))
 pcall(chilliSetProperty, obj2_topSheen, "Position", UDim2.new(0, 0, 0, 0))
-pcall(chilliSetProperty, obj2_topSheen, "Size", UDim2.new(1, 0, 0, 30))
+pcall(chilliSetProperty, obj2_topSheen, "Size", UDim2.new(1, 0, 0, 32))
 pcall(chilliSetProperty, obj2_topSheen, "Image", "rbxassetid://89768752694629")
-pcall(chilliSetProperty, obj2_topSheen, "ImageColor3", Color3.fromRGB(100, 190, 255))
-pcall(chilliSetProperty, obj2_topSheen, "ImageTransparency", 0.70)
+pcall(chilliSetProperty, obj2_topSheen, "ImageColor3", Color3.fromRGB(45, 125, 245))
+pcall(chilliSetProperty, obj2_topSheen, "ImageTransparency", 0.68)
 pcall(chilliSetProperty, obj2_topSheen, "ScaleType", Enum.ScaleType.Stretch)
 pcall(chilliSetProperty, obj2_topSheen, "ZIndex", 2)
 obj2_topSheen.Parent = objects.obj2
@@ -451,8 +457,8 @@ pcall(chilliSetProperty, objects.obj9, "TextXAlignment", Enum.TextXAlignment.Lef
 pcall(chilliSetProperty, objects.obj9, "TextYAlignment", Enum.TextYAlignment.Center)
 pcall(chilliSetProperty, objects.obj9, "Font", Enum.Font.FredokaOne)
 local obj9_constraint = Instance.new("UITextSizeConstraint")
-obj9_constraint.MaxTextSize = 18
-obj9_constraint.MinTextSize = 9
+obj9_constraint.MaxTextSize = 28
+obj9_constraint.MinTextSize = 13
 obj9_constraint.Parent = objects.obj9
 objects.obj9.Parent = objects.obj4
 
@@ -496,165 +502,63 @@ pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
 pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(0,60,170))
+pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(24, 75, 175))
 pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
-pcall(chilliSetProperty, objects.obj16, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj16, "ClipsDescendants", false)
 pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj16, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj16, "Selectable", false)
-pcall(chilliSetProperty, objects.obj16, "SelectionOrder", 0)
 pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1,0,1,0))
-pcall(chilliSetProperty, objects.obj16, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
 pcall(chilliSetProperty, objects.obj16, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj16, "AutomaticSize", Enum.AutomaticSize.None)
-pcall(chilliSetProperty, objects.obj16, "LayoutOrder", 0)
-objects.obj16.Parent = objects.obj14
-
-objects.obj17 = Instance.new("Frame")
-pcall(chilliSetProperty, objects.obj17, "Name", "Color")
-pcall(chilliSetProperty, objects.obj17, "Archivable", true)
-pcall(chilliSetProperty, objects.obj17, "Visible", true)
-pcall(chilliSetProperty, objects.obj17, "Active", false)
-pcall(chilliSetProperty, objects.obj17, "AnchorPoint", Vector2.new(0.5,0))
-pcall(chilliSetProperty, objects.obj17, "BackgroundColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj17, "BackgroundTransparency", 0)
-pcall(chilliSetProperty, objects.obj17, "BorderColor3", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj17, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj17, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj17, "Position", UDim2.new(0.5,0,0,0))
-pcall(chilliSetProperty, objects.obj17, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj17, "Selectable", false)
-pcall(chilliSetProperty, objects.obj17, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj17, "Size", UDim2.new(1,0,0.8999999761581421,0))
-pcall(chilliSetProperty, objects.obj17, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj17, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj17, "AutomaticSize", Enum.AutomaticSize.None)
-pcall(chilliSetProperty, objects.obj17, "LayoutOrder", 0)
-objects.obj17.Parent = objects.obj16
-
-objects.obj18 = Instance.new("Frame")
-pcall(chilliSetProperty, objects.obj18, "Name", "Transparent")
-pcall(chilliSetProperty, objects.obj18, "Archivable", true)
-pcall(chilliSetProperty, objects.obj18, "Visible", true)
-pcall(chilliSetProperty, objects.obj18, "Active", false)
-pcall(chilliSetProperty, objects.obj18, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj18, "BackgroundColor3", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj18, "BackgroundTransparency", 0.8999999761581421)
-pcall(chilliSetProperty, objects.obj18, "BorderColor3", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj18, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj18, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj18, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj18, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj18, "Selectable", false)
-pcall(chilliSetProperty, objects.obj18, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj18, "Size", UDim2.new(0.9599999785423279,0,0.8799999952316284,0))
-pcall(chilliSetProperty, objects.obj18, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj18, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj18, "AutomaticSize", Enum.AutomaticSize.None)
-pcall(chilliSetProperty, objects.obj18, "LayoutOrder", 0)
-objects.obj18.Parent = objects.obj17
-
-objects.obj19 = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj19, "Name", "Pattern")
-pcall(chilliSetProperty, objects.obj19, "Archivable", true)
-pcall(chilliSetProperty, objects.obj19, "Visible", true)
-pcall(chilliSetProperty, objects.obj19, "Active", false)
-pcall(chilliSetProperty, objects.obj19, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj19, "BackgroundColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj19, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj19, "BorderColor3", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj19, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj19, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj19, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj19, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj19, "Selectable", false)
-pcall(chilliSetProperty, objects.obj19, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj19, "Size", UDim2.new(1,0,1,0))
-pcall(chilliSetProperty, objects.obj19, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj19, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj19, "AutomaticSize", Enum.AutomaticSize.None)
-pcall(chilliSetProperty, objects.obj19, "LayoutOrder", 0)
-pcall(chilliSetProperty, objects.obj19, "Image", "")
-pcall(chilliSetProperty, objects.obj19, "ImageColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj19, "ImageTransparency", 0.5)
-pcall(chilliSetProperty, objects.obj19, "ScaleType", Enum.ScaleType.Tile)
-pcall(chilliSetProperty, objects.obj19, "SliceCenter", Rect.new(0,0,0,0))
-pcall(chilliSetProperty, objects.obj19, "SliceScale", 1)
-pcall(chilliSetProperty, objects.obj19, "TileSize", UDim2.new(2,0,2,0))
-pcall(chilliSetProperty, objects.obj19, "ResampleMode", Enum.ResamplerMode.Default)
-objects.obj19.Parent = objects.obj18
 
 local obj16_corner = Instance.new("UICorner")
 pcall(chilliSetProperty, obj16_corner, "CornerRadius", UDim.new(0, 6))
 obj16_corner.Parent = objects.obj16
 
-local obj17_corner = Instance.new("UICorner")
-pcall(chilliSetProperty, obj17_corner, "CornerRadius", UDim.new(0, 6))
-obj17_corner.Parent = objects.obj17
-
-objects.obj20 = Instance.new("TextLabel")
-pcall(chilliSetProperty, objects.obj20, "Name", "Label")
-pcall(chilliSetProperty, objects.obj20, "Archivable", true)
-pcall(chilliSetProperty, objects.obj20, "Visible", true)
-pcall(chilliSetProperty, objects.obj20, "Active", false)
-pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(239,220,203))
-pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj20, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj20, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.85,0,0.85,0))
-pcall(chilliSetProperty, objects.obj20, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj20, "ZIndex", 6)
-pcall(chilliSetProperty, objects.obj20, "Text", "X")
-pcall(chilliSetProperty, objects.obj20, "TextColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj20, "TextTransparency", 0)
-pcall(chilliSetProperty, objects.obj20, "TextStrokeColor3", Color3.fromRGB(0,15,60))
-pcall(chilliSetProperty, objects.obj20, "TextStrokeTransparency", 0.3)
-pcall(chilliSetProperty, objects.obj20, "TextScaled", true)
-pcall(chilliSetProperty, objects.obj20, "TextWrapped", false)
-pcall(chilliSetProperty, objects.obj20, "TextXAlignment", Enum.TextXAlignment.Center)
-pcall(chilliSetProperty, objects.obj20, "TextYAlignment", Enum.TextYAlignment.Center)
-pcall(chilliSetProperty, objects.obj20, "Font", Enum.Font.FredokaOne)
-pcall(chilliSetProperty, objects.obj20, "RichText", false)
-pcall(chilliSetProperty, objects.obj20, "LineHeight", 1)
-pcall(chilliSetProperty, objects.obj20, "MaxVisibleGraphemes", -1)
-objects.obj20.Parent = objects.obj17
-
-objects.obj21 = Instance.new("UIStroke")
-pcall(chilliSetProperty, objects.obj21, "Name", "UIStroke")
-pcall(chilliSetProperty, objects.obj21, "Archivable", true)
-pcall(chilliSetProperty, objects.obj21, "ApplyStrokeMode", Enum.ApplyStrokeMode.Contextual)
-pcall(chilliSetProperty, objects.obj21, "Color", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj21, "Enabled", true)
-pcall(chilliSetProperty, objects.obj21, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj21, "Thickness", 0.10999999940395355)
-pcall(chilliSetProperty, objects.obj21, "Transparency", 0)
-objects.obj21.Parent = objects.obj20
-
-objects.obj22 = Instance.new("UIGradient")
-pcall(chilliSetProperty, objects.obj22, "Name", "UIGradient")
-pcall(chilliSetProperty, objects.obj22, "Archivable", true)
-pcall(chilliSetProperty, objects.obj22, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(120,200,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,120,240))}))
-pcall(chilliSetProperty, objects.obj22, "Enabled", true)
-pcall(chilliSetProperty, objects.obj22, "Offset", Vector2.new(0,0))
-pcall(chilliSetProperty, objects.obj22, "Rotation", 90)
-pcall(chilliSetProperty, objects.obj22, "Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)}))
-objects.obj22.Parent = objects.obj17
-
 objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(0,20,100))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(45, 130, 245))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
 pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj23, "Thickness", 0.09000000357627869)
-pcall(chilliSetProperty, objects.obj23, "Transparency", 0)
+pcall(chilliSetProperty, objects.obj23, "Thickness", 1)
+pcall(chilliSetProperty, objects.obj23, "Transparency", 0.3)
 objects.obj23.Parent = objects.obj16
+
+-- Close Button Icon using Asset ID 102326100327209
+objects.obj20 = Instance.new("ImageLabel")
+pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
+pcall(chilliSetProperty, objects.obj20, "Archivable", true)
+pcall(chilliSetProperty, objects.obj20, "Visible", true)
+pcall(chilliSetProperty, objects.obj20, "Active", false)
+pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5, 0.5))
+pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
+pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
+pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
+pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
+pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.68, 0, 0.68, 0))
+pcall(chilliSetProperty, objects.obj20, "ZIndex", 10)
+pcall(chilliSetProperty, objects.obj20, "Image", "rbxassetid://102326100327209")
+pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
+pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
+pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
+objects.obj20.Parent = objects.obj16
+
+objects.obj16.Parent = objects.obj14
+
+-- Smooth Hover Animation for Close Button
+pcall(function()
+    objects.obj14.MouseEnter:Connect(function()
+        TweenService:Create(objects.obj16, TweenInfo.new(0.18), {
+            BackgroundColor3 = Color3.fromRGB(215, 45, 65),
+        }):Play()
+    end)
+    objects.obj14.MouseLeave:Connect(function()
+        TweenService:Create(objects.obj16, TweenInfo.new(0.18), {
+            BackgroundColor3 = Color3.fromRGB(24, 75, 175),
+        }):Play()
+    end)
+end)
 
 objects.obj24 = Instance.new("UIAspectRatioConstraint")
 pcall(chilliSetProperty, objects.obj24, "Name", "UIAspectRatioConstraint")
@@ -2392,17 +2296,14 @@ local function applyResizeSize(widthPixels, heightPixels)
     if region.X <= 0 or region.Y <= 0 then
         return
     end
+    -- Strict Min/Max clamping: Min 380x270, Max 700x510 (or 92% screen)
+    local maxAllowedW = math.min(700, region.X * 0.92)
+    local maxAllowedH = math.min(510, region.Y * 0.90)
+    local clampedW = math.clamp(widthPixels, 380, math.max(380, maxAllowedW))
+    local clampedH = math.clamp(heightPixels, 270, math.max(270, maxAllowedH))
     Runtime.menuSize = UDim2.fromScale(
-        math.clamp(
-            widthPixels / region.X,
-            RESIZE_LIMITS.MinWidth,
-            RESIZE_LIMITS.MaxWidth
-        ),
-        math.clamp(
-            heightPixels / region.Y,
-            RESIZE_LIMITS.MinHeight,
-            RESIZE_LIMITS.MaxHeight
-        )
+        clampedW / region.X,
+        clampedH / region.Y
     )
     rootGui:SetAttribute("MenuSize", Runtime.menuSize)
     mainFrame.Size = Runtime.menuSize
@@ -2488,14 +2389,32 @@ end)
 
 
 
+local function syncHeaderElements()
+    local barH = topBar.AbsoluteSize.Y
+    if barH <= 0 then barH = 38 end
+    
+    -- Icon size scales smoothly with header height
+    local iconDim = math.clamp(math.round(barH * 0.56), 18, 30)
+    objects.obj12.Position = UDim2.new(0, 12, 0.5, 0)
+    objects.obj12.Size = UDim2.fromOffset(iconDim, iconDim)
+    
+    -- Close button size scales smoothly with header height
+    local closeDim = math.clamp(math.round(barH * 0.62), 20, 32)
+    objects.obj14.Position = UDim2.new(1, -12, 0.5, 0)
+    objects.obj14.Size = UDim2.fromOffset(closeDim, closeDim)
+    
+    -- Title label dynamically adapts position and available width
+    local leftOffset = 12 + iconDim + 10
+    local rightOffset = closeDim + 14
+    objects.obj9.Position = UDim2.new(0, leftOffset, 0.5, 0)
+    objects.obj9.Size = UDim2.new(1, -(leftOffset + rightOffset), 0.70, 0)
+end
+
+topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncHeaderElements)
+
 ContentScale.OnChanged(function(scaleX, scaleY)
     topBar.Size = UDim2.new(1, 0, 0.135, 0)
-    objects.obj12.Position = UDim2.new(0, 10, 0.5, 0)
-    objects.obj12.Size = UDim2.fromOffset(22, 22)
-    objects.obj9.Position = UDim2.new(0, 36, 0.5, 0)
-    objects.obj9.Size = UDim2.new(1, -95, 0.72, 0)
-    objects.obj14.Position = UDim2.new(1, -10, 0.5, 0)
-    objects.obj14.Size = UDim2.new(0.62, 0, 0.62, 0)
+    syncHeaderElements()
 end)
 
 local normalTextFont = Font.new(
