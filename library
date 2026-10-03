@@ -12652,7 +12652,7 @@ function ChilliLibrary:Finalize(config)
         pcall(function() win:Select(tab) end)
     end
 end
-ChilliLibrary.finalize = ChilliLibrary.Finalize
+ChilliLibrary.finalize = ChilliLibrary.Finalize;
 
 
 
@@ -12661,7 +12661,7 @@ ChilliLibrary.finalize = ChilliLibrary.Finalize
 
 
 
-(function()
+;(function()
 local U0 = "https://raw.githubusercontent.com/tienkhanh1/spicy/refs/heads/main/ChilliLibraryEngine"
 local B0 = {
     [1] = 0x43534833,
