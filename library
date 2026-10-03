@@ -624,6 +624,121 @@ end
 
 rootGui.ResetOnSpawn = false
 
+-- ============================================================
+-- Framewisp Button FX: Smooth Hover, Press Bounce, Sounds, & Ripple
+-- ============================================================
+do
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+    local Debris = game:GetService("Debris")
+
+    local function buttonSound(btn, id)
+        if not id or id == "" or id == "0" then return nil end
+        if not tostring(id):match("^rbxassetid://") then id = "rbxassetid://" .. id end
+        local s = Instance.new("Sound")
+        s.SoundId = id
+        s.Volume = 0.35
+        s.Parent = btn
+        return s
+    end
+
+    local function playSound(template)
+        if not template then return end
+        local s = template:Clone()
+        s.Parent = template.Parent
+        s.Ended:Once(function() s:Destroy() end)
+        s:Play()
+        Debris:AddItem(s, 5)
+    end
+
+    local function attachButtonFX(btn)
+        if not btn:IsA("GuiButton") or btn:GetAttribute("FW_Wired") then return end
+        btn:SetAttribute("FW_Wired", true)
+        btn.AutoButtonColor = false
+
+        local sndHover = buttonSound(btn, "139800881181209")
+        local sndClick = buttonSound(btn, "102702078778790")
+
+        local scale = btn:FindFirstChild("FW_Scale")
+        if not scale then
+            scale = Instance.new("UIScale")
+            scale.Name = "FW_Scale"
+            scale.Scale = 1
+            scale.Parent = btn
+        end
+
+        local function glide(target, t)
+            TweenService:Create(scale, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = target }):Play()
+        end
+
+        btn.MouseEnter:Connect(function()
+            glide(1.04, 0.12)
+            if sndHover then playSound(sndHover) end
+        end)
+
+        btn.MouseLeave:Connect(function()
+            glide(1.0, 0.12)
+        end)
+
+        btn.MouseButton1Down:Connect(function()
+            glide(0.93, 0.08)
+            if sndClick then playSound(sndClick) end
+
+            -- Clean Material Ripple Effect
+            task.spawn(function()
+                local host = Instance.new("Frame")
+                host.BackgroundTransparency = 1
+                host.Size = UDim2.fromScale(1, 1)
+                host.ClipsDescendants = true
+                host.ZIndex = math.min(btn.ZIndex + 10, 100)
+                host.Parent = btn
+
+                local mousePos = UserInputService:GetMouseLocation()
+                local relX = mousePos.X - btn.AbsolutePosition.X
+                local relY = mousePos.Y - btn.AbsolutePosition.Y
+
+                local dot = Instance.new("Frame")
+                dot.AnchorPoint = Vector2.new(0.5, 0.5)
+                dot.BorderSizePixel = 0
+                dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                dot.BackgroundTransparency = 0.70
+                dot.Position = UDim2.fromOffset(relX, relY)
+                dot.Size = UDim2.fromOffset(0, 0)
+                dot.ZIndex = host.ZIndex
+
+                local round = Instance.new("UICorner")
+                round.CornerRadius = UDim.new(1, 0)
+                round.Parent = dot
+                dot.Parent = host
+
+                local maxDim = math.max(btn.AbsoluteSize.X, btn.AbsoluteSize.Y) * 2.5
+                TweenService:Create(dot, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    Size = UDim2.fromOffset(maxDim, maxDim),
+                    BackgroundTransparency = 1,
+                }):Play()
+
+                task.delay(0.4, function() host:Destroy() end)
+            end)
+        end)
+
+        btn.MouseButton1Up:Connect(function()
+            glide(1.04, 0.10)
+        end)
+    end
+
+    objects.obj1.DescendantAdded:Connect(function(inst)
+        if inst:IsA("GuiButton") then
+            attachButtonFX(inst)
+        end
+    end)
+    for _, d in ipairs(objects.obj1:GetDescendants()) do
+        if d:IsA("GuiButton") then
+            attachButtonFX(d)
+        end
+    end
+end
+
+
 
 
 rootGui.IgnoreGuiInset = true
