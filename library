@@ -429,11 +429,17 @@ do
     pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
     
     local function resolveCatAsset(id)
-        local target = (id and id ~= "") and id or "125229870206242"
+        local target = (id and id ~= "" and not tostring(id):find("120217172563852")) and id or "125229870206242"
         local str = tostring(target)
-        local num = str:match("%d+")
-        if not num then return "rbxthumb://type=Asset&id=125229870206242&w=420&h=420" end
-        -- 1. Try parsing exact texture from decal XML via executor HttpGet
+        local num = str:match("%d+") or "125229870206242"
+        
+        -- 1. Try game:GetObjects in executor context (retrieves the Decal instance with actual Texture property)
+        local okObj, objs = pcall(function() return game:GetObjects("rbxassetid://" .. num) end)
+        if okObj and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
+            return objs[1].Texture
+        end
+        
+        -- 2. Try parsing exact texture from decal XML via executor HttpGet
         local okHttp, xml = pcall(function()
             return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
         end)
@@ -443,12 +449,28 @@ do
                 return "rbxassetid://" .. trueId
             end
         end
-        -- 2. Try game:GetObjects
-        local okObj, objs = pcall(function() return game:GetObjects("rbxassetid://" .. num) end)
-        if okObj and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
-            return objs[1].Texture
+        
+        -- 3. Try custom asset download if writefile & getcustomasset exist
+        local okCustom, customAsset = pcall(function()
+            if typeof(writefile) == "function" and typeof(getcustomasset) == "function" then
+                local filename = "bh_cat_mascot_" .. num .. ".png"
+                local thumbApi = "https://thumbnails.roblox.com/v1/assets?assetIds=" .. num .. "&returnPolicy=PlaceHolder&size=420x420&format=Png"
+                local jsonStr = game:HttpGet(thumbApi)
+                local imgUrl = jsonStr:match('"imageUrl"%s*:%s*"([^"]+)"')
+                if imgUrl and imgUrl:find("http") then
+                    local pngData = game:HttpGet(imgUrl)
+                    if pngData and #pngData > 100 then
+                        writefile(filename, pngData)
+                        return getcustomasset(filename)
+                    end
+                end
+            end
+        end)
+        if okCustom and customAsset and typeof(customAsset) == "string" and #customAsset > 0 then
+            return customAsset
         end
-        -- 3. rbxthumb fallback
+        
+        -- 4. Official rbxthumb content protocol fallback
         return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420"
     end
     
@@ -2801,12 +2823,13 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     local button = Instance.new("TextButton")
     button.Name = text
     button.Active = true
-    button.AnchorPoint = Vector2.new(0.5, 0.5)
+    button.AnchorPoint = Vector2.new(0.5, 0)
     button.AutoButtonColor = false
     button.BackgroundTransparency = 1
     button.BorderSizePixel = 0
     button.LayoutOrder = layoutOrder
-    button.Size = UDim2.new(1, 0, 0.130, 0)
+    button.Size = UDim2.new(1, 0, 0, 32)
+    button.Position = UDim2.new(0.5, 0, 0, 0)
     button.Text = ""
     button.ZIndex = 99
     button.Parent = parent
@@ -2819,10 +2842,10 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     base.Name = "Main"
     base.Active = false
     base.AnchorPoint = Vector2.new(0.5, 0.5)
-    base.BackgroundColor3 = Color3.fromRGB(0,70,180)
+    base.BackgroundColor3 = Color3.fromRGB(0, 70, 180)
     base.BorderSizePixel = 0
     base.Position = UDim2.fromScale(0.5, 0.5)
-    base.Size = UDim2.fromScale(1, 0.92)
+    base.Size = UDim2.new(1, 0, 1, 0)
     base.ZIndex = 1
     base.Parent = button
     addScaledStroke(base, Enum.ApplyStrokeMode.Border, 0.0599999987)
@@ -2916,19 +2939,19 @@ local navSidebar = Instance.new("Frame")
 navSidebar.Name = "NavSidebar"
 navSidebar.Active = false
 navSidebar.AnchorPoint = Vector2.new(0, 0)
-navSidebar.BackgroundColor3 = Color3.fromRGB(10, 24, 46)
-navSidebar.BackgroundTransparency = 0.45
+navSidebar.BackgroundColor3 = Color3.fromRGB(8, 22, 44)
+navSidebar.BackgroundTransparency = 0.35
 navSidebar.BorderSizePixel = 0
-navSidebar.Position = UDim2.new(0, 8, 0, 52)
-navSidebar.Size = UDim2.new(0, 122, 1, -60)
+navSidebar.Position = UDim2.new(0, 8, 0, 56)
+navSidebar.Size = UDim2.new(0, 132, 1, -64)
 navSidebar.ZIndex = 8
 navSidebar.Parent = mainFrame
 
 local navSidebarStroke = Instance.new("UIStroke")
 navSidebarStroke.Name = "NavStroke"
-navSidebarStroke.Color = Color3.fromRGB(0, 140, 230)
-navSidebarStroke.Transparency = 0.65
-navSidebarStroke.Thickness = 1
+navSidebarStroke.Color = Color3.fromRGB(0, 150, 240)
+navSidebarStroke.Transparency = 0.5
+navSidebarStroke.Thickness = 1.2
 navSidebarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 navSidebarStroke.Parent = navSidebar
 
@@ -2937,13 +2960,13 @@ navScroll.Name = "NavScroll"
 navScroll.Active = true
 navScroll.BackgroundTransparency = 1
 navScroll.BorderSizePixel = 0
-navScroll.Position = UDim2.new(0, 0, 0, 4)
-navScroll.Size = UDim2.new(1, 0, 1, -8)
+navScroll.Position = UDim2.new(0, 4, 0, 6)
+navScroll.Size = UDim2.new(1, -8, 1, -12)
 navScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 navScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 navScroll.ScrollBarThickness = 3
-navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-navScroll.ScrollBarImageTransparency = 0.4
+navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
+navScroll.ScrollBarImageTransparency = 0.3
 navScroll.ScrollingDirection = Enum.ScrollingDirection.Y
 navScroll.ZIndex = 9
 navScroll.Parent = navSidebar
@@ -2954,12 +2977,12 @@ navScrollLayout.FillDirection = Enum.FillDirection.Vertical
 navScrollLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 navScrollLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 navScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
-navScrollLayout.Padding = UDim.new(0, 8)
+navScrollLayout.Padding = UDim.new(0, 5)
 navScrollLayout.Parent = navScroll
 
 local navScrollPadding = Instance.new("UIPadding")
-navScrollPadding.PaddingLeft = UDim.new(0, 3)
-navScrollPadding.PaddingRight = UDim.new(0, 3)
+navScrollPadding.PaddingLeft = UDim.new(0, 2)
+navScrollPadding.PaddingRight = UDim.new(0, 2)
 navScrollPadding.PaddingTop = UDim.new(0, 2)
 navScrollPadding.PaddingBottom = UDim.new(0, 4)
 navScrollPadding.Parent = navScroll
@@ -6617,6 +6640,9 @@ do
         }
     end
 
+    sideButtonLayout.Padding = UDim.new(0, 5)
+    sideButtonPadding.PaddingTop = UDim.new(0, 0)
+
     TabColumns.Left = {
         Frame = sideButtons,
         Layout = sideButtonLayout,
@@ -6638,32 +6664,63 @@ end
 local activeWindowSearch = nil
 local function syncAllWindowLayout()
     local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
+    local sidebarW = 132
+    local margin = 8
+    local contentX = margin + sidebarW + margin -- 148
+    local contentW = -(contentX + margin)       -- -156
     
     -- 1. NavSidebar on the left inside mainFrame
     if navSidebar then
-        navSidebar.Position = UDim2.new(0, 8, 0, topH + 6)
-        navSidebar.Size = UDim2.new(0, 122, 1, -(topH + 14))
+        navSidebar.Position = UDim2.new(0, margin, 0, topH + margin)
+        navSidebar.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
     end
     
-    -- 2. Search Bar at the TOP (right below topBar, spanning content width)
+    -- 2. Search Bar at the TOP (right next to sidebar, below topBar)
     local hasTopSearch = false
     if activeWindowSearch and activeWindowSearch.Parent then
         hasTopSearch = true
         activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
-        activeWindowSearch.Position = UDim2.new(0, 138, 0, topH + 6)
-        activeWindowSearch.Size = UDim2.new(1, -146, 0, 28)
+        activeWindowSearch.Position = UDim2.new(0, contentX, 0, topH + margin)
+        activeWindowSearch.Size = UDim2.new(1, contentW, 0, 30)
         activeWindowSearch.ZIndex = 25
+        activeWindowSearch.Visible = true
+        
+        if activeWindowSearch:IsA("Frame") then
+            activeWindowSearch.BackgroundColor3 = Color3.fromRGB(8, 25, 52)
+            activeWindowSearch.BackgroundTransparency = 0.25
+            activeWindowSearch.BorderSizePixel = 0
+            
+            local searchStroke = activeWindowSearch:FindFirstChild("SearchBorderStroke")
+            if not searchStroke then
+                searchStroke = Instance.new("UIStroke")
+                searchStroke.Name = "SearchBorderStroke"
+                searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                searchStroke.Color = Color3.fromRGB(0, 160, 240)
+                searchStroke.Thickness = 1.2
+                searchStroke.Transparency = 0.3
+                searchStroke.Parent = activeWindowSearch
+            end
+        end
+        
         for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
             if desc:IsA("GuiObject") then
                 desc.ZIndex = math.max(desc.ZIndex, 26)
+            end
+            if desc:IsA("TextLabel") and desc.Text:lower():find("search") then
+                desc.TextColor3 = Color3.fromRGB(120, 215, 255)
+                desc.Font = Enum.Font.FredokaOne
+            elseif desc:IsA("TextBox") then
+                desc.TextColor3 = Color3.fromRGB(240, 248, 255)
+                desc.PlaceholderColor3 = Color3.fromRGB(130, 170, 210)
             end
         end
     end
     
     -- 3. Content list & Tab Pages below Search Bar
-    local contentTop = topH + (hasTopSearch and 38 or 6)
-    local contentPos = UDim2.new(0, 138, 0, contentTop)
-    local contentSize = UDim2.new(1, -146, 1, -(contentTop + 8))
+    local searchOffset = hasTopSearch and (30 + margin) or 0
+    local contentTop = topH + margin + searchOffset
+    local contentPos = UDim2.new(0, contentX, 0, contentTop)
+    local contentSize = UDim2.new(1, contentW, 1, -(contentTop + margin))
     
     if objects.obj25 then
         objects.obj25.Position = contentPos
@@ -6680,37 +6737,53 @@ local function syncAllWindowLayout()
     end
 end
 
--- Relocate any Search Bar created by ChilliLibraryEngine from bottom to TOP
-local function monitorSearchBar(child)
-    if not child:IsA("GuiObject") or child == topBar or child == navSidebar or child == objects.obj25 then
-        return
+-- Robust Search Bar Relocation (Listens to both DescendantAdded and ChildAdded)
+local function handlePossibleSearch(inst)
+    if not inst or not inst.Parent then return end
+    local candidate = nil
+    if inst:IsA("TextBox") then
+        local ph = tostring(inst.PlaceholderText or ""):lower()
+        if ph:find("filter") or ph:find("search") or ph:find("feature") then
+            candidate = inst
+        end
+    elseif inst:IsA("TextLabel") or inst:IsA("TextButton") then
+        local t = tostring(inst.Text or ""):lower()
+        if t == "search" or t:find("filter") then
+            candidate = inst
+        end
+    elseif inst:IsA("Frame") then
+        local n = inst.Name:lower()
+        if n:find("search") or n:find("filter") then
+            candidate = inst
+        end
     end
-    local isSearch = false
-    if child.Name:lower():find("search") or child.Name:lower():find("filter") then
-        isSearch = true
-    else
-        for _, desc in ipairs(child:GetDescendants()) do
-            if desc:IsA("TextBox") and (desc.PlaceholderText:lower():find("filter") or desc.PlaceholderText:lower():find("search")) then
-                isSearch = true
-                break
+    
+    if candidate then
+        local top = candidate
+        while top.Parent and top.Parent ~= mainFrame do
+            top = top.Parent
+        end
+        if top and top.Parent == mainFrame and top ~= topBar and top ~= navSidebar and top ~= objects.obj25 then
+            if activeWindowSearch ~= top then
+                activeWindowSearch = top
+                syncAllWindowLayout()
+                top:GetPropertyChangedSignal("Position"):Connect(function()
+                    if top.Position.Y.Scale > 0.3 or top.Position.Y.Offset > 80 then
+                        syncAllWindowLayout()
+                    end
+                end)
             end
         end
     end
-    if isSearch then
-        activeWindowSearch = child
-        syncAllWindowLayout()
-        child:GetPropertyChangedSignal("Position"):Connect(function()
-            if child.Position.Y.Scale > 0.4 or child.Position.Y.Offset > 80 then
-                syncAllWindowLayout()
-            end
-        end)
-    end
 end
 
-mainFrame.ChildAdded:Connect(monitorSearchBar)
-for _, child in ipairs(mainFrame:GetChildren()) do
-    monitorSearchBar(child)
+mainFrame.DescendantAdded:Connect(handlePossibleSearch)
+mainFrame.ChildAdded:Connect(handlePossibleSearch)
+for _, desc in ipairs(mainFrame:GetDescendants()) do
+    handlePossibleSearch(desc)
 end
+
+mainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncAllWindowLayout)
 
 ContentScale.OnChanged(function(scaleX, scaleY)
     syncAllWindowLayout()
@@ -12330,6 +12403,7 @@ ApiImpl[93] = function(self)
             column.Layout.Padding = UDim.new(0, 5)
             for index, tab in ipairs(columnTabs) do
                 tab.Button.LayoutOrder = index
+                tab.Button.AnchorPoint = Vector2.new(0.5, 0)
                 tab.Button.Size = UDim2.new(1, 0, 0, 32)
             end
         end
@@ -12341,19 +12415,26 @@ local function setTabSelected(tab, selected)
     tab.Page.Visible = selected
     local base = tab.Button:FindFirstChild("Main")
     if base then
-        TweenService:Create(
-            base,
-            TweenInfo.new(
-                0.14,
-                Enum.EasingStyle.Quad,
-                Enum.EasingDirection.Out
-            ),
-            {
-                BackgroundColor3 = selected
-                        and Color3.fromRGB(0, 170, 255)
-                    or Color3.fromRGB(8, 45, 95),
-            }
-        ):Play()
+        local colorFrame = base:FindFirstChild("ColorFrame")
+        if colorFrame then
+            local grad = colorFrame:FindFirstChild("RedGradient")
+            if grad then
+                grad.Color = selected and ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 245, 255)),
+                    ColorSequenceKeypoint.new(0.06, Color3.fromRGB(0, 195, 255)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 130, 240)),
+                }) or ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 160, 200)),
+                    ColorSequenceKeypoint.new(0.06, Color3.fromRGB(20, 50, 90)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 30, 60)),
+                })
+            end
+        end
+        local stroke = base:FindFirstChildWhichIsA("UIStroke")
+        if stroke then
+            stroke.Color = selected and Color3.fromRGB(0, 220, 255) or Color3.fromRGB(10, 40, 80)
+            stroke.Transparency = selected and 0 or 0.3
+        end
     end
 end
 
