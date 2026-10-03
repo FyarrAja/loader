@@ -207,10 +207,10 @@ objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "OceanDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0,   Color3.fromRGB(24, 72, 138)),
+    ColorSequenceKeypoint.new(0,    Color3.fromRGB(20, 68, 132)),
     ColorSequenceKeypoint.new(0.35, Color3.fromRGB(15, 48, 96)),
-    ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(10, 32, 68)),
-    ColorSequenceKeypoint.new(1,   Color3.fromRGB(6, 20, 44))
+    ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(12, 36, 72)),
+    ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 28, 56))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
     NumberSequenceKeypoint.new(0, 0.04),
@@ -679,10 +679,11 @@ end)
 
 objects.obj24 = Instance.new("UIAspectRatioConstraint")
 pcall(chilliSetProperty, objects.obj24, "Name", "UIAspectRatioConstraint")
-pcall(chilliSetProperty, objects.obj24, "Archivable", true)
 pcall(chilliSetProperty, objects.obj24, "AspectRatio", 1.340000033378601)
 pcall(chilliSetProperty, objects.obj24, "AspectType", Enum.AspectType.FitWithinMaxSize)
 pcall(chilliSetProperty, objects.obj24, "DominantAxis", Enum.DominantAxis.Width)
+-- Disabled so window can be freely and smoothly resized in both dimensions without jitter
+objects.obj24.Enabled = false
 objects.obj24.Parent = objects.obj2
 
 objects.obj25 = Instance.new("ScrollingFrame")
@@ -711,7 +712,7 @@ pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSiz
 pcall(chilliSetProperty, objects.obj25, "ScrollBarThickness", 6)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageColor3", Color3.fromRGB(120,210,255))
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
-pcall(chilliSetProperty, objects.obj25, "ScrollingDirection", Enum.ScrollingDirection.XY)
+pcall(chilliSetProperty, objects.obj25, "ScrollingDirection", Enum.ScrollingDirection.Y)
 pcall(chilliSetProperty, objects.obj25, "ScrollingEnabled", true)
 pcall(chilliSetProperty, objects.obj25, "VerticalScrollBarInset", Enum.ScrollBarInset.None)
 pcall(chilliSetProperty, objects.obj25, "HorizontalScrollBarInset", Enum.ScrollBarInset.None)
@@ -2065,21 +2066,9 @@ function ContentScale.OnChanged(callback)
 end
 
 function ContentScale.Refresh()
-    local function axisScale(baseValue, currentValue)
-        if baseValue > 0 and currentValue > 0 then
-            return math.max(1, currentValue / baseValue)
-        end
-        return 1
-    end
-
-    local nextX = axisScale(
-        ContentScale.Base.X.Scale,
-        Runtime.menuSize.X.Scale
-    )
-    local nextY = axisScale(
-        ContentScale.Base.Y.Scale,
-        Runtime.menuSize.Y.Scale
-    )
+    -- Keep scale stable at 1.0 so options smoothly fill available page width without shrinking
+    local nextX = 1
+    local nextY = 1
     if math.abs(nextX - ContentScale.X) < 0.0001
         and math.abs(nextY - ContentScale.Y) < 0.0001
     then
@@ -2544,19 +2533,17 @@ local function applyResizeSize(widthPixels, heightPixels, isFinal)
     end
     
     if isFinal then
-        -- Satisfying spring / bounce settle on mouse release
-        activeResizeTween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        -- Satisfying settle on mouse release
+        activeResizeTween = TweenService:Create(mainFrame, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Size = Runtime.menuSize
         })
         activeResizeTween:Play()
     else
-        -- Fluid quad glide interpolation while actively dragging
-        activeResizeTween = TweenService:Create(mainFrame, TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = Runtime.menuSize
-        })
-        activeResizeTween:Play()
+        -- Immediate 1:1 response during active drag with zero lag
+        mainFrame.Size = Runtime.menuSize
     end
     ContentScale.Refresh()
+    syncAllWindowLayout()
 end
 
 local function resizeFromInputPosition(position, isFinal)
@@ -3097,14 +3084,26 @@ local function buildRowPlate(parent, labelText)
     main.Name = "Main"
     main.Active = false
     main.AnchorPoint = Vector2.new(0.5, 0.5)
-    main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    main.BackgroundTransparency = 0.5
+    -- Sleek Ocean Fresh sapphire/navy glass instead of pitch black
+    main.BackgroundColor3 = Color3.fromRGB(12, 34, 64)
+    main.BackgroundTransparency = 0.22
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
     main.Size = UDim2.fromScale(1, 0.85)
     main.ZIndex = 3
     main.Parent = parent
-    addScaledStroke(main, Enum.ApplyStrokeMode.Border, 0.05)
+    
+    local plateCorner = Instance.new("UICorner")
+    plateCorner.CornerRadius = UDim.new(0, 5)
+    plateCorner.Parent = main
+
+    local plateStroke = Instance.new("UIStroke")
+    plateStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    plateStroke.Color = Color3.fromRGB(0, 160, 240)
+    plateStroke.Transparency = 0.60
+    plateStroke.Thickness = 1.2
+    plateStroke.LineJoinMode = Enum.LineJoinMode.Round
+    plateStroke.Parent = main
 
     local label = Instance.new("TextLabel")
     label.Name = "Label"
@@ -3113,8 +3112,6 @@ local function buildRowPlate(parent, labelText)
     label.BackgroundTransparency = 1
     label.BorderSizePixel = 0
     label.Position = UDim2.fromScale(0.025, 0.5)
-    
-    
     label.Size = UDim2.fromScale(0.65, 0.64)
     label.Text = labelText
     label.TextWrapped = true
@@ -6634,7 +6631,7 @@ end
 -- Layout Synchronizer: Coordinates NavSidebar, Top Search Bar, and Content ScrollingFrame
 local syncAllWindowLayout
 do
-    local activeWindowSearch = nil
+    local windowSearchBar = nil
     local isSyncingLayout = false
 
     local function lockPageGeometry(page, contentPos, contentSize)
@@ -6694,66 +6691,12 @@ do
             navSidebar.ZIndex = 30
         end
         
-        -- 2. Search Bar at the TOP (right next to sidebar, below topBar)
-        local hasTopSearch = false
+        -- 2. Dedicated Native Ocean Search Bar at the TOP
         local searchH = 30
-        if activeWindowSearch and activeWindowSearch.Parent then
-            hasTopSearch = true
-            local searchPos = UDim2.new(0, contentX, 0, topH + margin)
-            local searchSize = UDim2.new(1, contentW, 0, searchH)
-            
-            activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
-            activeWindowSearch.Position = searchPos
-            activeWindowSearch.Size = searchSize
-            activeWindowSearch.ZIndex = 35
-            activeWindowSearch.Visible = true
-            activeWindowSearch.ClipsDescendants = true
-            
-            if activeWindowSearch:IsA("Frame") then
-                activeWindowSearch.BackgroundColor3 = Color3.fromRGB(6, 18, 38)
-                activeWindowSearch.BackgroundTransparency = 0.15
-                activeWindowSearch.BorderSizePixel = 0
-                
-                local searchStroke = activeWindowSearch:FindFirstChild("SearchBorderStroke")
-                if not searchStroke then
-                    searchStroke = Instance.new("UIStroke")
-                    searchStroke.Name = "SearchBorderStroke"
-                    searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                    searchStroke.Color = Color3.fromRGB(0, 180, 255)
-                    searchStroke.Thickness = 1.2
-                    searchStroke.Transparency = 0.2
-                    searchStroke.LineJoinMode = Enum.LineJoinMode.Miter
-                    searchStroke.Parent = activeWindowSearch
-                end
-            end
-            
-            for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
-                if desc:IsA("GuiObject") then
-                    if desc:IsA("TextBox") then
-                        desc.Visible = true
-                        desc.ZIndex = 38
-                        desc.TextColor3 = Color3.fromRGB(240, 250, 255)
-                        desc.PlaceholderColor3 = Color3.fromRGB(120, 165, 210)
-                        desc.Size = UDim2.new(1, -75, 1, -4)
-                        desc.Position = UDim2.new(0, 70, 0, 2)
-                        desc.AnchorPoint = Vector2.new(0, 0)
-                        desc.ClipsDescendants = true
-                    elseif desc:IsA("TextLabel") and desc.Text:lower():find("search") then
-                        desc.Visible = true
-                        desc.ZIndex = 38
-                        desc.TextColor3 = Color3.fromRGB(0, 210, 255)
-                        desc.Font = Enum.Font.FredokaOne
-                        desc.Size = UDim2.new(0, 60, 1, 0)
-                        desc.Position = UDim2.new(0, 8, 0, 0)
-                        desc.AnchorPoint = Vector2.new(0, 0)
-                    elseif desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("ImageLabel") then
-                        -- Hide any stray overlapping labels (like "Quick Access") inside the search bar frame
-                        if not desc:IsDescendantOf(desc.Parent:FindFirstChildWhichIsA("TextBox") or desc) then
-                            desc.Visible = false
-                        end
-                    end
-                end
-            end
+        if windowSearchBar then
+            windowSearchBar.Position = UDim2.new(0, contentX, 0, topH + margin)
+            windowSearchBar.Size = UDim2.new(1, contentW, 0, searchH)
+            windowSearchBar.Visible = true
         end
         
         -- Completely eliminate unwanted "Quick Access" sections and ghost headers from all normal tabs
@@ -6790,8 +6733,8 @@ do
             end
         end
         
-        -- 3. Content list & Tab Pages below Search Bar with 12px clean gap
-        local searchOffset = hasTopSearch and (searchH + 12) or 0
+        -- 3. Content list & Tab Pages below Search Bar with 8px clean gap
+        local searchOffset = searchH + 8
         local contentTop = topH + margin + searchOffset
         local contentPos = UDim2.new(0, contentX, 0, contentTop)
         local contentSize = UDim2.new(1, contentW, 1, -(contentTop + margin))
@@ -6813,47 +6756,119 @@ do
         isSyncingLayout = false
     end
 
-    -- Robust Search Bar Relocation (Listens to both DescendantAdded and ChildAdded)
-    local function handlePossibleSearch(inst)
-        if not inst or not inst.Parent then return end
-        local candidate = nil
-        if inst:IsA("TextBox") then
-            local ph = tostring(inst.PlaceholderText or ""):lower()
-            if ph:find("filter") or ph:find("search") or ph:find("feature") then
-                candidate = inst
-            end
-        elseif inst:IsA("TextLabel") or inst:IsA("TextButton") then
-            local t = tostring(inst.Text or ""):lower()
-            if t == "search" or t:find("filter") then
-                candidate = inst
-            end
-        elseif inst:IsA("Frame") then
-            local n = inst.Name:lower()
-            if n:find("search") or n:find("filter") then
-                candidate = inst
-            end
+    -- Dedicated Native Ocean Search Bar (Zero errors, live filtering across tabs)
+    windowSearchBar = Instance.new("Frame")
+    windowSearchBar.Name = "WindowSearchBar"
+    windowSearchBar.BackgroundColor3 = Color3.fromRGB(10, 32, 60)
+    windowSearchBar.BackgroundTransparency = 0.22
+    windowSearchBar.BorderSizePixel = 0
+    windowSearchBar.ZIndex = 25
+    windowSearchBar.Parent = mainFrame
+
+    local sCorner = Instance.new("UICorner")
+    sCorner.CornerRadius = UDim.new(0, 6)
+    sCorner.Parent = windowSearchBar
+
+    local sStroke = Instance.new("UIStroke")
+    sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    sStroke.Color = Color3.fromRGB(0, 190, 255)
+    sStroke.Transparency = 0.35
+    sStroke.Thickness = 1.2
+    sStroke.LineJoinMode = Enum.LineJoinMode.Round
+    sStroke.Parent = windowSearchBar
+
+    local sIcon = Instance.new("TextLabel")
+    sIcon.Name = "SearchIcon"
+    sIcon.BackgroundTransparency = 1
+    sIcon.BorderSizePixel = 0
+    sIcon.AnchorPoint = Vector2.new(0, 0.5)
+    sIcon.Position = UDim2.new(0, 8, 0.5, 0)
+    sIcon.Size = UDim2.fromOffset(20, 20)
+    sIcon.Font = Enum.Font.FredokaOne
+    sIcon.Text = "🔍"
+    sIcon.TextSize = 13
+    sIcon.TextColor3 = Color3.fromRGB(0, 210, 255)
+    sIcon.ZIndex = 26
+    sIcon.Parent = windowSearchBar
+
+    local sBox = Instance.new("TextBox")
+    sBox.Name = "SearchBox"
+    sBox.BackgroundTransparency = 1
+    sBox.BorderSizePixel = 0
+    sBox.AnchorPoint = Vector2.new(0, 0.5)
+    sBox.Position = UDim2.new(0, 30, 0.5, 0)
+    sBox.Size = UDim2.new(1, -56, 1, 0)
+    sBox.ClearTextOnFocus = false
+    sBox.Font = Enum.Font.FredokaOne
+    sBox.PlaceholderText = "Cari fitur (Search features)..."
+    sBox.PlaceholderColor3 = Color3.fromRGB(115, 165, 210)
+    sBox.TextColor3 = Color3.fromRGB(245, 252, 255)
+    sBox.TextSize = 13
+    sBox.TextXAlignment = Enum.TextXAlignment.Left
+    sBox.Text = ""
+    sBox.ZIndex = 26
+    sBox.Parent = windowSearchBar
+
+    local sClear = Instance.new("TextButton")
+    sClear.Name = "ClearBtn"
+    sClear.BackgroundTransparency = 1
+    sClear.BorderSizePixel = 0
+    sClear.AnchorPoint = Vector2.new(1, 0.5)
+    sClear.Position = UDim2.new(1, -6, 0.5, 0)
+    sClear.Size = UDim2.fromOffset(20, 20)
+    sClear.Font = Enum.Font.FredokaOne
+    sClear.Text = "✕"
+    sClear.TextSize = 13
+    sClear.TextColor3 = Color3.fromRGB(140, 185, 225)
+    sClear.Visible = false
+    sClear.ZIndex = 27
+    sClear.Parent = windowSearchBar
+
+    sClear.MouseButton1Click:Connect(function()
+        sBox.Text = ""
+    end)
+
+    local function applyLiveSearch(query)
+        query = tostring(query or ""):lower():match("^%s*(.-)%s*$") or ""
+        sClear.Visible = (query ~= "")
+        
+        local activeTab = ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.SelectedTab
+        if not activeTab then return end
+        
+        if type(activeTab._applySearch) == "function" then
+            pcall(function() activeTab._applySearch(query) end)
         end
         
-        if candidate then
-            local top = candidate
-            while top.Parent and top.Parent ~= mainFrame do
-                top = top.Parent
-            end
-            if top and top.Parent == mainFrame and top ~= topBar and top ~= navSidebar and top ~= objects.obj25 then
-                if activeWindowSearch ~= top then
-                    activeWindowSearch = top
-                    trackSearchLock(top)
-                    syncAllWindowLayout()
+        if activeTab.Sections then
+            for _, section in ipairs(activeTab.Sections) do
+                local sectionHasMatch = false
+                if section.Options then
+                    for _, option in ipairs(section.Options) do
+                        local optName = tostring(option.DisplayName or option.Name or ""):lower()
+                        local matched = (query == "") or optName:find(query, 1, true) ~= nil
+                        if option._visibilityHost then
+                            option._visibilityHost.Visible = matched
+                        elseif option.Instance then
+                            option.Instance.Visible = matched
+                        end
+                        if matched then
+                            sectionHasMatch = true
+                        end
+                    end
+                end
+                if section._container and section.Name and not section.Name:lower():find("quick access") then
+                    section._container.Visible = (query == "") or sectionHasMatch
                 end
             end
         end
+        if type(activeTab._updateCanvas) == "function" then
+            pcall(activeTab._updateCanvas)
+        end
     end
 
-    mainFrame.DescendantAdded:Connect(handlePossibleSearch)
-    mainFrame.ChildAdded:Connect(handlePossibleSearch)
-    for _, desc in ipairs(mainFrame:GetDescendants()) do
-        handlePossibleSearch(desc)
-    end
+    sBox:GetPropertyChangedSignal("Text"):Connect(function()
+        applyLiveSearch(sBox.Text)
+    end)
 
     mainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncAllWindowLayout)
 
@@ -12886,6 +12901,10 @@ ApiImpl[94] = function(self, tabOrName)
                 end
             end
         end
+        if tab.Page then
+            tab.Page.ScrollingDirection = Enum.ScrollingDirection.Y
+            tab.Page.CanvasPosition = Vector2.new(0, 0)
+        end
         for _, section in ipairs(tab.Sections) do
             if section._refreshLayout then
                 section._refreshLayout()
@@ -12918,6 +12937,7 @@ ApiImpl[95] = function(self, config)
         page.ScrollBarThickness = 6
         page.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
         page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        page.ScrollingDirection = Enum.ScrollingDirection.Y
         page.ClipsDescendants = true
         page.ZIndex = 20
         page.Parent = mainFrame
