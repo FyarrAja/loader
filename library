@@ -199,22 +199,22 @@ objects.obj2.Parent = objects.obj1
 -- No UICorner on obj2 for clean boxy look
 
 -- Ocean Blue Gradient Background (sleek modern, semi-transparent glassmorphic)
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(10, 26, 52))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.06)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(14, 40, 80))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.22)
 pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", true)
 
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "OceanDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0,    Color3.fromRGB(20, 68, 132)),
-    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(15, 48, 96)),
-    ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(12, 36, 72)),
-    ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 28, 56))
+    ColorSequenceKeypoint.new(0,    Color3.fromRGB(25, 78, 150)),
+    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(18, 56, 115)),
+    ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(14, 42, 88)),
+    ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 32, 68))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.04),
-    NumberSequenceKeypoint.new(1, 0.10)
+    NumberSequenceKeypoint.new(0, 0.10),
+    NumberSequenceKeypoint.new(1, 0.22)
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
@@ -226,11 +226,11 @@ objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "CanvasOuterBorder")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
 pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(60, 170, 255))
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(255, 255, 255))
 pcall(chilliSetProperty, objects.obj3, "Enabled", true)
-pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Miter)
-pcall(chilliSetProperty, objects.obj3, "Thickness", 1.5)
-pcall(chilliSetProperty, objects.obj3, "Transparency", 0.20)
+pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
+pcall(chilliSetProperty, objects.obj3, "Thickness", 1.8)
+pcall(chilliSetProperty, objects.obj3, "Transparency", 0)
 objects.obj3.Parent = objects.obj2
 
 -- Window Size Limit Constraint (Min 400x290, Max 760x550)
@@ -296,16 +296,16 @@ pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
 
 do
-    -- Rich Ocean Fresh Diagonal Gradient: electric cyan-blue to deep sapphire midnight
+    -- Smooth, Vibrant, Balanced Ocean Header Gradient (Pairs seamlessly with White Stroke)
     local obj4_gradient = Instance.new("UIGradient")
     pcall(chilliSetProperty, obj4_gradient, "Name", "HeaderOceanGradient")
     pcall(chilliSetProperty, obj4_gradient, "Color", ColorSequence.new({
-        ColorSequenceKeypoint.new(0,    Color3.fromRGB(0, 155, 255)),
-        ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 115, 225)),
-        ColorSequenceKeypoint.new(0.68, Color3.fromRGB(2, 60, 155)),
-        ColorSequenceKeypoint.new(1,    Color3.fromRGB(4, 30, 95))
+        ColorSequenceKeypoint.new(0,    Color3.fromRGB(0, 185, 255)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(0, 145, 242)),
+        ColorSequenceKeypoint.new(0.70, Color3.fromRGB(0, 110, 218)),
+        ColorSequenceKeypoint.new(1,    Color3.fromRGB(2, 75, 178))
     }))
-    pcall(chilliSetProperty, obj4_gradient, "Rotation", 45)
+    pcall(chilliSetProperty, obj4_gradient, "Rotation", 90)
     obj4_gradient.Parent = objects.obj4
 
     -- Subtle top highlight line (white glow)
@@ -682,9 +682,7 @@ pcall(chilliSetProperty, objects.obj24, "Name", "UIAspectRatioConstraint")
 pcall(chilliSetProperty, objects.obj24, "AspectRatio", 1.340000033378601)
 pcall(chilliSetProperty, objects.obj24, "AspectType", Enum.AspectType.FitWithinMaxSize)
 pcall(chilliSetProperty, objects.obj24, "DominantAxis", Enum.DominantAxis.Width)
--- Disabled so window can be freely and smoothly resized in both dimensions without jitter
-objects.obj24.Enabled = false
-objects.obj24.Parent = objects.obj2
+-- Do not parent to obj2 so window can be freely and smoothly resized in both dimensions without constraint jitter
 
 objects.obj25 = Instance.new("ScrollingFrame")
 pcall(chilliSetProperty, objects.obj25, "Name", "List")
@@ -2505,9 +2503,9 @@ local function setResizeGripHighlight(highlighted)
     -- Pulse border glow during resize
     if objects.obj3 then
         TweenService:Create(objects.obj3, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-            Color = highlighted and Color3.fromRGB(120, 220, 255) or Color3.fromRGB(60, 170, 255),
-            Thickness = highlighted and 2.0 or 1.5,
-            Transparency = highlighted and 0.05 or 0.20,
+            Color = Color3.fromRGB(255, 255, 255),
+            Thickness = highlighted and 2.2 or 1.8,
+            Transparency = 0,
         }):Play()
     end
 end
