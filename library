@@ -199,21 +199,21 @@ objects.obj2.Parent = objects.obj1
 -- No UICorner on obj2 for clean boxy look
 
 -- True Liquid Glass / Glassmorphism Translucent Acrylic Canvas (Crystal Depth)
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(6, 16, 28))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.58)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(16, 52, 102))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.60)
 pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", true)
 
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "OceanDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0,    Color3.fromRGB(16, 38, 68)),
-    ColorSequenceKeypoint.new(0.40, Color3.fromRGB(10, 24, 46)),
-    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(6, 16, 32)),
-    ColorSequenceKeypoint.new(1,    Color3.fromRGB(4, 10, 22))
+    ColorSequenceKeypoint.new(0,    Color3.fromRGB(42, 120, 205)),
+    ColorSequenceKeypoint.new(0.40, Color3.fromRGB(24, 76, 145)),
+    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(16, 52, 105)),
+    ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 38, 80))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.45),
+    NumberSequenceKeypoint.new(0, 0.48),
     NumberSequenceKeypoint.new(0.45, 0.58),
     NumberSequenceKeypoint.new(1, 0.68)
 }))
@@ -266,8 +266,8 @@ objects.obj3.Parent = objects.obj2
 do
     local windowLimit = Instance.new("UISizeConstraint")
     pcall(chilliSetProperty, windowLimit, "Name", "WindowSizeLimits")
-    pcall(chilliSetProperty, windowLimit, "MinSize", Vector2.new(400, 290))
-    pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(760, 550))
+    pcall(chilliSetProperty, windowLimit, "MinSize", Vector2.new(520, 320))
+    pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(820, 580))
     windowLimit.Parent = objects.obj2
 end
 
@@ -3068,25 +3068,43 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
 end
 
 -- Dedicated Navigation Sidebar INSIDE mainFrame (Left Column)
+-- Dedicated Navigation Sidebar INSIDE mainFrame (Left Column)
 local navSidebar = Instance.new("Frame")
 navSidebar.Name = "NavSidebar"
 navSidebar.Active = false
 navSidebar.AnchorPoint = Vector2.new(0, 0)
-navSidebar.BackgroundColor3 = Color3.fromRGB(6, 18, 34)
-navSidebar.BackgroundTransparency = 0.45
+navSidebar.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
+navSidebar.BackgroundTransparency = 0.60
 navSidebar.BorderSizePixel = 0
 navSidebar.Position = UDim2.new(0, 8, 0, 56)
 navSidebar.Size = UDim2.new(0, 138, 1, -64)
 navSidebar.ZIndex = 8
 navSidebar.Parent = mainFrame
 
+local navSidebarCorner = Instance.new("UICorner")
+navSidebarCorner.CornerRadius = UDim.new(0, 6)
+navSidebarCorner.Parent = navSidebar
+
 local navSidebarStroke = Instance.new("UIStroke")
 navSidebarStroke.Name = "NavStroke"
-navSidebarStroke.Color = Color3.fromRGB(0, 150, 240)
-navSidebarStroke.Transparency = 0.5
+navSidebarStroke.Color = Color3.fromRGB(80, 215, 255)
+navSidebarStroke.Transparency = 0.40
 navSidebarStroke.Thickness = 1.2
 navSidebarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 navSidebarStroke.Parent = navSidebar
+
+local navSidebarGrad = Instance.new("UIGradient")
+navSidebarGrad.Name = "SidebarGlassGrad"
+navSidebarGrad.Rotation = 90
+navSidebarGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 120, 205)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 40, 80)),
+})
+navSidebarGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.45),
+    NumberSequenceKeypoint.new(1, 0.65),
+})
+navSidebarGrad.Parent = navSidebar
 
 local navScroll = Instance.new("ScrollingFrame")
 navScroll.Name = "NavScroll"
@@ -3132,6 +3150,90 @@ sideButtons.AutomaticSize = Enum.AutomaticSize.Y
 sideButtons.LayoutOrder = 1
 sideButtons.ZIndex = 10
 sideButtons.Parent = navScroll
+
+-- Dedicated Navigation Sidebar INSIDE mainFrame (Right Column for Config / Settings)
+local navSidebarRight = Instance.new("Frame")
+navSidebarRight.Name = "NavSidebarRight"
+navSidebarRight.Active = false
+navSidebarRight.AnchorPoint = Vector2.new(1, 0)
+navSidebarRight.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
+navSidebarRight.BackgroundTransparency = 0.60
+navSidebarRight.BorderSizePixel = 0
+navSidebarRight.Position = UDim2.new(1, -8, 0, 56)
+navSidebarRight.Size = UDim2.new(0, 138, 1, -64)
+navSidebarRight.ZIndex = 8
+navSidebarRight.Visible = false
+navSidebarRight.Parent = mainFrame
+
+local navSidebarRightCorner = Instance.new("UICorner")
+navSidebarRightCorner.CornerRadius = UDim.new(0, 6)
+navSidebarRightCorner.Parent = navSidebarRight
+
+local navSidebarRightStroke = Instance.new("UIStroke")
+navSidebarRightStroke.Name = "NavStroke"
+navSidebarRightStroke.Color = Color3.fromRGB(80, 215, 255)
+navSidebarRightStroke.Transparency = 0.40
+navSidebarRightStroke.Thickness = 1.2
+navSidebarRightStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+navSidebarRightStroke.Parent = navSidebarRight
+
+local navSidebarRightGrad = Instance.new("UIGradient")
+navSidebarRightGrad.Name = "SidebarGlassGrad"
+navSidebarRightGrad.Rotation = 90
+navSidebarRightGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 120, 205)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 40, 80)),
+})
+navSidebarRightGrad.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.45),
+    NumberSequenceKeypoint.new(1, 0.65),
+})
+navSidebarRightGrad.Parent = navSidebarRight
+
+local navScrollRight = Instance.new("ScrollingFrame")
+navScrollRight.Name = "NavScrollRight"
+navScrollRight.Active = true
+navScrollRight.BackgroundTransparency = 1
+navScrollRight.BorderSizePixel = 0
+navScrollRight.Position = UDim2.new(0, 3, 0, 6)
+navScrollRight.Size = UDim2.new(1, -6, 1, -12)
+navScrollRight.CanvasSize = UDim2.new(0, 0, 0, 0)
+navScrollRight.AutomaticCanvasSize = Enum.AutomaticSize.Y
+navScrollRight.ScrollBarThickness = 3
+navScrollRight.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
+navScrollRight.ScrollBarImageTransparency = 0.3
+navScrollRight.ScrollingDirection = Enum.ScrollingDirection.Y
+navScrollRight.ZIndex = 9
+navScrollRight.Parent = navSidebarRight
+
+local navScrollRightLayout = Instance.new("UIListLayout")
+navScrollRightLayout.Name = "NavScrollLayout"
+navScrollRightLayout.FillDirection = Enum.FillDirection.Vertical
+navScrollRightLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+navScrollRightLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+navScrollRightLayout.SortOrder = Enum.SortOrder.LayoutOrder
+navScrollRightLayout.Padding = UDim.new(0, 8)
+navScrollRightLayout.Parent = navScrollRight
+
+local navScrollRightPadding = Instance.new("UIPadding")
+navScrollRightPadding.PaddingLeft = UDim.new(0, 4)
+navScrollRightPadding.PaddingRight = UDim.new(0, 4)
+navScrollRightPadding.PaddingTop = UDim.new(0, 6)
+navScrollRightPadding.PaddingBottom = UDim.new(0, 8)
+navScrollRightPadding.Parent = navScrollRight
+
+local sideButtonsRight = Instance.new("Frame")
+sideButtonsRight.Name = "SideButtonsRight"
+sideButtonsRight.Active = false
+sideButtonsRight.AnchorPoint = Vector2.new(0.5, 0)
+sideButtonsRight.BackgroundTransparency = 1
+sideButtonsRight.BorderSizePixel = 0
+sideButtonsRight.Position = UDim2.new(0.5, 0, 0, 0)
+sideButtonsRight.Size = UDim2.new(1, 0, 0, 0)
+sideButtonsRight.AutomaticSize = Enum.AutomaticSize.Y
+sideButtonsRight.LayoutOrder = 1
+sideButtonsRight.ZIndex = 10
+sideButtonsRight.Parent = navScrollRight
 
 
 
@@ -3254,9 +3356,9 @@ local function buildRowPlate(parent, labelText)
     main.Name = "Main"
     main.Active = false
     main.AnchorPoint = Vector2.new(0.5, 0.5)
-    -- Frosted Translucent Liquid Glass Tile
-    main.BackgroundColor3 = Color3.fromRGB(8, 22, 40)
-    main.BackgroundTransparency = 0.50
+    -- Luminous Frosted Liquid Glass Tile (Crystal Sheen & Glassmorphism)
+    main.BackgroundColor3 = Color3.fromRGB(20, 68, 125)
+    main.BackgroundTransparency = 0.64
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
     main.Size = UDim2.fromScale(1, 0.85)
@@ -3267,10 +3369,24 @@ local function buildRowPlate(parent, labelText)
     plateCorner.CornerRadius = UDim.new(0, 5)
     plateCorner.Parent = main
 
+    local plateGrad = Instance.new("UIGradient")
+    plateGrad.Name = "GlassSheenGrad"
+    plateGrad.Rotation = 90
+    plateGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 165, 255)),
+        ColorSequenceKeypoint.new(0.30, Color3.fromRGB(30, 95, 175)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 52, 105)),
+    })
+    plateGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.35),
+        NumberSequenceKeypoint.new(1, 0.62),
+    })
+    plateGrad.Parent = main
+
     local plateStroke = Instance.new("UIStroke")
     plateStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    plateStroke.Color = Color3.fromRGB(0, 160, 240)
-    plateStroke.Transparency = 0.60
+    plateStroke.Color = Color3.fromRGB(105, 228, 255)
+    plateStroke.Transparency = 0.32
     plateStroke.Thickness = 1.2
     plateStroke.LineJoinMode = Enum.LineJoinMode.Round
     plateStroke.Parent = main
@@ -6789,50 +6905,13 @@ sideButtonPadding.Parent = sideButtons
 
 local TabColumns = {}
 do
-    local function buildColumn(name, layoutOrder)
-        local frame = Instance.new("Frame")
-        frame.Name = name
-        frame.Active = false
-        frame.AnchorPoint = Vector2.new(0.5, 0)
-        frame.BackgroundTransparency = 1
-        frame.BorderSizePixel = 0
-        frame.Position = UDim2.new(0.5, 0, 0, 0)
-        frame.Size = UDim2.new(1, 0, 0, 0)
-        frame.AutomaticSize = Enum.AutomaticSize.Y
-        frame.LayoutOrder = layoutOrder or 2
-        frame.ZIndex = 10
-        frame.Parent = navScroll
-
-        local layout = Instance.new("UIListLayout")
-        layout.Name = "TabLayout"
-        layout.FillDirection = Enum.FillDirection.Vertical
-        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        layout.VerticalAlignment = Enum.VerticalAlignment.Top
-        layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Padding = UDim.new(0, 8)
-        layout.Parent = frame
-
-        local padding = Instance.new("UIPadding")
-        padding.Name = "TabPadding"
-        padding.PaddingTop = UDim.new(0, 0)
-        padding.Parent = frame
-
-        return {
-            Frame = frame,
-            Layout = layout,
-            Padding = padding,
-            AnchorX = 0.5,
-            EdgeX = 0,
-        }
-    end
-
     sideButtonLayout.Padding = UDim.new(0, 8)
     sideButtonPadding.PaddingTop = UDim.new(0, 0)
 
     TabColumns.Left = {
         Frame = sideButtons,
-        Layout = sideButtonLayout,
-        Padding = sideButtonPadding,
+        Layout = navScrollLayout,
+        Padding = navScrollPadding,
         AnchorX = 0.5,
         EdgeX = 0,
         CenterY = 0.5,
@@ -6840,10 +6919,17 @@ do
         Width = 1,
         GapRatio = TAB_LAYOUT.GapRatio,
     }
-    TabColumns.Right = buildColumn("SideButtonsRight", 2)
-    TabColumns.Right.CenterY = 0.5
-    TabColumns.Right.TopPadding = 0
-    TabColumns.Right.Width = 1
+    TabColumns.Right = {
+        Frame = sideButtonsRight,
+        Layout = navScrollRightLayout,
+        Padding = navScrollRightPadding,
+        AnchorX = 0.5,
+        EdgeX = 0,
+        CenterY = 0.5,
+        TopPadding = 0,
+        Width = 1,
+        GapRatio = TAB_LAYOUT.GapRatio,
+    }
 end
 
 -- Layout Synchronizer: Coordinates NavSidebar, Top Search Bar, and Content ScrollingFrame
@@ -6896,21 +6982,60 @@ do
         if isSyncingLayout then return end
         isSyncingLayout = true
         
+        local hasRightTabs = false
+        if sideButtonsRight then
+            for _, child in ipairs(sideButtonsRight:GetChildren()) do
+                if child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
+                    hasRightTabs = true
+                    break
+                end
+            end
+        end
+        if not hasRightTabs and navScrollRight then
+            for _, child in ipairs(navScrollRight:GetChildren()) do
+                if child ~= sideButtonsRight and child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
+                    hasRightTabs = true
+                    break
+                end
+            end
+        end
+        if not hasRightTabs then
+            local win = (ChilliLibrary and ChilliLibrary.Window) or (ChilliLibrary and ChilliLibrary._activeWindow)
+            if win and win.Tabs then
+                for _, tab in ipairs(win.Tabs) do
+                    if tab.Column == TabColumns.Right or tab.Side == "Right" then
+                        hasRightTabs = true
+                        break
+                    end
+                end
+            end
+        end
+
         local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
-        local sidebarW = 144
+        local sidebarW = 138
         local margin = 8
-        local contentX = margin + sidebarW + 10 -- 162px from left
-        local contentW = -(contentX + margin)   -- -170px offset from width
         
-        -- 1. NavSidebar on the left inside mainFrame
+        -- 1. NavSidebar on the left
         if navSidebar then
             navSidebar.Position = UDim2.new(0, margin, 0, topH + margin)
             navSidebar.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
             navSidebar.ZIndex = 30
         end
-        
-        -- 2. Dedicated Native Ocean Search Bar at the TOP
+
+        -- 2. NavSidebarRight on the right (for Config / Settings)
+        if navSidebarRight then
+            navSidebarRight.Visible = hasRightTabs
+            navSidebarRight.Position = UDim2.new(1, -margin, 0, topH + margin)
+            navSidebarRight.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
+            navSidebarRight.ZIndex = 30
+        end
+
+        local contentX = margin + sidebarW + 8
+        local rightReserved = hasRightTabs and (sidebarW + 8) or 0
+        local contentW = -(contentX + rightReserved + margin)
         local searchH = 30
+        
+        -- 3. Dedicated Native Ocean Search Bar at the TOP
         if windowSearchBar then
             windowSearchBar.Position = UDim2.new(0, contentX, 0, topH + margin)
             windowSearchBar.Size = UDim2.new(1, contentW, 0, searchH)
@@ -6977,8 +7102,8 @@ do
     -- Dedicated Native Ocean Search Bar (Zero errors, live filtering across tabs)
     windowSearchBar = Instance.new("Frame")
     windowSearchBar.Name = "WindowSearchBar"
-    windowSearchBar.BackgroundColor3 = Color3.fromRGB(10, 32, 60)
-    windowSearchBar.BackgroundTransparency = 0.22
+    windowSearchBar.BackgroundColor3 = Color3.fromRGB(18, 62, 115)
+    windowSearchBar.BackgroundTransparency = 0.58
     windowSearchBar.BorderSizePixel = 0
     windowSearchBar.ZIndex = 25
     windowSearchBar.Parent = mainFrame
@@ -6989,11 +7114,24 @@ do
 
     local sStroke = Instance.new("UIStroke")
     sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    sStroke.Color = Color3.fromRGB(0, 190, 255)
+    sStroke.Color = Color3.fromRGB(90, 220, 255)
     sStroke.Transparency = 0.35
     sStroke.Thickness = 1.2
     sStroke.LineJoinMode = Enum.LineJoinMode.Round
     sStroke.Parent = windowSearchBar
+
+    local sGrad = Instance.new("UIGradient")
+    sGrad.Name = "SearchGlassGrad"
+    sGrad.Rotation = 90
+    sGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 140, 230)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 50, 95)),
+    })
+    sGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.40),
+        NumberSequenceKeypoint.new(1, 0.65),
+    })
+    sGrad.Parent = windowSearchBar
 
     local sIcon = Instance.new("TextLabel")
     sIcon.Name = "SearchIcon"
@@ -7019,7 +7157,7 @@ do
     sBox.ClearTextOnFocus = false
     sBox.Font = Enum.Font.FredokaOne
     sBox.PlaceholderText = "Cari fitur (Search features)..."
-    sBox.PlaceholderColor3 = Color3.fromRGB(115, 165, 210)
+    sBox.PlaceholderColor3 = Color3.fromRGB(150, 220, 255)
     sBox.TextColor3 = Color3.fromRGB(245, 252, 255)
     sBox.TextSize = 13
     sBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -13216,7 +13354,23 @@ ApiImpl[95] = function(self, config)
     page.Size = objects.obj25.Size
     page.ClipsDescendants = true
 
-    local side = tostring(tabConfig.Side or "Left")
+    local side = tabConfig.Side
+    if not side then
+        local lowerName = tabConfig.Name:lower():gsub("%s+", " ")
+        if lowerName == "settings"
+            or lowerName == "config"
+            or lowerName == "configuration"
+            or lowerName:find("^config")
+            or lowerName == "quick & keys"
+            or (lowerName:find("quick") and lowerName:find("key"))
+            or (lowerName:find("settings$") and not lowerName:find("misc"))
+        then
+            side = "Right"
+        else
+            side = "Left"
+        end
+    end
+    side = (tostring(side):lower() == "right") and "Right" or "Left"
     local column = TabColumns[side] or TabColumns.Left
     local tabDisplayName = tostring(tabConfig.DisplayName or tabConfig.Name)
     local button = createRebirthStyleButton(
