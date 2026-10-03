@@ -198,33 +198,33 @@ local obj2_corner = Instance.new("UICorner")
 pcall(chilliSetProperty, obj2_corner, "CornerRadius", UDim.new(0, 14))
 obj2_corner.Parent = objects.obj2
 
+-- Translucent Smoked Charcoal/Grey Acrylic Background (Hitam ke abu-abuan transparan, NOT pitch dark)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(38, 44, 56))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.36)
+
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(34, 38, 48)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(24, 27, 34)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(16, 18, 24))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 62, 78)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 46, 58)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(26, 30, 40))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.12),
-    NumberSequenceKeypoint.new(0.5, 0.18),
-    NumberSequenceKeypoint.new(1, 0.25)
+    NumberSequenceKeypoint.new(0, 0.30),
+    NumberSequenceKeypoint.new(0.5, 0.36),
+    NumberSequenceKeypoint.new(1, 0.44)
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 90)
 objects.obj2_gradient.Parent = objects.obj2
 
+-- UIStroke Disabled on window frame (clean borderless glass aesthetic)
 objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
-pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(30, 115, 235))
-pcall(chilliSetProperty, objects.obj3, "Enabled", true)
-pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj3, "Thickness", 1.2)
-pcall(chilliSetProperty, objects.obj3, "Transparency", 0.35)
+pcall(chilliSetProperty, objects.obj3, "Enabled", false)
 objects.obj3.Parent = objects.obj2
 
 -- Strict Window Size Limit Constraint (Min 380x270, Max 700x510)
@@ -234,63 +234,47 @@ pcall(chilliSetProperty, windowLimit, "MinSize", Vector2.new(380, 270))
 pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(700, 510))
 windowLimit.Parent = objects.obj2
 
--- Multi-Asset Background Layer 1: Halftone Dot Matrix (Asset 125799959634008)
+-- Main Background (Bawah Header): Uses Framewisp Asset 101344938838576 (Halftone Corner Bold), NOT the same as header!
 objects.obj2_studs = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj2_studs, "Name", "HalftoneBackground")
+pcall(chilliSetProperty, objects.obj2_studs, "Name", "BodyHalftoneAccent")
 pcall(chilliSetProperty, objects.obj2_studs, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Visible", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Active", false)
-pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0.5,0.5))
+pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(1, 1))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1,0,1,0))
+pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(1, 0, 1, 0))
+pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(0.68, 0, 0.68, 0))
 pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://125799959634008")
-pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(30, 115, 235))
-pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.88)
-pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Tile)
-pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.new(0,80,0,80))
+pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://101344938838576")
+pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(110, 175, 255))
+pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.76)
+pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Fit)
 pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
 local studs_corner = Instance.new("UICorner")
 pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 14))
 studs_corner.Parent = objects.obj2_studs
 objects.obj2_studs.Parent = objects.obj2
 
--- Multi-Asset Background Layer 2: Halftone Corner Bold Accent (Asset 101344938838576)
-local obj2_cornerAccent = Instance.new("ImageLabel")
-pcall(chilliSetProperty, obj2_cornerAccent, "Name", "BgCornerHalftone")
-pcall(chilliSetProperty, obj2_cornerAccent, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, obj2_cornerAccent, "BorderSizePixel", 0)
-pcall(chilliSetProperty, obj2_cornerAccent, "AnchorPoint", Vector2.new(1, 1))
-pcall(chilliSetProperty, obj2_cornerAccent, "Position", UDim2.new(1, 0, 1, 0))
-pcall(chilliSetProperty, obj2_cornerAccent, "Size", UDim2.new(0.50, 0, 0.50, 0))
-pcall(chilliSetProperty, obj2_cornerAccent, "Image", "rbxassetid://101344938838576")
-pcall(chilliSetProperty, obj2_cornerAccent, "ImageColor3", Color3.fromRGB(25, 95, 210))
-pcall(chilliSetProperty, obj2_cornerAccent, "ImageTransparency", 0.80)
-pcall(chilliSetProperty, obj2_cornerAccent, "ScaleType", Enum.ScaleType.Fit)
-pcall(chilliSetProperty, obj2_cornerAccent, "ZIndex", 1)
-local corner_accent_c = Instance.new("UICorner")
-pcall(chilliSetProperty, corner_accent_c, "CornerRadius", UDim.new(0, 14))
-corner_accent_c.Parent = obj2_cornerAccent
-obj2_cornerAccent.Parent = objects.obj2
-
--- Multi-Asset Background Layer 3: Top Sheen Glow (Asset 89768752694629)
-local obj2_topSheen = Instance.new("ImageLabel")
-pcall(chilliSetProperty, obj2_topSheen, "Name", "BgTopSheen")
-pcall(chilliSetProperty, obj2_topSheen, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, obj2_topSheen, "BorderSizePixel", 0)
-pcall(chilliSetProperty, obj2_topSheen, "AnchorPoint", Vector2.new(0, 0))
-pcall(chilliSetProperty, obj2_topSheen, "Position", UDim2.new(0, 0, 0, 0))
-pcall(chilliSetProperty, obj2_topSheen, "Size", UDim2.new(1, 0, 0, 32))
-pcall(chilliSetProperty, obj2_topSheen, "Image", "rbxassetid://89768752694629")
-pcall(chilliSetProperty, obj2_topSheen, "ImageColor3", Color3.fromRGB(45, 125, 245))
-pcall(chilliSetProperty, obj2_topSheen, "ImageTransparency", 0.68)
-pcall(chilliSetProperty, obj2_topSheen, "ScaleType", Enum.ScaleType.Stretch)
-pcall(chilliSetProperty, obj2_topSheen, "ZIndex", 2)
-obj2_topSheen.Parent = objects.obj2
+-- Main Background Sheen Overlay (Asset 89768752694629): Glossy light sheen at bottom of window
+local obj2_bottomSheen = Instance.new("ImageLabel")
+pcall(chilliSetProperty, obj2_bottomSheen, "Name", "BodyBottomSheen")
+pcall(chilliSetProperty, obj2_bottomSheen, "BackgroundTransparency", 1)
+pcall(chilliSetProperty, obj2_bottomSheen, "BorderSizePixel", 0)
+pcall(chilliSetProperty, obj2_bottomSheen, "AnchorPoint", Vector2.new(0, 1))
+pcall(chilliSetProperty, obj2_bottomSheen, "Position", UDim2.new(0, 0, 1, 0))
+pcall(chilliSetProperty, obj2_bottomSheen, "Size", UDim2.new(1, 0, 0, 18))
+pcall(chilliSetProperty, obj2_bottomSheen, "Image", "rbxassetid://89768752694629")
+pcall(chilliSetProperty, obj2_bottomSheen, "ImageColor3", Color3.fromRGB(90, 160, 245))
+pcall(chilliSetProperty, obj2_bottomSheen, "ImageTransparency", 0.72)
+pcall(chilliSetProperty, obj2_bottomSheen, "ScaleType", Enum.ScaleType.Stretch)
+pcall(chilliSetProperty, obj2_bottomSheen, "ZIndex", 2)
+local bottom_sheen_c = Instance.new("UICorner")
+pcall(chilliSetProperty, bottom_sheen_c, "CornerRadius", UDim.new(0, 14))
+bottom_sheen_c.Parent = obj2_bottomSheen
+obj2_bottomSheen.Parent = objects.obj2
 
 objects.obj4 = Instance.new("Frame")
 pcall(chilliSetProperty, objects.obj4, "Name", "Top")
