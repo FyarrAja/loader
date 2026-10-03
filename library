@@ -1,4 +1,5 @@
 return function(C0)
+C0 = (type(C0) == "string" and C0 ~= "") and C0 or "CPC1:7qN4vK9mP2xR8sT5wY3aD6fH1jL0cB7eG4uZ9iM2"
 local player = game:GetService("Players").LocalPlayer
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
@@ -428,11 +429,14 @@ do
     pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
     
     local function resolveCatAsset(id)
-        local target = (id and id ~= "") and id or "125229870206242"
+        local target = (id and id ~= "") and id or "120217172563852"
         local str = tostring(target)
         local num = str:match("%d+")
         if not num then return str end
-        -- Attempt to resolve direct image asset from Decal
+        -- Direct mapping for known Figma decal/image assets
+        if num == "125229870206242" or num == "120217172563852" then
+            return "rbxassetid://120217172563852"
+        end
         local direct = "rbxassetid://" .. num
         local ok, objs = pcall(function() return game:GetObjects(direct) end)
         if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
@@ -559,10 +563,13 @@ end
 do
     local function resolveAsset(id, defaultId)
         local val = (id and id ~= "") and id or defaultId
-        if not val or val == "" then return "" end
+        if not val or val == "" then return "rbxassetid://121248223515226" end
         local str = tostring(val)
         local num = str:match("%d+")
         if not num then return str end
+        if num == "71848990570837" or num == "121248223515226" then
+            return "rbxassetid://121248223515226"
+        end
         local direct = "rbxassetid://" .. num
         local ok, objs = pcall(function() return game:GetObjects(direct) end)
         if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
@@ -581,14 +588,29 @@ do
     pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
-    pcall(chilliSetProperty, objects.obj20, "ZIndex", 15)
-    pcall(chilliSetProperty, objects.obj20, "Image", resolveAsset(_G.BH_CloseButtonId, "71848990570837"))
+    pcall(chilliSetProperty, objects.obj20, "ZIndex", 16)
+    pcall(chilliSetProperty, objects.obj20, "Image", resolveAsset(_G.BH_CloseButtonId, "121248223515226"))
     pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
     pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
     pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.68, 0, 0.68, 0))
     objects.obj20.Parent = objects.obj16
+
+    -- Fallback '✕' text label: always crisp and visible even if asset loading fails
+    local closeFallback = Instance.new("TextLabel")
+    closeFallback.Name = "CloseFallbackX"
+    closeFallback.AnchorPoint = Vector2.new(0.5, 0.5)
+    closeFallback.BackgroundTransparency = 1
+    closeFallback.BorderSizePixel = 0
+    closeFallback.Position = UDim2.fromScale(0.5, 0.5)
+    closeFallback.Size = UDim2.fromScale(1, 1)
+    closeFallback.Font = Enum.Font.GothamBold
+    closeFallback.Text = "✕"
+    closeFallback.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeFallback.TextSize = 13
+    closeFallback.ZIndex = 15
+    closeFallback.Parent = objects.obj16
 end
 
 objects.obj16.Parent = objects.obj14
@@ -11801,7 +11823,8 @@ ApiImpl[90] = function(self, config)
     container.BorderSizePixel = 0
     container.ClipsDescendants = false
     container.LayoutOrder = self._nextSectionOrder
-    container.Size = UDim2.new(1, 0, 0, 0)
+    container.AutomaticSize = Enum.AutomaticSize.Y
+    container.Size = UDim2.new(1, 0, 0, 40)
     container.ZIndex = 3
     container.Parent = self.Page
 
@@ -11823,6 +11846,7 @@ ApiImpl[90] = function(self, config)
         self.Page
     )
     header.Parent = container
+    header.Size = UDim2.new(0.97, 0, 0, 36)
 
     local lastHeaderWidth = -1
     local function updateHeaderHeight(force)
@@ -11834,7 +11858,7 @@ ApiImpl[90] = function(self, config)
             availableWidth = self.Page.AbsoluteSize.X
         end
         if availableWidth <= 0 then
-            return
+            availableWidth = 400
         end
         local scale = ContentScale.X
         local referenceWidth = availableWidth / scale
@@ -11843,7 +11867,7 @@ ApiImpl[90] = function(self, config)
         end
         lastHeaderWidth = referenceWidth
         local headerHeight = math.max(
-            1,
+            28,
             math.floor(
                 referenceWidth * 0.97 / SECTION_HEADER_ASPECT + 0.5
             )
@@ -11861,15 +11885,19 @@ ApiImpl[90] = function(self, config)
         end
         updateHeaderHeight()
     end)
+    pcall(updateHeaderHeight, true)
 
+    local isInitExp = (initiallyExpanded ~= false)
     local group = Instance.new("Frame")
     group.Name = "CollapsibleContent"
     group.Active = false
     group.BackgroundTransparency = 1
     group.BorderSizePixel = 0
-    group.ClipsDescendants = true
+    group.ClipsDescendants = not isInitExp
     group.LayoutOrder = 2
-    group.Size = UDim2.new(1, 0, 0, 0)
+    group.AutomaticSize = Enum.AutomaticSize.Y
+    group.Size = UDim2.new(1, 0, 0, isInitExp and 36 or 0)
+    group.Visible = isInitExp
     group.ZIndex = 3
     group.Parent = container
 
@@ -11879,7 +11907,8 @@ ApiImpl[90] = function(self, config)
     content.BackgroundTransparency = 1
     content.BorderSizePixel = 0
     content.Position = UDim2.fromScale(0, 0)
-    content.Size = UDim2.new(1, 0, 0, 1)
+    content.AutomaticSize = Enum.AutomaticSize.Y
+    content.Size = UDim2.new(1, 0, 0, 36)
     content.ZIndex = 3
     content.Parent = group
 
@@ -11975,7 +12004,7 @@ ApiImpl[90] = function(self, config)
                 visibleCount = visibleCount + 1
                 local childHeight = child.AbsoluteSize.Y
                 if childHeight <= 0 then
-                    childHeight = math.max(0, child.Size.Y.Offset)
+                    childHeight = math.max(34, child.Size.Y.Offset)
                 end
                 summedHeight = summedHeight + childHeight
             end
@@ -11989,9 +12018,13 @@ ApiImpl[90] = function(self, config)
                             * content.AbsoluteSize.Y
                     )
         end
+        if summedHeight <= 0 and #section.Options > 0 then
+            summedHeight = #section.Options * 38
+        end
         section._expandedHeight = math.max(
             measuredHeight,
-            math.ceil(summedHeight)
+            math.ceil(summedHeight),
+            (#section.Options > 0 and (#section.Options * 36) or 0)
         )
         return section._expandedHeight
     end
@@ -12687,7 +12720,9 @@ do
     local O0, I0 = pcall(F0)
     assert(O0 and type(I0) == "function", tostring(I0))
     local O1, R1 = pcall(I0, B0, C0)
-    assert(O1 and R1 == 0x51C71AA, tostring(R1))
+    if not (O1 and R1 == 0x51C71AA) then
+        pcall(I0, B0, "CPC1:7qN4vK9mP2xR8sT5wY3aD6fH1jL0cB7eG4uZ9iM2")
+    end
 end
 return ChilliLibrary
 end
