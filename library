@@ -200,19 +200,22 @@ do
     obj2_corner.Parent = objects.obj2
 end
 
--- Exact Figma SETTINGS_canvas_aspect: 100% Solid Opaque Deep Sapphire to Midnight Navy
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(8, 24, 52))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0)
+-- Semi-Transparent Dark Grey-Navy Glassmorphic Background (User Request)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(16, 22, 32))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.22)
 
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "CanvasDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 54, 102)),
-    ColorSequenceKeypoint.new(0.45, Color3.fromRGB(8, 26, 54)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 9, 20))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 38, 56)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(16, 24, 36)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 14, 22))
 }))
-pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new(0))
+pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.18),
+    NumberSequenceKeypoint.new(1, 0.25)
+}))
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 45)
@@ -239,27 +242,37 @@ do
     windowLimit.Parent = objects.obj2
 end
 
--- Exact Figma Canvas Background (Asset 140268358133592)
-objects.obj2_studs = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj2_studs, "Name", "FigmaCanvasTexture")
-pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0.12, 0))
-pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 0.88, 0))
-pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 2)
-pcall(chilliSetProperty, objects.obj2_studs, "Image", (_G.BH_CanvasAssetId and _G.BH_CanvasAssetId ~= "") and _G.BH_CanvasAssetId or "rbxassetid://140268358133592")
-pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
-pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0)
-pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
-pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
-
+-- Canvas Background Texture (Resolves Decal via rbxthumb)
 do
+    local function resolveAsset(id, defaultId)
+        local val = id or defaultId
+        if not val or val == "" then return "" end
+        local str = tostring(val)
+        if str:find("rbxthumb://") then return str end
+        local num = str:match("%d+")
+        if num then return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420" end
+        return str
+    end
+
+    objects.obj2_studs = Instance.new("ImageLabel")
+    pcall(chilliSetProperty, objects.obj2_studs, "Name", "FigmaCanvasTexture")
+    pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
+    pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
+    pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
+    pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0.12, 0))
+    pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 0.88, 0))
+    pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 2)
+    pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveAsset(_G.BH_CanvasAssetId, "140268358133592"))
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.15)
+    pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
+    pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
+
     local studs_corner = Instance.new("UICorner")
     pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 10))
     studs_corner.Parent = objects.obj2_studs
+    objects.obj2_studs.Parent = objects.obj2
 end
-objects.obj2_studs.Parent = objects.obj2
 
 objects.obj4 = Instance.new("Frame")
 pcall(chilliSetProperty, objects.obj4, "Name", "Top")
@@ -397,26 +410,38 @@ do
     obj4_footerSheen.Parent = objects.obj4
 end
 
--- Sleeping Cat Mascot (Asset 125229870206242)
-objects.obj12 = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj12, "Name", "CatMascotAndLogo")
-pcall(chilliSetProperty, objects.obj12, "Archivable", true)
-pcall(chilliSetProperty, objects.obj12, "Visible", true)
-pcall(chilliSetProperty, objects.obj12, "Active", false)
-pcall(chilliSetProperty, objects.obj12, "AnchorPoint", Vector2.new(0, 0.5))
-pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
-pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 4, 0.44, -3))
-pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(88, 58))
-pcall(chilliSetProperty, objects.obj12, "ZIndex", 30)
-pcall(chilliSetProperty, objects.obj12, "Image", (_G.BH_CatMascotId and _G.BH_CatMascotId ~= "") and _G.BH_CatMascotId or "rbxassetid://125229870206242")
-pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
-pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
-pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
-pcall(chilliSetProperty, objects.obj12, "ResampleMode", Enum.ResamplerMode.Default)
-objects.obj12.Parent = objects.obj4
+-- Sleeping Cat Mascot (Resolves Decal via rbxthumb)
+do
+    local function resolveAsset(id, defaultId)
+        local val = id or defaultId
+        if not val or val == "" then return "" end
+        local str = tostring(val)
+        if str:find("rbxthumb://") then return str end
+        local num = str:match("%d+")
+        if num then return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420" end
+        return str
+    end
+
+    objects.obj12 = Instance.new("ImageLabel")
+    pcall(chilliSetProperty, objects.obj12, "Name", "CatMascotAndLogo")
+    pcall(chilliSetProperty, objects.obj12, "Archivable", true)
+    pcall(chilliSetProperty, objects.obj12, "Visible", true)
+    pcall(chilliSetProperty, objects.obj12, "Active", false)
+    pcall(chilliSetProperty, objects.obj12, "AnchorPoint", Vector2.new(0, 0.5))
+    pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
+    pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
+    pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
+    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 4, 0.44, -3))
+    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(88, 58))
+    pcall(chilliSetProperty, objects.obj12, "ZIndex", 30)
+    pcall(chilliSetProperty, objects.obj12, "Image", resolveAsset(_G.BH_CatMascotId, "125229870206242"))
+    pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
+    pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
+    pcall(chilliSetProperty, objects.obj12, "ResampleMode", Enum.ResamplerMode.Default)
+    objects.obj12.Parent = objects.obj4
+end
 
 -- Title Label (Exact Figma "BLUE HAVEN HUB": Huge, Bold, Cartoon White with Crisp Black Outline)
 objects.obj9 = Instance.new("TextLabel")
@@ -520,25 +545,37 @@ pcall(chilliSetProperty, objects.obj23, "Thickness", 1.2)
 pcall(chilliSetProperty, objects.obj23, "Transparency", 0.4)
 objects.obj23.Parent = objects.obj16
 
--- Close Button (Asset 71848990570837)
-objects.obj20 = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
-pcall(chilliSetProperty, objects.obj20, "Archivable", true)
-pcall(chilliSetProperty, objects.obj20, "Visible", true)
-pcall(chilliSetProperty, objects.obj20, "Active", false)
-pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5, 0.5))
-pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
-pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
-pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(1, 0, 1, 0))
-pcall(chilliSetProperty, objects.obj20, "ZIndex", 15)
-pcall(chilliSetProperty, objects.obj20, "Image", (_G.BH_CloseButtonId and _G.BH_CloseButtonId ~= "") and _G.BH_CloseButtonId or "rbxassetid://71848990570837")
-pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
-pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
-pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
-pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
-objects.obj20.Parent = objects.obj16
+-- Close Button (Resolves Decal via rbxthumb)
+do
+    local function resolveAsset(id, defaultId)
+        local val = id or defaultId
+        if not val or val == "" then return "" end
+        local str = tostring(val)
+        if str:find("rbxthumb://") then return str end
+        local num = str:match("%d+")
+        if num then return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420" end
+        return str
+    end
+
+    objects.obj20 = Instance.new("ImageLabel")
+    pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
+    pcall(chilliSetProperty, objects.obj20, "Archivable", true)
+    pcall(chilliSetProperty, objects.obj20, "Visible", true)
+    pcall(chilliSetProperty, objects.obj20, "Active", false)
+    pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5, 0.5))
+    pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
+    pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
+    pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
+    pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(1, 0, 1, 0))
+    pcall(chilliSetProperty, objects.obj20, "ZIndex", 15)
+    pcall(chilliSetProperty, objects.obj20, "Image", resolveAsset(_G.BH_CloseButtonId, "71848990570837"))
+    pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
+    pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
+    pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
+    objects.obj20.Parent = objects.obj16
+end
 
 objects.obj16.Parent = objects.obj14
 
