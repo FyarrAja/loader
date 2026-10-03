@@ -198,86 +198,71 @@ local obj2_corner = Instance.new("UICorner")
 pcall(chilliSetProperty, obj2_corner, "CornerRadius", UDim.new(0, 14))
 obj2_corner.Parent = objects.obj2
 
--- Translucent Smoked Charcoal/Grey Acrylic Background (Hitam ke abu-abuan transparan, NOT pitch dark)
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(38, 44, 56))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.36)
+-- Exact Figma SETTINGS_canvas_aspect: Deep Sapphire to Midnight Navy Gradient (45 deg)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(11, 48, 88))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.10)
 
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 62, 78)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 46, 58)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(26, 30, 40))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 58, 102)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(8, 26, 58)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 8, 20))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.30),
-    NumberSequenceKeypoint.new(0.5, 0.36),
-    NumberSequenceKeypoint.new(1, 0.44)
+    NumberSequenceKeypoint.new(0, 0.08),
+    NumberSequenceKeypoint.new(0.5, 0.12),
+    NumberSequenceKeypoint.new(1, 0.16)
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
-pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 90)
+pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 45)
 objects.obj2_gradient.Parent = objects.obj2
 
--- UIStroke Disabled on window frame (clean borderless glass aesthetic)
+-- Subtle 1px Outer Border (Exact Figma Outline)
 objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
-pcall(chilliSetProperty, objects.obj3, "Enabled", false)
+pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(60, 110, 175))
+pcall(chilliSetProperty, objects.obj3, "Enabled", true)
+pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
+pcall(chilliSetProperty, objects.obj3, "Thickness", 1)
+pcall(chilliSetProperty, objects.obj3, "Transparency", 0.65)
 objects.obj3.Parent = objects.obj2
 
--- Strict Window Size Limit Constraint (Min 380x270, Max 700x510)
+-- Strict Window Size Limit Constraint (Min 380x270, Max 720x520)
 local windowLimit = Instance.new("UISizeConstraint")
 pcall(chilliSetProperty, windowLimit, "Name", "WindowSizeLimits")
 pcall(chilliSetProperty, windowLimit, "MinSize", Vector2.new(380, 270))
-pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(700, 510))
+pcall(chilliSetProperty, windowLimit, "MaxSize", Vector2.new(720, 520))
 windowLimit.Parent = objects.obj2
 
--- Main Background (Bawah Header): Uses Asset 140268358133592 (Watermark Emblem)
+-- Figma Canvas Background: Triangular Halftone Lattice Layer (Asset 2_triangle_canvas.png)
 objects.obj2_studs = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj2_studs, "Name", "BodyAssetBackground")
+pcall(chilliSetProperty, objects.obj2_studs, "Name", "FigmaTriangleCanvas")
 pcall(chilliSetProperty, objects.obj2_studs, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Visible", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Active", false)
-pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0.5, 0.5))
+pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0, 0))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0.5, 0, 0.57, 0))
-pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(0.72, 0, 0.72, 0))
+pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0.118, 0))
+pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 0.882, 0))
 pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
-pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://140268358133592")
-pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(150, 205, 255))
-pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.76)
-pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Fit)
+-- Default to fallback halftone texture, user can set FIGMA_TRIANGLE_CANVAS_ID below
+pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://101344938838576")
+pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(180, 220, 255))
+pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.40)
+pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
 pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
-local studs_aspect = Instance.new("UIAspectRatioConstraint")
-pcall(chilliSetProperty, studs_aspect, "AspectRatio", 1)
-studs_aspect.Parent = objects.obj2_studs
 local studs_corner = Instance.new("UICorner")
-pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 14))
+pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 10))
 studs_corner.Parent = objects.obj2_studs
 objects.obj2_studs.Parent = objects.obj2
-
--- Main Background Sheen Overlay (Asset 89768752694629): Glossy light sheen at bottom of window
-local obj2_bottomSheen = Instance.new("ImageLabel")
-pcall(chilliSetProperty, obj2_bottomSheen, "Name", "BodyBottomSheen")
-pcall(chilliSetProperty, obj2_bottomSheen, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, obj2_bottomSheen, "BorderSizePixel", 0)
-pcall(chilliSetProperty, obj2_bottomSheen, "AnchorPoint", Vector2.new(0, 1))
-pcall(chilliSetProperty, obj2_bottomSheen, "Position", UDim2.new(0, 0, 1, 0))
-pcall(chilliSetProperty, obj2_bottomSheen, "Size", UDim2.new(1, 0, 0, 18))
-pcall(chilliSetProperty, obj2_bottomSheen, "Image", "rbxassetid://89768752694629")
-pcall(chilliSetProperty, obj2_bottomSheen, "ImageColor3", Color3.fromRGB(90, 160, 245))
-pcall(chilliSetProperty, obj2_bottomSheen, "ImageTransparency", 0.72)
-pcall(chilliSetProperty, obj2_bottomSheen, "ScaleType", Enum.ScaleType.Stretch)
-pcall(chilliSetProperty, obj2_bottomSheen, "ZIndex", 2)
-local bottom_sheen_c = Instance.new("UICorner")
-pcall(chilliSetProperty, bottom_sheen_c, "CornerRadius", UDim.new(0, 14))
-bottom_sheen_c.Parent = obj2_bottomSheen
-obj2_bottomSheen.Parent = objects.obj2
 
 objects.obj4 = Instance.new("Frame")
 pcall(chilliSetProperty, objects.obj4, "Name", "Top")
@@ -289,7 +274,7 @@ pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(255,25
 pcall(chilliSetProperty, objects.obj4, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj4, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj4, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj4, "ClipsDescendants", true)
+pcall(chilliSetProperty, objects.obj4, "ClipsDescendants", false)
 pcall(chilliSetProperty, objects.obj4, "Position", UDim2.new(0.5,0,0,0))
 pcall(chilliSetProperty, objects.obj4, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj4, "Selectable", false)
@@ -301,18 +286,32 @@ pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
 
 local obj4_corner = Instance.new("UICorner")
-pcall(chilliSetProperty, obj4_corner, "CornerRadius", UDim.new(0, 14))
+pcall(chilliSetProperty, obj4_corner, "CornerRadius", UDim.new(0, 10))
 obj4_corner.Parent = objects.obj4
 
 local obj4_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, obj4_gradient, "Name", "HeaderGradient")
 pcall(chilliSetProperty, obj4_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(42, 155, 255)),
-    ColorSequenceKeypoint.new(0.6, Color3.fromRGB(18, 80, 200)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 48, 155))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 85, 220)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 120, 245)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 140, 255))
 }))
-pcall(chilliSetProperty, obj4_gradient, "Rotation", 45)
+pcall(chilliSetProperty, obj4_gradient, "Rotation", 0)
 obj4_gradient.Parent = objects.obj4
+
+-- Top Rim Light Highlight (Exact Figma top glow)
+local obj4_topRim = Instance.new("Frame")
+pcall(chilliSetProperty, obj4_topRim, "Name", "TopRimLight")
+pcall(chilliSetProperty, obj4_topRim, "BackgroundColor3", Color3.fromRGB(190, 230, 255))
+pcall(chilliSetProperty, obj4_topRim, "BackgroundTransparency", 0.45)
+pcall(chilliSetProperty, obj4_topRim, "BorderSizePixel", 0)
+pcall(chilliSetProperty, obj4_topRim, "Position", UDim2.new(0, 0, 0, 0))
+pcall(chilliSetProperty, obj4_topRim, "Size", UDim2.new(1, 0, 0, 1.5))
+pcall(chilliSetProperty, obj4_topRim, "ZIndex", 8)
+local topRim_c = Instance.new("UICorner")
+pcall(chilliSetProperty, topRim_c, "CornerRadius", UDim.new(0, 10))
+topRim_c.Parent = obj4_topRim
+obj4_topRim.Parent = objects.obj4
 
 local obj4_bottomCover = Instance.new("Frame")
 pcall(chilliSetProperty, obj4_bottomCover, "Name", "BottomSquareCover")
@@ -397,9 +396,9 @@ pcall(chilliSetProperty, obj4_footerSheen, "ScaleType", Enum.ScaleType.Stretch)
 pcall(chilliSetProperty, obj4_footerSheen, "ZIndex", 5)
 obj4_footerSheen.Parent = objects.obj4
 
--- Icon (Asset 140268358133592)
+-- Sleeping Cat Mascot & Bhv Logo (from 'figma_assets/1_cat_mascot.png')
 objects.obj12 = Instance.new("ImageLabel")
-pcall(chilliSetProperty, objects.obj12, "Name", "Icon")
+pcall(chilliSetProperty, objects.obj12, "Name", "CatMascotAndLogo")
 pcall(chilliSetProperty, objects.obj12, "Archivable", true)
 pcall(chilliSetProperty, objects.obj12, "Visible", true)
 pcall(chilliSetProperty, objects.obj12, "Active", false)
@@ -408,44 +407,52 @@ pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255,2
 pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 10, 0.5, 0))
-pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(22, 22))
-pcall(chilliSetProperty, objects.obj12, "ZIndex", 15)
+pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 4, 0.44, -3))
+pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(78, 54))
+pcall(chilliSetProperty, objects.obj12, "ZIndex", 20)
 pcall(chilliSetProperty, objects.obj12, "Image", "rbxassetid://140268358133592")
 pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
 pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
 objects.obj12.Parent = objects.obj4
 
--- Title Label (Strictly locked between Icon and Close Button, never spills outside)
+-- Title Label (Exact Figma "BLUE HAVEN HUB" with bold black cartoon outline)
 objects.obj9 = Instance.new("TextLabel")
 pcall(chilliSetProperty, objects.obj9, "Name", "Label")
 pcall(chilliSetProperty, objects.obj9, "Archivable", true)
 pcall(chilliSetProperty, objects.obj9, "Visible", true)
 pcall(chilliSetProperty, objects.obj9, "Active", false)
-pcall(chilliSetProperty, objects.obj9, "AnchorPoint", Vector2.new(0, 0.5))
+pcall(chilliSetProperty, objects.obj9, "AnchorPoint", Vector2.new(0.5, 0.5))
 pcall(chilliSetProperty, objects.obj9, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj9, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj9, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj9, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj9, "Position", UDim2.new(0, 36, 0.5, 0))
-pcall(chilliSetProperty, objects.obj9, "Size", UDim2.new(1, -95, 0.72, 0))
-pcall(chilliSetProperty, objects.obj9, "ZIndex", 15)
-pcall(chilliSetProperty, objects.obj9, "Text", "BlueHaven Hub")
+pcall(chilliSetProperty, objects.obj9, "ClipsDescendants", false)
+pcall(chilliSetProperty, objects.obj9, "Position", UDim2.new(0.53, 0, 0.5, 0))
+pcall(chilliSetProperty, objects.obj9, "Size", UDim2.new(0.66, 0, 0.78, 0))
+pcall(chilliSetProperty, objects.obj9, "ZIndex", 18)
+pcall(chilliSetProperty, objects.obj9, "Text", "BLUE HAVEN HUB")
 pcall(chilliSetProperty, objects.obj9, "TextColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj9, "TextTransparency", 0)
-pcall(chilliSetProperty, objects.obj9, "TextStrokeColor3", Color3.fromRGB(0, 20, 70))
-pcall(chilliSetProperty, objects.obj9, "TextStrokeTransparency", 0.4)
-pcall(chilliSetProperty, objects.obj9, "TextSize", 16)
 pcall(chilliSetProperty, objects.obj9, "TextScaled", true)
 pcall(chilliSetProperty, objects.obj9, "TextWrapped", false)
-pcall(chilliSetProperty, objects.obj9, "TextTruncate", Enum.TextTruncate.AtEnd)
-pcall(chilliSetProperty, objects.obj9, "TextXAlignment", Enum.TextXAlignment.Left)
+pcall(chilliSetProperty, objects.obj9, "TextTruncate", Enum.TextTruncate.None)
+pcall(chilliSetProperty, objects.obj9, "TextXAlignment", Enum.TextXAlignment.Center)
 pcall(chilliSetProperty, objects.obj9, "TextYAlignment", Enum.TextYAlignment.Center)
 pcall(chilliSetProperty, objects.obj9, "Font", Enum.Font.FredokaOne)
+
+-- Bold Cartoon Black Outline (Exact Figma Style)
+local obj9_stroke = Instance.new("UIStroke")
+pcall(chilliSetProperty, obj9_stroke, "Name", "CartoonTitleStroke")
+pcall(chilliSetProperty, obj9_stroke, "ApplyStrokeMode", Enum.ApplyStrokeMode.Contextual)
+pcall(chilliSetProperty, obj9_stroke, "Color", Color3.fromRGB(0, 0, 0))
+pcall(chilliSetProperty, obj9_stroke, "Thickness", 2.6)
+pcall(chilliSetProperty, obj9_stroke, "Transparency", 0)
+pcall(chilliSetProperty, obj9_stroke, "LineJoinMode", Enum.LineJoinMode.Round)
+obj9_stroke.Parent = objects.obj9
+
 local obj9_constraint = Instance.new("UITextSizeConstraint")
 obj9_constraint.MaxTextSize = 28
-obj9_constraint.MinTextSize = 13
+obj9_constraint.MinTextSize = 14
 obj9_constraint.Parent = objects.obj9
 objects.obj9.Parent = objects.obj4
 
@@ -462,11 +469,11 @@ pcall(chilliSetProperty, objects.obj14, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj14, "BorderColor3", Color3.fromRGB(27,42,53))
 pcall(chilliSetProperty, objects.obj14, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj14, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(1, -10, 0.5, 0))
+pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(1, -8, 0.5, 0))
 pcall(chilliSetProperty, objects.obj14, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj14, "Selectable", true)
 pcall(chilliSetProperty, objects.obj14, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj14, "Size", UDim2.new(0.62, 0, 0.62, 0))
+pcall(chilliSetProperty, objects.obj14, "Size", UDim2.new(0.76, 0, 0.76, 0))
 pcall(chilliSetProperty, objects.obj14, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
 pcall(chilliSetProperty, objects.obj14, "ZIndex", 99)
 pcall(chilliSetProperty, objects.obj14, "AutomaticSize", Enum.AutomaticSize.None)
@@ -489,7 +496,7 @@ pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
 pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(24, 75, 175))
+pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(240, 85, 115))
 pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj16, "ClipsDescendants", false)
@@ -498,21 +505,21 @@ pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj16, "ZIndex", 1)
 
 local obj16_corner = Instance.new("UICorner")
-pcall(chilliSetProperty, obj16_corner, "CornerRadius", UDim.new(0, 6))
+pcall(chilliSetProperty, obj16_corner, "CornerRadius", UDim.new(0, 8))
 obj16_corner.Parent = objects.obj16
 
 objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(45, 130, 245))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(60, 15, 25))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
 pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj23, "Thickness", 1)
-pcall(chilliSetProperty, objects.obj23, "Transparency", 0.3)
+pcall(chilliSetProperty, objects.obj23, "Thickness", 1.2)
+pcall(chilliSetProperty, objects.obj23, "Transparency", 0.4)
 objects.obj23.Parent = objects.obj16
 
--- Close Button Icon using Asset ID 102326100327209
+-- Close Button Bold Black Cartoon X (Exact Figma Style)
 objects.obj20 = Instance.new("ImageLabel")
 pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
 pcall(chilliSetProperty, objects.obj20, "Archivable", true)
@@ -523,26 +530,26 @@ pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 
 pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
-pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.68, 0, 0.68, 0))
+pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.72, 0, 0.72, 0))
 pcall(chilliSetProperty, objects.obj20, "ZIndex", 10)
 pcall(chilliSetProperty, objects.obj20, "Image", "rbxassetid://102326100327209")
-pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
+pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(0, 0, 0))
 pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
 pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
 objects.obj20.Parent = objects.obj16
 
 objects.obj16.Parent = objects.obj14
 
--- Smooth Hover Animation for Close Button
+-- Smooth Hover Animation: Brightens Coral Pink on hover
 pcall(function()
     objects.obj14.MouseEnter:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.18), {
-            BackgroundColor3 = Color3.fromRGB(215, 45, 65),
+        TweenService:Create(objects.obj16, TweenInfo.new(0.16), {
+            BackgroundColor3 = Color3.fromRGB(255, 110, 140),
         }):Play()
     end)
     objects.obj14.MouseLeave:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.18), {
-            BackgroundColor3 = Color3.fromRGB(24, 75, 175),
+        TweenService:Create(objects.obj16, TweenInfo.new(0.16), {
+            BackgroundColor3 = Color3.fromRGB(240, 85, 115),
         }):Play()
     end)
 end)
@@ -2378,23 +2385,24 @@ end)
 
 local function syncHeaderElements()
     local barH = topBar.AbsoluteSize.Y
-    if barH <= 0 then barH = 38 end
+    if barH <= 0 then barH = 46 end
     
-    -- Icon size scales smoothly with header height
-    local iconDim = math.clamp(math.round(barH * 0.56), 18, 30)
-    objects.obj12.Position = UDim2.new(0, 12, 0.5, 0)
-    objects.obj12.Size = UDim2.fromOffset(iconDim, iconDim)
+    -- Sleeping Cat Mascot & Logo scales with header height
+    local catH = math.clamp(math.round(barH * 1.15), 44, 62)
+    local catW = math.round(catH * 1.45)
+    objects.obj12.Position = UDim2.new(0, 4, 0.44, -3)
+    objects.obj12.Size = UDim2.fromOffset(catW, catH)
     
-    -- Close button size scales smoothly with header height
-    local closeDim = math.clamp(math.round(barH * 0.62), 20, 32)
-    objects.obj14.Position = UDim2.new(1, -12, 0.5, 0)
+    -- Close button: Proportional coral square
+    local closeDim = math.clamp(math.round(barH * 0.78), 28, 42)
+    objects.obj14.Position = UDim2.new(1, -8, 0.5, 0)
     objects.obj14.Size = UDim2.fromOffset(closeDim, closeDim)
     
-    -- Title label dynamically adapts position and available width
-    local leftOffset = 12 + iconDim + 10
-    local rightOffset = closeDim + 14
-    objects.obj9.Position = UDim2.new(0, leftOffset, 0.5, 0)
-    objects.obj9.Size = UDim2.new(1, -(leftOffset + rightOffset), 0.70, 0)
+    -- Center title "BLUE HAVEN HUB" perfectly centered between mascot and close button
+    local leftBound = catW + 8
+    local rightBound = closeDim + 12
+    objects.obj9.Position = UDim2.new(0.53, 0, 0.5, 0)
+    objects.obj9.Size = UDim2.new(1, -(leftBound + rightBound), 0.78, 0)
 end
 
 topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncHeaderElements)
