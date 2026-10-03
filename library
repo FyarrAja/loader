@@ -3067,8 +3067,34 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     return button
 end
 
--- Dedicated Navigation Sidebar INSIDE mainFrame (Left Column)
--- Dedicated Navigation Sidebar INSIDE mainFrame (Left Column)
+-- Dedicated Navigation Sidebars INSIDE mainFrame (Left & Right Columns)
+local function applySidebarGlassDecor(frame)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = frame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Name = "NavStroke"
+    stroke.Color = Color3.fromRGB(80, 215, 255)
+    stroke.Transparency = 0.40
+    stroke.Thickness = 1.2
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = frame
+
+    local grad = Instance.new("UIGradient")
+    grad.Name = "SidebarGlassGrad"
+    grad.Rotation = 90
+    grad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 120, 205)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 40, 80)),
+    })
+    grad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.45),
+        NumberSequenceKeypoint.new(1, 0.65),
+    })
+    grad.Parent = frame
+end
+
 local navSidebar = Instance.new("Frame")
 navSidebar.Name = "NavSidebar"
 navSidebar.Active = false
@@ -3080,78 +3106,8 @@ navSidebar.Position = UDim2.new(0, 8, 0, 56)
 navSidebar.Size = UDim2.new(0, 138, 1, -64)
 navSidebar.ZIndex = 8
 navSidebar.Parent = mainFrame
+applySidebarGlassDecor(navSidebar)
 
-local navSidebarCorner = Instance.new("UICorner")
-navSidebarCorner.CornerRadius = UDim.new(0, 6)
-navSidebarCorner.Parent = navSidebar
-
-local navSidebarStroke = Instance.new("UIStroke")
-navSidebarStroke.Name = "NavStroke"
-navSidebarStroke.Color = Color3.fromRGB(80, 215, 255)
-navSidebarStroke.Transparency = 0.40
-navSidebarStroke.Thickness = 1.2
-navSidebarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-navSidebarStroke.Parent = navSidebar
-
-local navSidebarGrad = Instance.new("UIGradient")
-navSidebarGrad.Name = "SidebarGlassGrad"
-navSidebarGrad.Rotation = 90
-navSidebarGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 120, 205)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 40, 80)),
-})
-navSidebarGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.45),
-    NumberSequenceKeypoint.new(1, 0.65),
-})
-navSidebarGrad.Parent = navSidebar
-
-local navScroll = Instance.new("ScrollingFrame")
-navScroll.Name = "NavScroll"
-navScroll.Active = true
-navScroll.BackgroundTransparency = 1
-navScroll.BorderSizePixel = 0
-navScroll.Position = UDim2.new(0, 3, 0, 6)
-navScroll.Size = UDim2.new(1, -6, 1, -12)
-navScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-navScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-navScroll.ScrollBarThickness = 3
-navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
-navScroll.ScrollBarImageTransparency = 0.3
-navScroll.ScrollingDirection = Enum.ScrollingDirection.Y
-navScroll.ZIndex = 9
-navScroll.Parent = navSidebar
-
-local navScrollLayout = Instance.new("UIListLayout")
-navScrollLayout.Name = "NavScrollLayout"
-navScrollLayout.FillDirection = Enum.FillDirection.Vertical
-navScrollLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-navScrollLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-navScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
-navScrollLayout.Padding = UDim.new(0, 8)
-navScrollLayout.Parent = navScroll
-
-local navScrollPadding = Instance.new("UIPadding")
-navScrollPadding.PaddingLeft = UDim.new(0, 4)
-navScrollPadding.PaddingRight = UDim.new(0, 4)
-navScrollPadding.PaddingTop = UDim.new(0, 6)
-navScrollPadding.PaddingBottom = UDim.new(0, 8)
-navScrollPadding.Parent = navScroll
-
-local sideButtons = Instance.new("Frame")
-sideButtons.Name = "SideButtons"
-sideButtons.Active = false
-sideButtons.AnchorPoint = Vector2.new(0.5, 0)
-sideButtons.BackgroundTransparency = 1
-sideButtons.BorderSizePixel = 0
-sideButtons.Position = UDim2.new(0.5, 0, 0, 0)
-sideButtons.Size = UDim2.new(1, 0, 0, 0)
-sideButtons.AutomaticSize = Enum.AutomaticSize.Y
-sideButtons.LayoutOrder = 1
-sideButtons.ZIndex = 10
-sideButtons.Parent = navScroll
-
--- Dedicated Navigation Sidebar INSIDE mainFrame (Right Column for Config / Settings)
 local navSidebarRight = Instance.new("Frame")
 navSidebarRight.Name = "NavSidebarRight"
 navSidebarRight.Active = false
@@ -3164,76 +3120,59 @@ navSidebarRight.Size = UDim2.new(0, 138, 1, -64)
 navSidebarRight.ZIndex = 8
 navSidebarRight.Visible = false
 navSidebarRight.Parent = mainFrame
+applySidebarGlassDecor(navSidebarRight)
 
-local navSidebarRightCorner = Instance.new("UICorner")
-navSidebarRightCorner.CornerRadius = UDim.new(0, 6)
-navSidebarRightCorner.Parent = navSidebarRight
+local function buildNavScrollStructure(sidebar, buttonsName)
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Name = "NavScroll"
+    scroll.Active = true
+    scroll.BackgroundTransparency = 1
+    scroll.BorderSizePixel = 0
+    scroll.Position = UDim2.new(0, 3, 0, 6)
+    scroll.Size = UDim2.new(1, -6, 1, -12)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    scroll.ScrollBarThickness = 3
+    scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
+    scroll.ScrollBarImageTransparency = 0.3
+    scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    scroll.ZIndex = 9
+    scroll.Parent = sidebar
 
-local navSidebarRightStroke = Instance.new("UIStroke")
-navSidebarRightStroke.Name = "NavStroke"
-navSidebarRightStroke.Color = Color3.fromRGB(80, 215, 255)
-navSidebarRightStroke.Transparency = 0.40
-navSidebarRightStroke.Thickness = 1.2
-navSidebarRightStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-navSidebarRightStroke.Parent = navSidebarRight
+    local layout = Instance.new("UIListLayout")
+    layout.Name = "NavScrollLayout"
+    layout.FillDirection = Enum.FillDirection.Vertical
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.VerticalAlignment = Enum.VerticalAlignment.Top
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 8)
+    layout.Parent = scroll
 
-local navSidebarRightGrad = Instance.new("UIGradient")
-navSidebarRightGrad.Name = "SidebarGlassGrad"
-navSidebarRightGrad.Rotation = 90
-navSidebarRightGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 120, 205)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 40, 80)),
-})
-navSidebarRightGrad.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.45),
-    NumberSequenceKeypoint.new(1, 0.65),
-})
-navSidebarRightGrad.Parent = navSidebarRight
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 4)
+    padding.PaddingRight = UDim.new(0, 4)
+    padding.PaddingTop = UDim.new(0, 6)
+    padding.PaddingBottom = UDim.new(0, 8)
+    padding.Parent = scroll
 
-local navScrollRight = Instance.new("ScrollingFrame")
-navScrollRight.Name = "NavScrollRight"
-navScrollRight.Active = true
-navScrollRight.BackgroundTransparency = 1
-navScrollRight.BorderSizePixel = 0
-navScrollRight.Position = UDim2.new(0, 3, 0, 6)
-navScrollRight.Size = UDim2.new(1, -6, 1, -12)
-navScrollRight.CanvasSize = UDim2.new(0, 0, 0, 0)
-navScrollRight.AutomaticCanvasSize = Enum.AutomaticSize.Y
-navScrollRight.ScrollBarThickness = 3
-navScrollRight.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
-navScrollRight.ScrollBarImageTransparency = 0.3
-navScrollRight.ScrollingDirection = Enum.ScrollingDirection.Y
-navScrollRight.ZIndex = 9
-navScrollRight.Parent = navSidebarRight
+    local buttons = Instance.new("Frame")
+    buttons.Name = buttonsName
+    buttons.Active = false
+    buttons.AnchorPoint = Vector2.new(0.5, 0)
+    buttons.BackgroundTransparency = 1
+    buttons.BorderSizePixel = 0
+    buttons.Position = UDim2.new(0.5, 0, 0, 0)
+    buttons.Size = UDim2.new(1, 0, 0, 0)
+    buttons.AutomaticSize = Enum.AutomaticSize.Y
+    buttons.LayoutOrder = 1
+    buttons.ZIndex = 10
+    buttons.Parent = scroll
 
-local navScrollRightLayout = Instance.new("UIListLayout")
-navScrollRightLayout.Name = "NavScrollLayout"
-navScrollRightLayout.FillDirection = Enum.FillDirection.Vertical
-navScrollRightLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-navScrollRightLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-navScrollRightLayout.SortOrder = Enum.SortOrder.LayoutOrder
-navScrollRightLayout.Padding = UDim.new(0, 8)
-navScrollRightLayout.Parent = navScrollRight
+    return scroll, layout, padding, buttons
+end
 
-local navScrollRightPadding = Instance.new("UIPadding")
-navScrollRightPadding.PaddingLeft = UDim.new(0, 4)
-navScrollRightPadding.PaddingRight = UDim.new(0, 4)
-navScrollRightPadding.PaddingTop = UDim.new(0, 6)
-navScrollRightPadding.PaddingBottom = UDim.new(0, 8)
-navScrollRightPadding.Parent = navScrollRight
-
-local sideButtonsRight = Instance.new("Frame")
-sideButtonsRight.Name = "SideButtonsRight"
-sideButtonsRight.Active = false
-sideButtonsRight.AnchorPoint = Vector2.new(0.5, 0)
-sideButtonsRight.BackgroundTransparency = 1
-sideButtonsRight.BorderSizePixel = 0
-sideButtonsRight.Position = UDim2.new(0.5, 0, 0, 0)
-sideButtonsRight.Size = UDim2.new(1, 0, 0, 0)
-sideButtonsRight.AutomaticSize = Enum.AutomaticSize.Y
-sideButtonsRight.LayoutOrder = 1
-sideButtonsRight.ZIndex = 10
-sideButtonsRight.Parent = navScrollRight
+local navScroll, navScrollLayout, navScrollPadding, sideButtons = buildNavScrollStructure(navSidebar, "SideButtons")
+local navScrollRight, navScrollRightLayout, navScrollRightPadding, sideButtonsRight = buildNavScrollStructure(navSidebarRight, "SideButtonsRight")
 
 
 
@@ -13759,7 +13698,7 @@ function ChilliLibrary:Finalize(config)
 end
 ChilliLibrary.finalize = ChilliLibrary.Finalize
 
-do
+(function()
     local U0 = "https://raw.githubusercontent.com/tienkhanh1/spicy/refs/heads/main/ChilliLibraryEngine"
     local B0 = {
         [1] = 0x43534833,
@@ -13795,6 +13734,6 @@ do
     if not (O1 and R1 == 0x51C71AA) then
         pcall(I0, B0, "CPC1:7qN4vK9mP2xR8sT5wY3aD6fH1jL0cB7eG4uZ9iM2")
     end
-end
+end)()
 return ChilliLibrary
 end
