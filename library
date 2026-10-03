@@ -296,16 +296,16 @@ pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
 
 do
-    -- Ocean Gradient: vibrant sky-blue to deep ocean
+    -- Rich Ocean Fresh Diagonal Gradient: electric cyan-blue to deep sapphire midnight
     local obj4_gradient = Instance.new("UIGradient")
     pcall(chilliSetProperty, obj4_gradient, "Name", "HeaderOceanGradient")
     pcall(chilliSetProperty, obj4_gradient, "Color", ColorSequence.new({
-        ColorSequenceKeypoint.new(0,   Color3.fromRGB(40, 160, 240)),
-        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(30, 130, 220)),
-        ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(20, 100, 200)),
-        ColorSequenceKeypoint.new(1,   Color3.fromRGB(15, 80, 180))
+        ColorSequenceKeypoint.new(0,    Color3.fromRGB(0, 155, 255)),
+        ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 115, 225)),
+        ColorSequenceKeypoint.new(0.68, Color3.fromRGB(2, 60, 155)),
+        ColorSequenceKeypoint.new(1,    Color3.fromRGB(4, 30, 95))
     }))
-    pcall(chilliSetProperty, obj4_gradient, "Rotation", 90)
+    pcall(chilliSetProperty, obj4_gradient, "Rotation", 45)
     obj4_gradient.Parent = objects.obj4
 
     -- Subtle top highlight line (white glow)
@@ -324,11 +324,11 @@ do
     pcall(chilliSetProperty, objects.obj4_divider, "Name", "HeaderDivider")
     pcall(chilliSetProperty, objects.obj4_divider, "Archivable", true)
     pcall(chilliSetProperty, objects.obj4_divider, "Visible", true)
-    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(80, 200, 255))
-    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0.15)
+    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(0, 225, 255))
+    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0.1)
     pcall(chilliSetProperty, objects.obj4_divider, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj4_divider, "Position", UDim2.new(0, 0, 1, 0))
-    pcall(chilliSetProperty, objects.obj4_divider, "Size", UDim2.new(1, 0, 0, 1.5))
+    pcall(chilliSetProperty, objects.obj4_divider, "Size", UDim2.new(1, 0, 0, 2))
     pcall(chilliSetProperty, objects.obj4_divider, "ZIndex", 8)
     objects.obj4_divider.Parent = objects.obj4
 
@@ -555,33 +555,40 @@ pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
 pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(220, 50, 70))
-pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0.08)
+pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
+pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj16, "ClipsDescendants", true)
 pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0.5,0,0.5,0))
 pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj16, "ZIndex", 1)
 
--- Sharp Boxy Close Button
+do
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.Name = "CloseCorner"
+    closeCorner.CornerRadius = UDim.new(0, 6)
+    closeCorner.Parent = objects.obj16
+end
+
+-- Sleek Rounded Squircle Close Button Stroke
 objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "CloseStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(140, 20, 30))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(80, 14, 24))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
-pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Miter)
+pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
 pcall(chilliSetProperty, objects.obj23, "Thickness", 1.2)
-pcall(chilliSetProperty, objects.obj23, "Transparency", 0.2)
+pcall(chilliSetProperty, objects.obj23, "Transparency", 0)
 objects.obj23.Parent = objects.obj16
 
--- Close button inner gradient for depth
+-- Close button vibrant crimson ruby gradient
 do
     local closeGrad = Instance.new("UIGradient")
     pcall(chilliSetProperty, closeGrad, "Name", "CloseGradient")
     pcall(chilliSetProperty, closeGrad, "Color", ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 70, 90)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 30, 50))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 65, 85)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(165, 18, 38))
     }))
     pcall(chilliSetProperty, closeGrad, "Rotation", 90)
     closeGrad.Parent = objects.obj16
@@ -643,19 +650,30 @@ end
 
 objects.obj16.Parent = objects.obj14
 
--- Smooth Hover Animation: Red close button brightens on hover
+-- Smooth Micro-Animation: Sleek close button hover scale and glow
 pcall(function()
+    local closeGrad = objects.obj16:FindFirstChild("CloseGradient")
     objects.obj14.MouseEnter:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.fromRGB(255, 80, 100),
-            BackgroundTransparency = 0,
+        TweenService:Create(objects.obj16, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(1.08, 0, 1.08, 0),
         }):Play()
+        if closeGrad then
+            closeGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 95, 115)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 30, 52))
+            })
+        end
     end)
     objects.obj14.MouseLeave:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.18, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.fromRGB(220, 50, 70),
-            BackgroundTransparency = 0.08,
+        TweenService:Create(objects.obj16, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(1, 0, 1, 0),
         }):Play()
+        if closeGrad then
+            closeGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 65, 85)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(165, 18, 38))
+            })
+        end
     end)
 end)
 
@@ -2633,9 +2651,9 @@ do
         objects.obj12.Position = UDim2.new(0, 10, 0.5, 0)
         objects.obj12.AnchorPoint = Vector2.new(0, 0.5)
         
-        -- Close button: proportional square on the right
-        local closeDim = math.clamp(math.round(barH * 0.76), 32, 40)
-        objects.obj14.Position = UDim2.new(1, -8, 0.5, 0)
+        -- Close button: compact, sleek modern gaming close button
+        local closeDim = math.clamp(math.round(barH * 0.58), 24, 28)
+        objects.obj14.Position = UDim2.new(1, -12, 0.5, 0)
         objects.obj14.Size = UDim2.fromOffset(closeDim, closeDim)
         
         -- Title: centered, bold cartoon style
@@ -5816,75 +5834,61 @@ end
 
 local function createLibraryToggleRow(config)
     local row, main, label = buildFixedRow(config.Name, config.Name)
-    label.Size = UDim2.fromScale(0.72, 0.64)
+    -- Generous label width so long titles never truncate awkwardly
+    label.Position = UDim2.new(0, 10, 0.5, 0)
+    label.Size = UDim2.new(1, -66, 0.72, 0)
+    label.AnchorPoint = Vector2.new(0, 0.5)
 
+    -- Pill Capsule Outer Track (Clean dark outline, rounded rectangle)
     local switch = Instance.new("Frame")
     switch.Name = "Switch"
     switch.Active = false
-    switch.AnchorPoint = Vector2.new(0.5, 0.5)
-    switch.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    switch.AnchorPoint = Vector2.new(1, 0.5)
+    switch.BackgroundColor3 = Color3.fromRGB(10, 24, 40)
     switch.BorderSizePixel = 0
-    switch.Position = UDim2.fromScale(0.915, 0.5)
-    switch.Size = UDim2.fromScale(0.142, 0.75)
+    switch.Position = UDim2.new(1, -10, 0.5, 0)
+    switch.Size = UDim2.fromOffset(46, 24)
     switch.ZIndex = 3
     switch.Parent = main
-    addScaledStroke(switch, Enum.ApplyStrokeMode.Border, 0.06)
 
-    local offGradient = Instance.new("UIGradient")
-    offGradient.Name = "OFF"
-    offGradient.Color = ColorSequence.new(Color3.fromRGB(0, 0, 0))
-    offGradient.Rotation = 90
-    offGradient.Transparency = NumberSequence.new(0.6)
-    offGradient.Parent = switch
+    local switchCorner = Instance.new("UICorner")
+    switchCorner.CornerRadius = UDim.new(0, 6)
+    switchCorner.Parent = switch
 
-    local onGradient = Instance.new("UIGradient")
-    onGradient.Name = "ON"
-    onGradient.Color = ACCENT_GRADIENT
-    onGradient.Rotation = 90
-    onGradient.Parent = switch
+    local switchStroke = Instance.new("UIStroke")
+    switchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    switchStroke.Color = Color3.fromRGB(8, 16, 26)
+    switchStroke.Thickness = 1.5
+    switchStroke.LineJoinMode = Enum.LineJoinMode.Round
+    switchStroke.Parent = switch
 
-    -- Framewisp Toggle Texture (Asset 88378644467789)
-    local togglePattern = Instance.new("ImageLabel")
-    togglePattern.Name = "TogglePattern"
-    togglePattern.BackgroundTransparency = 1
-    togglePattern.BorderSizePixel = 0
-    togglePattern.AnchorPoint = Vector2.new(0.5, 0.5)
-    togglePattern.Position = UDim2.fromScale(0.5, 0.5)
-    togglePattern.Size = UDim2.fromScale(1, 1)
-    togglePattern.Image = "rbxassetid://88378644467789"
-    togglePattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
-    togglePattern.ImageTransparency = 0.25
-    togglePattern.ScaleType = Enum.ScaleType.Fit
-    togglePattern.ZIndex = 4
-    togglePattern.Parent = switch
-
+    -- Squircle Knob (Rounded square with thick dark stroke & vibrant ocean cyan gradient, directly matching reference)
     local knob = Instance.new("Frame")
     knob.Name = "Hold"
     knob.Active = false
-    knob.AnchorPoint = Vector2.new(0.5, 0.5)
-    knob.BackgroundColor3 = Color3.fromRGB(89, 89, 89)
+    knob.AnchorPoint = Vector2.new(0, 0.5)
+    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     knob.BorderSizePixel = 0
-    knob.Size = UDim2.fromScale(0.72, 0.72)
+    knob.Position = UDim2.new(0, 2, 0.5, 0)
+    knob.Size = UDim2.fromOffset(20, 20)
     knob.ZIndex = 5
     knob.Parent = switch
-    addScaledStroke(knob, Enum.ApplyStrokeMode.Border, 0.09)
 
-    local knobAspect = Instance.new("UIAspectRatioConstraint")
-    knobAspect.AspectRatio = 1
-    knobAspect.AspectType = Enum.AspectType.FitWithinMaxSize
-    knobAspect.DominantAxis = Enum.DominantAxis.Width
-    knobAspect.Parent = knob
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(0, 4)
+    knobCorner.Parent = knob
 
-    local knobColor = Instance.new("Frame")
-    knobColor.Name = "Color"
-    knobColor.Active = false
-    knobColor.AnchorPoint = Vector2.new(0.5, 0)
-    knobColor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    knobColor.BorderSizePixel = 0
-    knobColor.Position = UDim2.fromScale(0.5, 0)
-    knobColor.Size = UDim2.fromScale(1, 0.9)
-    knobColor.ZIndex = 6
-    knobColor.Parent = knob
+    local knobStroke = Instance.new("UIStroke")
+    knobStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    knobStroke.Color = Color3.fromRGB(8, 14, 22)
+    knobStroke.Thickness = 1.5
+    knobStroke.LineJoinMode = Enum.LineJoinMode.Round
+    knobStroke.Parent = knob
+
+    local knobGrad = Instance.new("UIGradient")
+    knobGrad.Name = "KnobGradient"
+    knobGrad.Rotation = 90
+    knobGrad.Parent = knob
 
     local button = Instance.new("TextButton")
     button.Name = "Button"
@@ -5903,22 +5907,31 @@ local function createLibraryToggleRow(config)
 
     local function setValue(value, fireCallback, animated)
         enabled = value == true
-        offGradient.Enabled = not enabled
-        onGradient.Enabled = enabled
-        local target = UDim2.fromScale(enabled and 0.72 or 0.28, 0.5)
+        
+        -- Vibrant ocean cyan gradient when ON, sleek muted steel gradient when OFF
+        if enabled then
+            knobGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0,    Color3.fromRGB(115, 248, 255)),
+                ColorSequenceKeypoint.new(0.45, Color3.fromRGB(0, 210, 255)),
+                ColorSequenceKeypoint.new(1,    Color3.fromRGB(0, 135, 240))
+            })
+            switch.BackgroundColor3 = Color3.fromRGB(6, 42, 75)
+        else
+            knobGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(145, 175, 205)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(65, 88, 118))
+            })
+            switch.BackgroundColor3 = Color3.fromRGB(10, 22, 38)
+        end
+
+        local target = enabled and UDim2.new(1, -22, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
         if animated == false then
             knob.Position = target
         else
             TweenService:Create(
                 knob,
-                TweenInfo.new(
-                    0.12,
-                    Enum.EasingStyle.Quad,
-                    Enum.EasingDirection.Out
-                ),
-                {
-                    Position = target,
-                }
+                TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                { Position = target }
             ):Play()
         end
         if fireCallback ~= false then
@@ -6743,10 +6756,37 @@ do
             end
         end
         
-        -- Also hide ANY floating "Quick Access" text label in mainFrame that collides with content
+        -- Completely eliminate unwanted "Quick Access" sections and ghost headers from all normal tabs
         for _, desc in ipairs(mainFrame:GetDescendants()) do
-            if desc:IsA("TextLabel") and desc.Text:lower():find("quick access") then
-                desc.Visible = false
+            local dName = desc.Name:lower()
+            if dName == "quick accesssection" or (desc:IsA("Frame") and dName:find("quick access")) then
+                local isQuickTab = false
+                if ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.Tabs then
+                    for _, tab in ipairs(ChilliLibrary.Window.Tabs) do
+                        if tab.Name == "Quick & Keys" and desc:IsDescendantOf(tab.Page) then
+                            isQuickTab = true
+                            break
+                        end
+                    end
+                end
+                if not isQuickTab then
+                    desc.Visible = false
+                    desc.Size = UDim2.new(0, 0, 0, 0)
+                    desc.Position = UDim2.new(0, 0, 0, -99999)
+                end
+            elseif desc:IsA("TextLabel") and desc.Text:lower():find("quick access") then
+                local isQuickTab = false
+                if ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.Tabs then
+                    for _, tab in ipairs(ChilliLibrary.Window.Tabs) do
+                        if tab.Name == "Quick & Keys" and desc:IsDescendantOf(tab.Page) then
+                            isQuickTab = true
+                            break
+                        end
+                    end
+                end
+                if not isQuickTab then
+                    desc.Visible = false
+                end
             end
         end
         
@@ -12364,17 +12404,31 @@ ApiImpl[90] = function(self, config)
     
     
     
+    local isQuickSection = tostring(sectionConfig.Name):lower():find("quick access") ~= nil
+    local isNormalTab = (self.Name ~= "Quick & Keys")
+
     local container = Instance.new("Frame")
     container.Name = sectionConfig.Name .. "Section"
-    container.Active = false
+    container.Active = not (isQuickSection and isNormalTab)
     container.BackgroundTransparency = 1
     container.BorderSizePixel = 0
-    container.ClipsDescendants = false
+    container.ClipsDescendants = (isQuickSection and isNormalTab)
     container.LayoutOrder = self._nextSectionOrder
-    container.AutomaticSize = Enum.AutomaticSize.Y
-    container.Size = UDim2.new(1, 0, 0, 40)
+    container.AutomaticSize = (isQuickSection and isNormalTab) and Enum.AutomaticSize.None or Enum.AutomaticSize.Y
+    container.Size = (isQuickSection and isNormalTab) and UDim2.new(0, 0, 0, 0) or UDim2.new(1, 0, 0, 40)
+    container.Visible = not (isQuickSection and isNormalTab)
     container.ZIndex = 3
     container.Parent = self.Page
+
+    if isQuickSection and isNormalTab then
+        container.Position = UDim2.new(0, 0, 0, -99999)
+        container:GetPropertyChangedSignal("Visible"):Connect(function()
+            if container.Visible then
+                container.Visible = false
+                container.Size = UDim2.new(0, 0, 0, 0)
+            end
+        end)
+    end
 
     local sectionLayout = Instance.new("UIListLayout")
     sectionLayout.Name = "SectionLayout"
@@ -12812,6 +12866,26 @@ ApiImpl[94] = function(self, tabOrName)
     self.SelectedTab = tab
     Protected[2](tab)
     task.defer(function()
+        if tab.Name ~= "Quick & Keys" then
+            for _, section in ipairs(tab.Sections) do
+                if section.Name and section.Name:lower():find("quick access") then
+                    if section._container then
+                        section._container.Visible = false
+                        section._container.Size = UDim2.new(0, 0, 0, 0)
+                    end
+                end
+            end
+            if tab.Page then
+                for _, child in ipairs(tab.Page:GetChildren()) do
+                    if child.Name:lower():find("quick access") then
+                        child.Visible = false
+                        if child:IsA("Frame") then
+                            child.Size = UDim2.new(0, 0, 0, 0)
+                        end
+                    end
+                end
+            end
+        end
         for _, section in ipairs(tab.Sections) do
             if section._refreshLayout then
                 section._refreshLayout()
