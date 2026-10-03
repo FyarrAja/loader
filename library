@@ -6660,575 +6660,584 @@ do
 end
 
 -- Layout Synchronizer: Coordinates NavSidebar, Top Search Bar, and Content ScrollingFrame
-local activeWindowSearch = nil
-local isSyncingLayout = false
+local syncAllWindowLayout
+do
+    local activeWindowSearch = nil
+    local isSyncingLayout = false
 
-local function lockPageGeometry(page, contentPos, contentSize)
-    if not page then return end
-    page.AnchorPoint = Vector2.new(0, 0)
-    page.Position = contentPos
-    page.Size = contentSize
-    page.ClipsDescendants = true
-    page.ZIndex = 20
-end
-
-local lockedPages = {}
-local syncAllWindowLayout -- forward declaration
-
-local function trackPageLock(page)
-    if not page or lockedPages[page] then return end
-    lockedPages[page] = true
-    
-    local function enforce()
-        if isSyncingLayout then return end
-        syncAllWindowLayout()
+    local function lockPageGeometry(page, contentPos, contentSize)
+        if not page then return end
+        page.AnchorPoint = Vector2.new(0, 0)
+        page.Position = contentPos
+        page.Size = contentSize
+        page.ClipsDescendants = true
+        page.ZIndex = 20
     end
-    
-    page:GetPropertyChangedSignal("AnchorPoint"):Connect(enforce)
-    page:GetPropertyChangedSignal("Position"):Connect(enforce)
-    page:GetPropertyChangedSignal("Size"):Connect(enforce)
-end
 
-local searchTrackingConnected = false
-local function trackSearchLock(bar)
-    if searchTrackingConnected or not bar then return end
-    searchTrackingConnected = true
-    
-    local function enforce()
-        if isSyncingLayout then return end
-        syncAllWindowLayout()
-    end
-    
-    bar:GetPropertyChangedSignal("Position"):Connect(enforce)
-    bar:GetPropertyChangedSignal("Size"):Connect(enforce)
-    bar:GetPropertyChangedSignal("AnchorPoint"):Connect(enforce)
-end
+    local lockedPages = {}
 
-function syncAllWindowLayout()
-    if isSyncingLayout then return end
-    isSyncingLayout = true
-    
-    local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
-    local sidebarW = 132
-    local margin = 8
-    local contentX = margin + sidebarW + margin -- 148
-    local contentW = -(contentX + margin)       -- -156
-    
-    -- 1. NavSidebar on the left inside mainFrame
-    if navSidebar then
-        navSidebar.Position = UDim2.new(0, margin, 0, topH + margin)
-        navSidebar.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
-        navSidebar.ZIndex = 30
-    end
-    
-    -- 2. Search Bar at the TOP (right next to sidebar, below topBar)
-    local hasTopSearch = false
-    if activeWindowSearch and activeWindowSearch.Parent then
-        hasTopSearch = true
-        local searchPos = UDim2.new(0, contentX, 0, topH + margin)
-        local searchSize = UDim2.new(1, contentW, 0, 28)
+    local function trackPageLock(page)
+        if not page or lockedPages[page] then return end
+        lockedPages[page] = true
         
-        activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
-        activeWindowSearch.Position = searchPos
-        activeWindowSearch.Size = searchSize
-        activeWindowSearch.ZIndex = 35
-        activeWindowSearch.Visible = true
-        activeWindowSearch.ClipsDescendants = true
+        local function enforce()
+            if isSyncingLayout then return end
+            syncAllWindowLayout()
+        end
         
-        if activeWindowSearch:IsA("Frame") then
-            activeWindowSearch.BackgroundColor3 = Color3.fromRGB(8, 25, 52)
-            activeWindowSearch.BackgroundTransparency = 0.25
-            activeWindowSearch.BorderSizePixel = 0
+        page:GetPropertyChangedSignal("AnchorPoint"):Connect(enforce)
+        page:GetPropertyChangedSignal("Position"):Connect(enforce)
+        page:GetPropertyChangedSignal("Size"):Connect(enforce)
+    end
+
+    local searchTrackingConnected = false
+    local function trackSearchLock(bar)
+        if searchTrackingConnected or not bar then return end
+        searchTrackingConnected = true
+        
+        local function enforce()
+            if isSyncingLayout then return end
+            syncAllWindowLayout()
+        end
+        
+        bar:GetPropertyChangedSignal("Position"):Connect(enforce)
+        bar:GetPropertyChangedSignal("Size"):Connect(enforce)
+        bar:GetPropertyChangedSignal("AnchorPoint"):Connect(enforce)
+    end
+
+    function syncAllWindowLayout()
+        if isSyncingLayout then return end
+        isSyncingLayout = true
+        
+        local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
+        local sidebarW = 132
+        local margin = 8
+        local contentX = margin + sidebarW + margin -- 148
+        local contentW = -(contentX + margin)       -- -156
+        
+        -- 1. NavSidebar on the left inside mainFrame
+        if navSidebar then
+            navSidebar.Position = UDim2.new(0, margin, 0, topH + margin)
+            navSidebar.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
+            navSidebar.ZIndex = 30
+        end
+        
+        -- 2. Search Bar at the TOP (right next to sidebar, below topBar)
+        local hasTopSearch = false
+        if activeWindowSearch and activeWindowSearch.Parent then
+            hasTopSearch = true
+            local searchPos = UDim2.new(0, contentX, 0, topH + margin)
+            local searchSize = UDim2.new(1, contentW, 0, 28)
             
-            local searchStroke = activeWindowSearch:FindFirstChild("SearchBorderStroke")
-            if not searchStroke then
-                searchStroke = Instance.new("UIStroke")
-                searchStroke.Name = "SearchBorderStroke"
-                searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                searchStroke.Color = Color3.fromRGB(0, 160, 240)
-                searchStroke.Thickness = 1.2
-                searchStroke.Transparency = 0.3
-                searchStroke.Parent = activeWindowSearch
+            activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
+            activeWindowSearch.Position = searchPos
+            activeWindowSearch.Size = searchSize
+            activeWindowSearch.ZIndex = 35
+            activeWindowSearch.Visible = true
+            activeWindowSearch.ClipsDescendants = true
+            
+            if activeWindowSearch:IsA("Frame") then
+                activeWindowSearch.BackgroundColor3 = Color3.fromRGB(8, 25, 52)
+                activeWindowSearch.BackgroundTransparency = 0.25
+                activeWindowSearch.BorderSizePixel = 0
+                
+                local searchStroke = activeWindowSearch:FindFirstChild("SearchBorderStroke")
+                if not searchStroke then
+                    searchStroke = Instance.new("UIStroke")
+                    searchStroke.Name = "SearchBorderStroke"
+                    searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                    searchStroke.Color = Color3.fromRGB(0, 160, 240)
+                    searchStroke.Thickness = 1.2
+                    searchStroke.Transparency = 0.3
+                    searchStroke.Parent = activeWindowSearch
+                end
+            end
+            
+            for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
+                if desc:IsA("GuiObject") then
+                    desc.ZIndex = math.max(desc.ZIndex, 36)
+                    if desc:IsA("TextBox") then
+                        desc.TextColor3 = Color3.fromRGB(240, 248, 255)
+                        desc.PlaceholderColor3 = Color3.fromRGB(130, 170, 210)
+                        desc.Size = UDim2.new(1, -70, 1, 0)
+                        desc.Position = UDim2.new(0, 65, 0, 0)
+                        desc.AnchorPoint = Vector2.new(0, 0)
+                        desc.ClipsDescendants = true
+                    elseif desc:IsA("TextLabel") and desc.Text:lower():find("search") then
+                        desc.TextColor3 = Color3.fromRGB(120, 215, 255)
+                        desc.Font = Enum.Font.FredokaOne
+                        desc.Size = UDim2.new(0, 60, 1, 0)
+                        desc.Position = UDim2.new(0, 4, 0, 0)
+                        desc.AnchorPoint = Vector2.new(0, 0)
+                    end
+                end
             end
         end
         
-        for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
-            if desc:IsA("GuiObject") then
-                desc.ZIndex = math.max(desc.ZIndex, 36)
-                if desc:IsA("TextBox") then
-                    desc.TextColor3 = Color3.fromRGB(240, 248, 255)
-                    desc.PlaceholderColor3 = Color3.fromRGB(130, 170, 210)
-                    desc.Size = UDim2.new(1, -70, 1, 0)
-                    desc.Position = UDim2.new(0, 65, 0, 0)
-                    desc.AnchorPoint = Vector2.new(0, 0)
-                    desc.ClipsDescendants = true
-                elseif desc:IsA("TextLabel") and desc.Text:lower():find("search") then
-                    desc.TextColor3 = Color3.fromRGB(120, 215, 255)
-                    desc.Font = Enum.Font.FredokaOne
-                    desc.Size = UDim2.new(0, 60, 1, 0)
-                    desc.Position = UDim2.new(0, 4, 0, 0)
-                    desc.AnchorPoint = Vector2.new(0, 0)
+        -- 3. Content list & Tab Pages below Search Bar
+        local searchOffset = hasTopSearch and (28 + 6) or 0
+        local contentTop = topH + margin + searchOffset
+        local contentPos = UDim2.new(0, contentX, 0, contentTop)
+        local contentSize = UDim2.new(1, contentW, 1, -(contentTop + margin))
+        
+        if objects.obj25 then
+            lockPageGeometry(objects.obj25, contentPos, contentSize)
+            trackPageLock(objects.obj25)
+        end
+        
+        if ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.Tabs then
+            for _, tab in ipairs(ChilliLibrary.Window.Tabs) do
+                if tab.Page then
+                    lockPageGeometry(tab.Page, contentPos, contentSize)
+                    trackPageLock(tab.Page)
+                end
+            end
+        end
+        
+        isSyncingLayout = false
+    end
+
+    -- Robust Search Bar Relocation (Listens to both DescendantAdded and ChildAdded)
+    local function handlePossibleSearch(inst)
+        if not inst or not inst.Parent then return end
+        local candidate = nil
+        if inst:IsA("TextBox") then
+            local ph = tostring(inst.PlaceholderText or ""):lower()
+            if ph:find("filter") or ph:find("search") or ph:find("feature") then
+                candidate = inst
+            end
+        elseif inst:IsA("TextLabel") or inst:IsA("TextButton") then
+            local t = tostring(inst.Text or ""):lower()
+            if t == "search" or t:find("filter") then
+                candidate = inst
+            end
+        elseif inst:IsA("Frame") then
+            local n = inst.Name:lower()
+            if n:find("search") or n:find("filter") then
+                candidate = inst
+            end
+        end
+        
+        if candidate then
+            local top = candidate
+            while top.Parent and top.Parent ~= mainFrame do
+                top = top.Parent
+            end
+            if top and top.Parent == mainFrame and top ~= topBar and top ~= navSidebar and top ~= objects.obj25 then
+                if activeWindowSearch ~= top then
+                    activeWindowSearch = top
+                    trackSearchLock(top)
+                    syncAllWindowLayout()
                 end
             end
         end
     end
-    
-    -- 3. Content list & Tab Pages below Search Bar
-    local searchOffset = hasTopSearch and (28 + 6) or 0
-    local contentTop = topH + margin + searchOffset
-    local contentPos = UDim2.new(0, contentX, 0, contentTop)
-    local contentSize = UDim2.new(1, contentW, 1, -(contentTop + margin))
-    
-    if objects.obj25 then
-        lockPageGeometry(objects.obj25, contentPos, contentSize)
-        trackPageLock(objects.obj25)
+
+    mainFrame.DescendantAdded:Connect(handlePossibleSearch)
+    mainFrame.ChildAdded:Connect(handlePossibleSearch)
+    for _, desc in ipairs(mainFrame:GetDescendants()) do
+        handlePossibleSearch(desc)
     end
-    
-    if ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.Tabs then
-        for _, tab in ipairs(ChilliLibrary.Window.Tabs) do
-            if tab.Page then
-                lockPageGeometry(tab.Page, contentPos, contentSize)
-                trackPageLock(tab.Page)
-            end
-        end
-    end
-    
-    isSyncingLayout = false
+
+    mainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncAllWindowLayout)
+
+    ContentScale.OnChanged(function(scaleX, scaleY)
+        syncAllWindowLayout()
+    end)
 end
-
--- Robust Search Bar Relocation (Listens to both DescendantAdded and ChildAdded)
-local function handlePossibleSearch(inst)
-    if not inst or not inst.Parent then return end
-    local candidate = nil
-    if inst:IsA("TextBox") then
-        local ph = tostring(inst.PlaceholderText or ""):lower()
-        if ph:find("filter") or ph:find("search") or ph:find("feature") then
-            candidate = inst
-        end
-    elseif inst:IsA("TextLabel") or inst:IsA("TextButton") then
-        local t = tostring(inst.Text or ""):lower()
-        if t == "search" or t:find("filter") then
-            candidate = inst
-        end
-    elseif inst:IsA("Frame") then
-        local n = inst.Name:lower()
-        if n:find("search") or n:find("filter") then
-            candidate = inst
-        end
-    end
-    
-    if candidate then
-        local top = candidate
-        while top.Parent and top.Parent ~= mainFrame do
-            top = top.Parent
-        end
-        if top and top.Parent == mainFrame and top ~= topBar and top ~= navSidebar and top ~= objects.obj25 then
-            if activeWindowSearch ~= top then
-                activeWindowSearch = top
-                trackSearchLock(top)
-                syncAllWindowLayout()
-            end
-        end
-    end
-end
-
-mainFrame.DescendantAdded:Connect(handlePossibleSearch)
-mainFrame.ChildAdded:Connect(handlePossibleSearch)
-for _, desc in ipairs(mainFrame:GetDescendants()) do
-    handlePossibleSearch(desc)
-end
-
-mainFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncAllWindowLayout)
-
-ContentScale.OnChanged(function(scaleX, scaleY)
-    syncAllWindowLayout()
-end)
 
 -- ============================================================
 -- BlueHaven Close & Minimize Confirmation Modal
 -- Boxy Ocean Blue style matching BlueHaven Hub
 -- ============================================================
-local currentConfirmWindow = nil
-local closeConfirmationModal = Instance.new("Frame")
-closeConfirmationModal.Name = "CloseConfirmationModal"
-closeConfirmationModal.Active = true
-closeConfirmationModal.AnchorPoint = Vector2.new(0, 0)
-closeConfirmationModal.Position = UDim2.new(0, 0, 0, 0)
-closeConfirmationModal.Size = UDim2.new(1, 0, 1, 0)
-closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 5, 15)
-closeConfirmationModal.BackgroundTransparency = 1
-closeConfirmationModal.BorderSizePixel = 0
-closeConfirmationModal.ZIndex = 200
-closeConfirmationModal.Visible = false
-closeConfirmationModal.ClipsDescendants = true
-closeConfirmationModal.Parent = mainFrame
+local showCloseConfirmationModal
+do
+    local currentConfirmWindow = nil
+    local isModalOpen = false
 
-local modalBackdropBtn = Instance.new("TextButton")
-modalBackdropBtn.Name = "BackdropDismiss"
-modalBackdropBtn.Active = true
-modalBackdropBtn.BackgroundTransparency = 1
-modalBackdropBtn.BorderSizePixel = 0
-modalBackdropBtn.Size = UDim2.new(1, 0, 1, 0)
-modalBackdropBtn.Text = ""
-modalBackdropBtn.ZIndex = 201
-modalBackdropBtn.Parent = closeConfirmationModal
-
-local modalCard = Instance.new("Frame")
-modalCard.Name = "Card"
-modalCard.Active = true
-modalCard.AnchorPoint = Vector2.new(0.5, 0.5)
-modalCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-modalCard.Size = UDim2.new(0, 360, 0, 196)
-modalCard.BackgroundColor3 = Color3.fromRGB(10, 24, 48)
-modalCard.BackgroundTransparency = 0.05
-modalCard.BorderSizePixel = 0
-modalCard.ZIndex = 205
-modalCard.Parent = closeConfirmationModal
-
-local modalCardScale = Instance.new("UIScale")
-modalCardScale.Name = "CardScale"
-modalCardScale.Scale = 1
-modalCardScale.Parent = modalCard
-
-local modalCardStroke = Instance.new("UIStroke")
-modalCardStroke.Name = "CardStroke"
-modalCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-modalCardStroke.Color = Color3.fromRGB(0, 170, 255)
-modalCardStroke.Thickness = 1.5
-modalCardStroke.Transparency = 0.15
-modalCardStroke.LineJoinMode = Enum.LineJoinMode.Miter
-modalCardStroke.Parent = modalCard
-
-local modalCardGrad = Instance.new("UIGradient")
-modalCardGrad.Name = "CardGradient"
-modalCardGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 45, 90)),
-    ColorSequenceKeypoint.new(0.4, Color3.fromRGB(10, 26, 52)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 18, 36)),
-})
-modalCardGrad.Rotation = 45
-modalCardGrad.Parent = modalCard
-
--- Modal Header
-local modalHeader = Instance.new("Frame")
-modalHeader.Name = "ModalHeader"
-modalHeader.Active = false
-modalHeader.BackgroundColor3 = Color3.fromRGB(20, 80, 160)
-modalHeader.BackgroundTransparency = 0.2
-modalHeader.BorderSizePixel = 0
-modalHeader.Position = UDim2.new(0, 0, 0, 0)
-modalHeader.Size = UDim2.new(1, 0, 0, 34)
-modalHeader.ZIndex = 206
-modalHeader.Parent = modalCard
-
-local modalHeaderGrad = Instance.new("UIGradient")
-modalHeaderGrad.Name = "HeaderGrad"
-modalHeaderGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 140, 230)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 75, 170)),
-})
-modalHeaderGrad.Rotation = 90
-modalHeaderGrad.Parent = modalHeader
-
-local modalHeaderLine = Instance.new("Frame")
-modalHeaderLine.Name = "DividerLine"
-modalHeaderLine.BackgroundColor3 = Color3.fromRGB(80, 200, 255)
-modalHeaderLine.BorderSizePixel = 0
-modalHeaderLine.Position = UDim2.new(0, 0, 1, 0)
-modalHeaderLine.Size = UDim2.new(1, 0, 0, 1.5)
-modalHeaderLine.ZIndex = 207
-modalHeaderLine.Parent = modalHeader
-
-local modalTitle = Instance.new("TextLabel")
-modalTitle.Name = "ModalTitle"
-modalTitle.BackgroundTransparency = 1
-modalTitle.BorderSizePixel = 0
-modalTitle.Position = UDim2.new(0, 12, 0, 0)
-modalTitle.Size = UDim2.new(1, -50, 1, 0)
-modalTitle.Font = Enum.Font.FredokaOne
-modalTitle.Text = "BLUE HAVEN HUB"
-modalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-modalTitle.TextSize = 16
-modalTitle.TextXAlignment = Enum.TextXAlignment.Left
-modalTitle.TextYAlignment = Enum.TextYAlignment.Center
-modalTitle.ZIndex = 208
-modalTitle.Parent = modalHeader
-
-local modalTitleStroke = Instance.new("UIStroke")
-modalTitleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-modalTitleStroke.Color = Color3.fromRGB(0, 0, 0)
-modalTitleStroke.Thickness = 1.5
-modalTitleStroke.Parent = modalTitle
-
-local modalCloseBtn = Instance.new("TextButton")
-modalCloseBtn.Name = "ModalCloseBtn"
-modalCloseBtn.Active = true
-modalCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
-modalCloseBtn.Position = UDim2.new(1, -6, 0.5, 0)
-modalCloseBtn.Size = UDim2.new(0, 24, 0, 24)
-modalCloseBtn.BackgroundColor3 = Color3.fromRGB(200, 45, 65)
-modalCloseBtn.BorderSizePixel = 0
-modalCloseBtn.Font = Enum.Font.FredokaOne
-modalCloseBtn.Text = "X"
-modalCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-modalCloseBtn.TextSize = 13
-modalCloseBtn.ZIndex = 209
-modalCloseBtn.AutoButtonColor = false
-modalCloseBtn.Parent = modalHeader
-
-local modalCloseBtnStroke = Instance.new("UIStroke")
-modalCloseBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-modalCloseBtnStroke.Color = Color3.fromRGB(140, 20, 30)
-modalCloseBtnStroke.Thickness = 1
-modalCloseBtnStroke.Parent = modalCloseBtn
-
--- Modal Body Text
-local modalPrompt = Instance.new("TextLabel")
-modalPrompt.Name = "Prompt"
-modalPrompt.BackgroundTransparency = 1
-modalPrompt.BorderSizePixel = 0
-modalPrompt.Position = UDim2.new(0.5, 0, 0, 44)
-modalPrompt.AnchorPoint = Vector2.new(0.5, 0)
-modalPrompt.Size = UDim2.new(1, -24, 0, 20)
-modalPrompt.Font = Enum.Font.GothamBold
-modalPrompt.Text = "Tutup atau Minimalkan GUI?"
-modalPrompt.TextColor3 = Color3.fromRGB(255, 255, 255)
-modalPrompt.TextSize = 14
-modalPrompt.TextXAlignment = Enum.TextXAlignment.Center
-modalPrompt.ZIndex = 206
-modalPrompt.Parent = modalCard
-
-local modalSubPrompt = Instance.new("TextLabel")
-modalSubPrompt.Name = "SubPrompt"
-modalSubPrompt.BackgroundTransparency = 1
-modalSubPrompt.BorderSizePixel = 0
-modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 66)
-modalSubPrompt.AnchorPoint = Vector2.new(0.5, 0)
-modalSubPrompt.Size = UDim2.new(1, -24, 0, 28)
-modalSubPrompt.Font = Enum.Font.Gotham
-modalSubPrompt.Text = "Pilih Minimize untuk menyembunyikan GUI, atau Close untuk menghentikan script secara permanen."
-modalSubPrompt.TextColor3 = Color3.fromRGB(150, 195, 235)
-modalSubPrompt.TextSize = 11
-modalSubPrompt.TextWrapped = true
-modalSubPrompt.TextXAlignment = Enum.TextXAlignment.Center
-modalSubPrompt.ZIndex = 206
-modalSubPrompt.Parent = modalCard
-
--- Action Buttons Container
-local modalBtnContainer = Instance.new("Frame")
-modalBtnContainer.Name = "BtnContainer"
-modalBtnContainer.BackgroundTransparency = 1
-modalBtnContainer.BorderSizePixel = 0
-modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 102)
-modalBtnContainer.AnchorPoint = Vector2.new(0.5, 0)
-modalBtnContainer.Size = UDim2.new(1, -28, 0, 48)
-modalBtnContainer.ZIndex = 206
-modalBtnContainer.Parent = modalCard
-
--- Helper to create styled modal button
-local function createModalActionBtn(parent, name, titleText, subText, pos, size, isAlert)
-    local btn = Instance.new("TextButton")
-    btn.Name = name
-    btn.Active = true
-    btn.AutoButtonColor = false
-    btn.Position = pos
-    btn.Size = size
-    btn.BackgroundColor3 = isAlert and Color3.fromRGB(220, 50, 70) or Color3.fromRGB(0, 140, 230)
-    btn.BorderSizePixel = 0
-    btn.Text = ""
-    btn.ZIndex = 207
-    btn.Parent = parent
-
-    local btnStroke = Instance.new("UIStroke")
-    btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    btnStroke.Color = isAlert and Color3.fromRGB(255, 90, 110) or Color3.fromRGB(60, 210, 255)
-    btnStroke.Thickness = 1.2
-    btnStroke.Parent = btn
-
-    local btnGrad = Instance.new("UIGradient")
-    btnGrad.Color = isAlert and ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 65, 85)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 25, 45)),
-    }) or ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 195, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 110, 220)),
-    })
-    btnGrad.Rotation = 90
-    btnGrad.Parent = btn
-
-    local titleLbl = Instance.new("TextLabel")
-    titleLbl.BackgroundTransparency = 1
-    titleLbl.Position = UDim2.new(0, 0, 0, 4)
-    titleLbl.Size = UDim2.new(1, 0, 0, 20)
-    titleLbl.Font = Enum.Font.FredokaOne
-    titleLbl.Text = titleText
-    titleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLbl.TextSize = 14
-    titleLbl.ZIndex = 208
-    titleLbl.Parent = btn
-
-    local titleStroke = Instance.new("UIStroke")
-    titleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-    titleStroke.Color = Color3.fromRGB(0, 0, 0)
-    titleStroke.Thickness = 1
-    titleStroke.Parent = titleLbl
-
-    local subLbl = Instance.new("TextLabel")
-    subLbl.BackgroundTransparency = 1
-    subLbl.Position = UDim2.new(0, 0, 0, 25)
-    subLbl.Size = UDim2.new(1, 0, 0, 16)
-    subLbl.Font = Enum.Font.GothamMedium
-    subLbl.Text = subText
-    subLbl.TextColor3 = isAlert and Color3.fromRGB(255, 215, 215) or Color3.fromRGB(205, 240, 255)
-    subLbl.TextSize = 10
-    subLbl.ZIndex = 208
-    subLbl.Parent = btn
-
-    local btnScale = Instance.new("UIScale")
-    btnScale.Scale = 1
-    btnScale.Parent = btn
-
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1.03 }):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
-    end)
-    btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.06, Enum.EasingStyle.Quad), { Scale = 0.96 }):Play()
-    end)
-    btn.MouseButton1Up:Connect(function()
-        TweenService:Create(btnScale, TweenInfo.new(0.08, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
-    end)
-
-    return btn
-end
-
-local minimizeBtn = createModalActionBtn(
-    modalBtnContainer,
-    "MinimizeBtn",
-    "MINIMIZE",
-    "Sembunyikan ke ikon",
-    UDim2.new(0, 0, 0, 0),
-    UDim2.new(0.485, 0, 1, 0),
-    false
-)
-
-local closePermBtn = createModalActionBtn(
-    modalBtnContainer,
-    "ClosePermBtn",
-    "CLOSE PERMANENT",
-    "Hentikan script total",
-    UDim2.new(0.515, 0, 0, 0),
-    UDim2.new(0.485, 0, 1, 0),
-    true
-)
-
--- Cancel button at bottom of card
-local cancelBtn = Instance.new("TextButton")
-cancelBtn.Name = "CancelBtn"
-cancelBtn.Active = true
-cancelBtn.AutoButtonColor = false
-cancelBtn.BackgroundColor3 = Color3.fromRGB(15, 32, 60)
-cancelBtn.BackgroundTransparency = 0.5
-cancelBtn.BorderSizePixel = 0
-cancelBtn.Position = UDim2.new(0.5, 0, 0, 158)
-cancelBtn.AnchorPoint = Vector2.new(0.5, 0)
-cancelBtn.Size = UDim2.new(1, -28, 0, 26)
-cancelBtn.Font = Enum.Font.GothamMedium
-cancelBtn.Text = "Batal (Kembali ke GUI)"
-cancelBtn.TextColor3 = Color3.fromRGB(160, 200, 235)
-cancelBtn.TextSize = 11
-cancelBtn.ZIndex = 207
-cancelBtn.Parent = modalCard
-
-local cancelBtnStroke = Instance.new("UIStroke")
-cancelBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-cancelBtnStroke.Color = Color3.fromRGB(0, 140, 220)
-cancelBtnStroke.Transparency = 0.6
-cancelBtnStroke.Thickness = 1
-cancelBtnStroke.Parent = cancelBtn
-
-cancelBtn.MouseEnter:Connect(function()
-    TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.2 }):Play()
-end)
-cancelBtn.MouseLeave:Connect(function()
-    TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.5 }):Play()
-end)
-
--- Modal Animation Controllers
-local isModalOpen = false
-local function showCloseConfirmationModal(window)
-    if isModalOpen then return end
-    isModalOpen = true
-    currentConfirmWindow = window
-    
-    closeConfirmationModal.Visible = true
+    local closeConfirmationModal = Instance.new("Frame")
+    closeConfirmationModal.Name = "CloseConfirmationModal"
+    closeConfirmationModal.Active = true
+    closeConfirmationModal.AnchorPoint = Vector2.new(0, 0)
+    closeConfirmationModal.Position = UDim2.new(0, 0, 0, 0)
+    closeConfirmationModal.Size = UDim2.new(1, 0, 1, 0)
+    closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 5, 15)
     closeConfirmationModal.BackgroundTransparency = 1
-    modalCardScale.Scale = 0.85
-    
-    TweenService:Create(closeConfirmationModal, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0.45
-    }):Play()
-    
-    TweenService:Create(modalCardScale, TweenInfo.new(0.24, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Scale = 1
-    }):Play()
-end
+    closeConfirmationModal.BorderSizePixel = 0
+    closeConfirmationModal.ZIndex = 200
+    closeConfirmationModal.Visible = false
+    closeConfirmationModal.ClipsDescendants = true
+    closeConfirmationModal.Parent = mainFrame
 
-local function hideCloseConfirmationModal(callback)
-    if not isModalOpen then return end
-    isModalOpen = false
-    
-    TweenService:Create(closeConfirmationModal, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-        BackgroundTransparency = 1
-    }):Play()
-    
-    local scaleTween = TweenService:Create(modalCardScale, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-        Scale = 0.88
+    local modalBackdropBtn = Instance.new("TextButton")
+    modalBackdropBtn.Name = "BackdropDismiss"
+    modalBackdropBtn.Active = true
+    modalBackdropBtn.BackgroundTransparency = 1
+    modalBackdropBtn.BorderSizePixel = 0
+    modalBackdropBtn.Size = UDim2.new(1, 0, 1, 0)
+    modalBackdropBtn.Text = ""
+    modalBackdropBtn.ZIndex = 201
+    modalBackdropBtn.Parent = closeConfirmationModal
+
+    local modalCard = Instance.new("Frame")
+    modalCard.Name = "Card"
+    modalCard.Active = true
+    modalCard.AnchorPoint = Vector2.new(0.5, 0.5)
+    modalCard.Position = UDim2.new(0.5, 0, 0.5, 0)
+    modalCard.Size = UDim2.new(0, 360, 0, 196)
+    modalCard.BackgroundColor3 = Color3.fromRGB(10, 24, 48)
+    modalCard.BackgroundTransparency = 0.05
+    modalCard.BorderSizePixel = 0
+    modalCard.ZIndex = 205
+    modalCard.Parent = closeConfirmationModal
+
+    local modalCardScale = Instance.new("UIScale")
+    modalCardScale.Name = "CardScale"
+    modalCardScale.Scale = 1
+    modalCardScale.Parent = modalCard
+
+    local modalCardStroke = Instance.new("UIStroke")
+    modalCardStroke.Name = "CardStroke"
+    modalCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    modalCardStroke.Color = Color3.fromRGB(0, 170, 255)
+    modalCardStroke.Thickness = 1.5
+    modalCardStroke.Transparency = 0.15
+    modalCardStroke.LineJoinMode = Enum.LineJoinMode.Miter
+    modalCardStroke.Parent = modalCard
+
+    local modalCardGrad = Instance.new("UIGradient")
+    modalCardGrad.Name = "CardGradient"
+    modalCardGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 45, 90)),
+        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(10, 26, 52)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 18, 36)),
     })
-    scaleTween:Play()
-    scaleTween.Completed:Connect(function()
-        closeConfirmationModal.Visible = false
-        if callback then
-            callback()
-        end
+    modalCardGrad.Rotation = 45
+    modalCardGrad.Parent = modalCard
+
+    -- Modal Header
+    local modalHeader = Instance.new("Frame")
+    modalHeader.Name = "ModalHeader"
+    modalHeader.Active = false
+    modalHeader.BackgroundColor3 = Color3.fromRGB(20, 80, 160)
+    modalHeader.BackgroundTransparency = 0.2
+    modalHeader.BorderSizePixel = 0
+    modalHeader.Position = UDim2.new(0, 0, 0, 0)
+    modalHeader.Size = UDim2.new(1, 0, 0, 34)
+    modalHeader.ZIndex = 206
+    modalHeader.Parent = modalCard
+
+    local modalHeaderGrad = Instance.new("UIGradient")
+    modalHeaderGrad.Name = "HeaderGrad"
+    modalHeaderGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 140, 230)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 75, 170)),
+    })
+    modalHeaderGrad.Rotation = 90
+    modalHeaderGrad.Parent = modalHeader
+
+    local modalHeaderLine = Instance.new("Frame")
+    modalHeaderLine.Name = "DividerLine"
+    modalHeaderLine.BackgroundColor3 = Color3.fromRGB(80, 200, 255)
+    modalHeaderLine.BorderSizePixel = 0
+    modalHeaderLine.Position = UDim2.new(0, 0, 1, 0)
+    modalHeaderLine.Size = UDim2.new(1, 0, 0, 1.5)
+    modalHeaderLine.ZIndex = 207
+    modalHeaderLine.Parent = modalHeader
+
+    local modalTitle = Instance.new("TextLabel")
+    modalTitle.Name = "ModalTitle"
+    modalTitle.BackgroundTransparency = 1
+    modalTitle.BorderSizePixel = 0
+    modalTitle.Position = UDim2.new(0, 12, 0, 0)
+    modalTitle.Size = UDim2.new(1, -50, 1, 0)
+    modalTitle.Font = Enum.Font.FredokaOne
+    modalTitle.Text = "BLUE HAVEN HUB"
+    modalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    modalTitle.TextSize = 16
+    modalTitle.TextXAlignment = Enum.TextXAlignment.Left
+    modalTitle.TextYAlignment = Enum.TextYAlignment.Center
+    modalTitle.ZIndex = 208
+    modalTitle.Parent = modalHeader
+
+    local modalTitleStroke = Instance.new("UIStroke")
+    modalTitleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    modalTitleStroke.Color = Color3.fromRGB(0, 0, 0)
+    modalTitleStroke.Thickness = 1.5
+    modalTitleStroke.Parent = modalTitle
+
+    local modalCloseBtn = Instance.new("TextButton")
+    modalCloseBtn.Name = "ModalCloseBtn"
+    modalCloseBtn.Active = true
+    modalCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
+    modalCloseBtn.Position = UDim2.new(1, -6, 0.5, 0)
+    modalCloseBtn.Size = UDim2.new(0, 24, 0, 24)
+    modalCloseBtn.BackgroundColor3 = Color3.fromRGB(200, 45, 65)
+    modalCloseBtn.BorderSizePixel = 0
+    modalCloseBtn.Font = Enum.Font.FredokaOne
+    modalCloseBtn.Text = "X"
+    modalCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    modalCloseBtn.TextSize = 13
+    modalCloseBtn.ZIndex = 209
+    modalCloseBtn.AutoButtonColor = false
+    modalCloseBtn.Parent = modalHeader
+
+    local modalCloseBtnStroke = Instance.new("UIStroke")
+    modalCloseBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    modalCloseBtnStroke.Color = Color3.fromRGB(140, 20, 30)
+    modalCloseBtnStroke.Thickness = 1
+    modalCloseBtnStroke.Parent = modalCloseBtn
+
+    -- Modal Body Text
+    local modalPrompt = Instance.new("TextLabel")
+    modalPrompt.Name = "Prompt"
+    modalPrompt.BackgroundTransparency = 1
+    modalPrompt.BorderSizePixel = 0
+    modalPrompt.Position = UDim2.new(0.5, 0, 0, 44)
+    modalPrompt.AnchorPoint = Vector2.new(0.5, 0)
+    modalPrompt.Size = UDim2.new(1, -24, 0, 20)
+    modalPrompt.Font = Enum.Font.GothamBold
+    modalPrompt.Text = "Tutup atau Minimalkan GUI?"
+    modalPrompt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    modalPrompt.TextSize = 14
+    modalPrompt.TextXAlignment = Enum.TextXAlignment.Center
+    modalPrompt.ZIndex = 206
+    modalPrompt.Parent = modalCard
+
+    local modalSubPrompt = Instance.new("TextLabel")
+    modalSubPrompt.Name = "SubPrompt"
+    modalSubPrompt.BackgroundTransparency = 1
+    modalSubPrompt.BorderSizePixel = 0
+    modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 66)
+    modalSubPrompt.AnchorPoint = Vector2.new(0.5, 0)
+    modalSubPrompt.Size = UDim2.new(1, -24, 0, 28)
+    modalSubPrompt.Font = Enum.Font.Gotham
+    modalSubPrompt.Text = "Pilih Minimize untuk menyembunyikan GUI, atau Close untuk menghentikan script secara permanen."
+    modalSubPrompt.TextColor3 = Color3.fromRGB(150, 195, 235)
+    modalSubPrompt.TextSize = 11
+    modalSubPrompt.TextWrapped = true
+    modalSubPrompt.TextXAlignment = Enum.TextXAlignment.Center
+    modalSubPrompt.ZIndex = 206
+    modalSubPrompt.Parent = modalCard
+
+    -- Action Buttons Container
+    local modalBtnContainer = Instance.new("Frame")
+    modalBtnContainer.Name = "BtnContainer"
+    modalBtnContainer.BackgroundTransparency = 1
+    modalBtnContainer.BorderSizePixel = 0
+    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 102)
+    modalBtnContainer.AnchorPoint = Vector2.new(0.5, 0)
+    modalBtnContainer.Size = UDim2.new(1, -28, 0, 48)
+    modalBtnContainer.ZIndex = 206
+    modalBtnContainer.Parent = modalCard
+
+    -- Helper to create styled modal button
+    local function createModalActionBtn(parent, name, titleText, subText, pos, size, isAlert)
+        local btn = Instance.new("TextButton")
+        btn.Name = name
+        btn.Active = true
+        btn.AutoButtonColor = false
+        btn.Position = pos
+        btn.Size = size
+        btn.BackgroundColor3 = isAlert and Color3.fromRGB(220, 50, 70) or Color3.fromRGB(0, 140, 230)
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.ZIndex = 207
+        btn.Parent = parent
+
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        btnStroke.Color = isAlert and Color3.fromRGB(255, 90, 110) or Color3.fromRGB(60, 210, 255)
+        btnStroke.Thickness = 1.2
+        btnStroke.Parent = btn
+
+        local btnGrad = Instance.new("UIGradient")
+        btnGrad.Color = isAlert and ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 65, 85)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 25, 45)),
+        }) or ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 195, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 110, 220)),
+        })
+        btnGrad.Rotation = 90
+        btnGrad.Parent = btn
+
+        local titleLbl = Instance.new("TextLabel")
+        titleLbl.BackgroundTransparency = 1
+        titleLbl.Position = UDim2.new(0, 0, 0, 4)
+        titleLbl.Size = UDim2.new(1, 0, 0, 20)
+        titleLbl.Font = Enum.Font.FredokaOne
+        titleLbl.Text = titleText
+        titleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+        titleLbl.TextSize = 14
+        titleLbl.ZIndex = 208
+        titleLbl.Parent = btn
+
+        local titleStroke = Instance.new("UIStroke")
+        titleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        titleStroke.Color = Color3.fromRGB(0, 0, 0)
+        titleStroke.Thickness = 1
+        titleStroke.Parent = titleLbl
+
+        local subLbl = Instance.new("TextLabel")
+        subLbl.BackgroundTransparency = 1
+        subLbl.Position = UDim2.new(0, 0, 0, 25)
+        subLbl.Size = UDim2.new(1, 0, 0, 16)
+        subLbl.Font = Enum.Font.GothamMedium
+        subLbl.Text = subText
+        subLbl.TextColor3 = isAlert and Color3.fromRGB(255, 215, 215) or Color3.fromRGB(205, 240, 255)
+        subLbl.TextSize = 10
+        subLbl.ZIndex = 208
+        subLbl.Parent = btn
+
+        local btnScale = Instance.new("UIScale")
+        btnScale.Scale = 1
+        btnScale.Parent = btn
+
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1.03 }):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+        end)
+        btn.MouseButton1Down:Connect(function()
+            TweenService:Create(btnScale, TweenInfo.new(0.06, Enum.EasingStyle.Quad), { Scale = 0.96 }):Play()
+        end)
+        btn.MouseButton1Up:Connect(function()
+            TweenService:Create(btnScale, TweenInfo.new(0.08, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+        end)
+
+        return btn
+    end
+
+    local minimizeBtn = createModalActionBtn(
+        modalBtnContainer,
+        "MinimizeBtn",
+        "MINIMIZE",
+        "Sembunyikan ke ikon",
+        UDim2.new(0, 0, 0, 0),
+        UDim2.new(0.485, 0, 1, 0),
+        false
+    )
+
+    local closePermBtn = createModalActionBtn(
+        modalBtnContainer,
+        "ClosePermBtn",
+        "CLOSE PERMANENT",
+        "Hentikan script total",
+        UDim2.new(0.515, 0, 0, 0),
+        UDim2.new(0.485, 0, 1, 0),
+        true
+    )
+
+    -- Cancel button at bottom of card
+    local cancelBtn = Instance.new("TextButton")
+    cancelBtn.Name = "CancelBtn"
+    cancelBtn.Active = true
+    cancelBtn.AutoButtonColor = false
+    cancelBtn.BackgroundColor3 = Color3.fromRGB(15, 32, 60)
+    cancelBtn.BackgroundTransparency = 0.5
+    cancelBtn.BorderSizePixel = 0
+    cancelBtn.Position = UDim2.new(0.5, 0, 0, 158)
+    cancelBtn.AnchorPoint = Vector2.new(0.5, 0)
+    cancelBtn.Size = UDim2.new(1, -28, 0, 26)
+    cancelBtn.Font = Enum.Font.GothamMedium
+    cancelBtn.Text = "Batal (Kembali ke GUI)"
+    cancelBtn.TextColor3 = Color3.fromRGB(160, 200, 235)
+    cancelBtn.TextSize = 11
+    cancelBtn.ZIndex = 207
+    cancelBtn.Parent = modalCard
+
+    local cancelBtnStroke = Instance.new("UIStroke")
+    cancelBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    cancelBtnStroke.Color = Color3.fromRGB(0, 140, 220)
+    cancelBtnStroke.Transparency = 0.6
+    cancelBtnStroke.Thickness = 1
+    cancelBtnStroke.Parent = cancelBtn
+
+    cancelBtn.MouseEnter:Connect(function()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.2 }):Play()
+    end)
+    cancelBtn.MouseLeave:Connect(function()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.5 }):Play()
+    end)
+
+    -- Modal Animation Controllers
+    local function hideCloseConfirmationModal(callback)
+        if not isModalOpen then return end
+        isModalOpen = false
+        
+        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            BackgroundTransparency = 1
+        }):Play()
+        
+        local scaleTween = TweenService:Create(modalCardScale, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Scale = 0.88
+        })
+        scaleTween:Play()
+        scaleTween.Completed:Connect(function()
+            closeConfirmationModal.Visible = false
+            if callback then
+                callback()
+            end
+        end)
+    end
+
+    function showCloseConfirmationModal(window)
+        if isModalOpen then return end
+        isModalOpen = true
+        currentConfirmWindow = window
+        
+        closeConfirmationModal.Visible = true
+        closeConfirmationModal.BackgroundTransparency = 1
+        modalCardScale.Scale = 0.85
+        
+        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 0.45
+        }):Play()
+        
+        TweenService:Create(modalCardScale, TweenInfo.new(0.24, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Scale = 1
+        }):Play()
+    end
+
+    modalBackdropBtn.MouseButton1Click:Connect(function()
+        hideCloseConfirmationModal()
+    end)
+
+    modalCloseBtn.MouseButton1Click:Connect(function()
+        hideCloseConfirmationModal()
+    end)
+
+    cancelBtn.MouseButton1Click:Connect(function()
+        hideCloseConfirmationModal()
+    end)
+
+    minimizeBtn.MouseButton1Click:Connect(function()
+        hideCloseConfirmationModal(function()
+            if currentConfirmWindow then
+                ApiImpl[103](currentConfirmWindow)
+            end
+        end)
+    end)
+
+    closePermBtn.MouseButton1Click:Connect(function()
+        hideCloseConfirmationModal(function()
+            if currentConfirmWindow then
+                ApiImpl[105](currentConfirmWindow)
+                pcall(function()
+                    if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
+                end)
+            else
+                pcall(function()
+                    disconnectRootConnections()
+                    if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
+                    if rootGui and rootGui.Parent then rootGui:Destroy() end
+                end)
+            end
+        end)
     end)
 end
-
-modalBackdropBtn.MouseButton1Click:Connect(function()
-    hideCloseConfirmationModal()
-end)
-
-modalCloseBtn.MouseButton1Click:Connect(function()
-    hideCloseConfirmationModal()
-end)
-
-cancelBtn.MouseButton1Click:Connect(function()
-    hideCloseConfirmationModal()
-end)
-
-minimizeBtn.MouseButton1Click:Connect(function()
-    hideCloseConfirmationModal(function()
-        if currentConfirmWindow then
-            ApiImpl[103](currentConfirmWindow)
-        end
-    end)
-end)
-
-closePermBtn.MouseButton1Click:Connect(function()
-    hideCloseConfirmationModal(function()
-        if currentConfirmWindow then
-            ApiImpl[105](currentConfirmWindow)
-        else
-            pcall(function()
-                disconnectRootConnections()
-                if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
-                if rootGui and rootGui.Parent then rootGui:Destroy() end
-            end)
-        end
-    end)
-end)
 
 local function createSectionHeader(title, layoutOrder, clipViewport)
     local header = Instance.new("TextLabel")
