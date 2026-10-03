@@ -194,11 +194,8 @@ pcall(chilliSetProperty, objects.obj2, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj2, "LayoutOrder", 0)
 objects.obj2.Parent = objects.obj1
 
-do
-    local obj2_corner = Instance.new("UICorner")
-    pcall(chilliSetProperty, obj2_corner, "CornerRadius", UDim.new(0, 14))
-    obj2_corner.Parent = objects.obj2
-end
+-- Sharp Boxy Frame (CornerRadius = 0)
+-- No UICorner on obj2 for clean boxy look
 
 -- Semi-Transparent Dark Grey-Navy Glassmorphic Background (User Request)
 pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(16, 22, 32))
@@ -221,16 +218,16 @@ pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 45)
 objects.obj2_gradient.Parent = objects.obj2
 
--- Subtle Glowing 1.2px Outer Border (Exact Figma Outline)
+-- Sharp 1.5px Outer Border (Clean Boxy / Kotak Miter Outline)
 objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "CanvasOuterBorder")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
 pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(65, 125, 200))
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(0, 140, 255))
 pcall(chilliSetProperty, objects.obj3, "Enabled", true)
-pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj3, "Thickness", 1.2)
-pcall(chilliSetProperty, objects.obj3, "Transparency", 0.35)
+pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Miter)
+pcall(chilliSetProperty, objects.obj3, "Thickness", 1.5)
+pcall(chilliSetProperty, objects.obj3, "Transparency", 0.30)
 objects.obj3.Parent = objects.obj2
 
 -- Window Size Limit Constraint (Min 400x290, Max 760x550)
@@ -242,7 +239,7 @@ do
     windowLimit.Parent = objects.obj2
 end
 
--- Canvas Background Texture (Resolves Decal via rbxthumb)
+-- Canvas Background Texture (ZIndex 0, Boxy sharp corners)
 do
     local function resolveAsset(id, defaultId)
         local val = id or defaultId
@@ -261,16 +258,12 @@ do
     pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
     pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0.12, 0))
     pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 0.88, 0))
-    pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 2)
+    pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 0)
     pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveAsset(_G.BH_CanvasAssetId, "140268358133592"))
     pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.15)
     pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
     pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
-
-    local studs_corner = Instance.new("UICorner")
-    pcall(chilliSetProperty, studs_corner, "CornerRadius", UDim.new(0, 10))
-    studs_corner.Parent = objects.obj2_studs
     objects.obj2_studs.Parent = objects.obj2
 end
 
@@ -289,69 +282,45 @@ pcall(chilliSetProperty, objects.obj4, "Position", UDim2.new(0.5,0,0,0))
 pcall(chilliSetProperty, objects.obj4, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj4, "Selectable", false)
 pcall(chilliSetProperty, objects.obj4, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj4, "Size", UDim2.new(1,0,0.145,0))
+pcall(chilliSetProperty, objects.obj4, "Size", UDim2.new(1,0,0.138,0))
 pcall(chilliSetProperty, objects.obj4, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
 pcall(chilliSetProperty, objects.obj4, "ZIndex", 2)
 pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
 
 do
-    local obj4_corner = Instance.new("UICorner")
-    pcall(chilliSetProperty, obj4_corner, "CornerRadius", UDim.new(0, 10))
-    obj4_corner.Parent = objects.obj4
-
     local obj4_gradient = Instance.new("UIGradient")
     pcall(chilliSetProperty, obj4_gradient, "Name", "HeaderGradient")
     pcall(chilliSetProperty, obj4_gradient, "Color", ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 160, 255)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 120, 245)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 85, 215))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 115, 235)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 95, 210)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 70, 175))
     }))
     pcall(chilliSetProperty, obj4_gradient, "Rotation", 90)
     obj4_gradient.Parent = objects.obj4
 
-    -- Top Rim Light Highlight (Exact Figma top glow)
+    -- Sharp Top Rim Highlight
     local obj4_topRim = Instance.new("Frame")
     pcall(chilliSetProperty, obj4_topRim, "Name", "TopRimLight")
-    pcall(chilliSetProperty, obj4_topRim, "BackgroundColor3", Color3.fromRGB(190, 230, 255))
-    pcall(chilliSetProperty, obj4_topRim, "BackgroundTransparency", 0.45)
+    pcall(chilliSetProperty, obj4_topRim, "BackgroundColor3", Color3.fromRGB(180, 230, 255))
+    pcall(chilliSetProperty, obj4_topRim, "BackgroundTransparency", 0.40)
     pcall(chilliSetProperty, obj4_topRim, "BorderSizePixel", 0)
     pcall(chilliSetProperty, obj4_topRim, "Position", UDim2.new(0, 0, 0, 0))
     pcall(chilliSetProperty, obj4_topRim, "Size", UDim2.new(1, 0, 0, 1.5))
     pcall(chilliSetProperty, obj4_topRim, "ZIndex", 8)
-    local topRim_c = Instance.new("UICorner")
-    pcall(chilliSetProperty, topRim_c, "CornerRadius", UDim.new(0, 10))
-    topRim_c.Parent = obj4_topRim
     obj4_topRim.Parent = objects.obj4
 
-    local obj4_bottomCover = Instance.new("Frame")
-    pcall(chilliSetProperty, obj4_bottomCover, "Name", "BottomSquareCover")
-    pcall(chilliSetProperty, obj4_bottomCover, "BackgroundColor3", Color3.fromRGB(12, 55, 165))
-    pcall(chilliSetProperty, obj4_bottomCover, "BorderSizePixel", 0)
-    pcall(chilliSetProperty, obj4_bottomCover, "Position", UDim2.new(0, 0, 1, -8))
-    pcall(chilliSetProperty, obj4_bottomCover, "Size", UDim2.new(1, 0, 0, 8))
-    pcall(chilliSetProperty, obj4_bottomCover, "ZIndex", 2)
-    obj4_bottomCover.Parent = objects.obj4
-
+    -- Sharp Bottom Divider Line (Cyan/Blue separator)
     objects.obj4_divider = Instance.new("Frame")
     pcall(chilliSetProperty, objects.obj4_divider, "Name", "HeaderDivider")
     pcall(chilliSetProperty, objects.obj4_divider, "Archivable", true)
     pcall(chilliSetProperty, objects.obj4_divider, "Visible", true)
-    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(80, 200, 255))
-    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0.15)
+    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(0, 140, 255))
+    pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0)
     pcall(chilliSetProperty, objects.obj4_divider, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj4_divider, "Position", UDim2.new(0, 0, 1, 0))
-    pcall(chilliSetProperty, objects.obj4_divider, "Size", UDim2.new(1, 0, 0, 2))
+    pcall(chilliSetProperty, objects.obj4_divider, "Size", UDim2.new(1, 0, 0, 1.5))
     pcall(chilliSetProperty, objects.obj4_divider, "ZIndex", 8)
-    local obj4_div_gradient = Instance.new("UIGradient")
-    pcall(chilliSetProperty, obj4_div_gradient, "Color", ColorSequence.new(Color3.fromRGB(130, 225, 255)))
-    pcall(chilliSetProperty, obj4_div_gradient, "Transparency", NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.7),
-        NumberSequenceKeypoint.new(0.3, 0.1),
-        NumberSequenceKeypoint.new(0.7, 0.1),
-        NumberSequenceKeypoint.new(1, 0.7)
-    }))
-    obj4_div_gradient.Parent = objects.obj4_divider
     objects.obj4_divider.Parent = objects.obj4
 end
 
@@ -410,36 +379,27 @@ do
     obj4_footerSheen.Parent = objects.obj4
 end
 
--- Sleeping Cat Mascot (Resolves Decal via rbxthumb)
+-- Mascot (Hidden if not explicitly set with a transparent decal to avoid white box)
 do
-    local function resolveAsset(id, defaultId)
-        local val = id or defaultId
-        if not val or val == "" then return "" end
-        local str = tostring(val)
-        if str:find("rbxthumb://") then return str end
-        local num = str:match("%d+")
-        if num then return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420" end
-        return str
-    end
-
     objects.obj12 = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj12, "Name", "CatMascotAndLogo")
     pcall(chilliSetProperty, objects.obj12, "Archivable", true)
-    pcall(chilliSetProperty, objects.obj12, "Visible", true)
+    pcall(chilliSetProperty, objects.obj12, "Visible", false) -- Clean header without broken white block
     pcall(chilliSetProperty, objects.obj12, "Active", false)
     pcall(chilliSetProperty, objects.obj12, "AnchorPoint", Vector2.new(0, 0.5))
     pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 4, 0.44, -3))
-    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(88, 58))
+    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 6, 0.5, 0))
+    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(40, 40))
     pcall(chilliSetProperty, objects.obj12, "ZIndex", 30)
-    pcall(chilliSetProperty, objects.obj12, "Image", resolveAsset(_G.BH_CatMascotId, "125229870206242"))
-    pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
-    pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
-    pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
-    pcall(chilliSetProperty, objects.obj12, "ResampleMode", Enum.ResamplerMode.Default)
+    if _G.BH_CatMascotId and _G.BH_CatMascotId ~= "" and not tostring(_G.BH_CatMascotId):find("125229870206242") then
+        local str = tostring(_G.BH_CatMascotId)
+        local num = str:match("%d+")
+        pcall(chilliSetProperty, objects.obj12, "Image", str:find("rbxthumb://") and str or ("rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420"))
+        pcall(chilliSetProperty, objects.obj12, "Visible", true)
+    end
     objects.obj12.Parent = objects.obj4
 end
 
@@ -528,21 +488,18 @@ pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0.5,0,0.5,0))
 pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj16, "ZIndex", 1)
 
-do
-    local obj16_corner = Instance.new("UICorner")
-    pcall(chilliSetProperty, obj16_corner, "CornerRadius", UDim.new(0, 8))
-    obj16_corner.Parent = objects.obj16
-end
+-- Sharp Boxy Close Button (CornerRadius = 0)
+-- No UICorner on obj16
 
 objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(60, 15, 25))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(40, 10, 15))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
-pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
+pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Miter)
 pcall(chilliSetProperty, objects.obj23, "Thickness", 1.2)
-pcall(chilliSetProperty, objects.obj23, "Transparency", 0.4)
+pcall(chilliSetProperty, objects.obj23, "Transparency", 0.3)
 objects.obj23.Parent = objects.obj16
 
 -- Close Button (Resolves Decal via rbxthumb)
