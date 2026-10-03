@@ -259,7 +259,7 @@ pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(255,25
 pcall(chilliSetProperty, objects.obj4, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj4, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj4, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj4, "ClipsDescendants", false)
+pcall(chilliSetProperty, objects.obj4, "ClipsDescendants", true)
 pcall(chilliSetProperty, objects.obj4, "Position", UDim2.new(0.5,0,0,0))
 pcall(chilliSetProperty, objects.obj4, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj4, "Selectable", false)
@@ -378,16 +378,16 @@ pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255,2
 pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 12, 0.5, 0))
+pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 10, 0.5, 0))
 pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(22, 22))
-pcall(chilliSetProperty, objects.obj12, "ZIndex", 6)
+pcall(chilliSetProperty, objects.obj12, "ZIndex", 15)
 pcall(chilliSetProperty, objects.obj12, "Image", "rbxassetid://140268358133592")
 pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
 pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
 objects.obj12.Parent = objects.obj4
 
--- Title Label
+-- Title Label (Strictly locked between Icon and Close Button, never spills outside)
 objects.obj9 = Instance.new("TextLabel")
 pcall(chilliSetProperty, objects.obj9, "Name", "Label")
 pcall(chilliSetProperty, objects.obj9, "Archivable", true)
@@ -397,20 +397,26 @@ pcall(chilliSetProperty, objects.obj9, "AnchorPoint", Vector2.new(0, 0.5))
 pcall(chilliSetProperty, objects.obj9, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj9, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj9, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj9, "Position", UDim2.new(0, 40, 0.5, 0))
-pcall(chilliSetProperty, objects.obj9, "Size", UDim2.new(0.68, 0, 0.7, 0))
-pcall(chilliSetProperty, objects.obj9, "ZIndex", 6)
+pcall(chilliSetProperty, objects.obj9, "ClipsDescendants", true)
+pcall(chilliSetProperty, objects.obj9, "Position", UDim2.new(0, 38, 0.5, 0))
+pcall(chilliSetProperty, objects.obj9, "Size", UDim2.new(1, -74, 0.75, 0))
+pcall(chilliSetProperty, objects.obj9, "ZIndex", 15)
 pcall(chilliSetProperty, objects.obj9, "Text", "BlueHaven Hub")
 pcall(chilliSetProperty, objects.obj9, "TextColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj9, "TextTransparency", 0)
 pcall(chilliSetProperty, objects.obj9, "TextStrokeColor3", Color3.fromRGB(0, 20, 70))
 pcall(chilliSetProperty, objects.obj9, "TextStrokeTransparency", 0.4)
-pcall(chilliSetProperty, objects.obj9, "TextSize", 14)
+pcall(chilliSetProperty, objects.obj9, "TextSize", 16)
 pcall(chilliSetProperty, objects.obj9, "TextScaled", true)
-pcall(chilliSetProperty, objects.obj9, "TextWrapped", true)
+pcall(chilliSetProperty, objects.obj9, "TextWrapped", false)
+pcall(chilliSetProperty, objects.obj9, "TextTruncate", Enum.TextTruncate.AtEnd)
 pcall(chilliSetProperty, objects.obj9, "TextXAlignment", Enum.TextXAlignment.Left)
 pcall(chilliSetProperty, objects.obj9, "TextYAlignment", Enum.TextYAlignment.Center)
 pcall(chilliSetProperty, objects.obj9, "Font", Enum.Font.FredokaOne)
+local obj9_constraint = Instance.new("UITextSizeConstraint")
+obj9_constraint.MaxTextSize = 18
+obj9_constraint.MinTextSize = 9
+obj9_constraint.Parent = objects.obj9
 objects.obj9.Parent = objects.obj4
 
 objects.obj4.Parent = objects.obj2
@@ -420,13 +426,13 @@ pcall(chilliSetProperty, objects.obj14, "Name", "Close")
 pcall(chilliSetProperty, objects.obj14, "Archivable", true)
 pcall(chilliSetProperty, objects.obj14, "Visible", true)
 pcall(chilliSetProperty, objects.obj14, "Active", true)
-pcall(chilliSetProperty, objects.obj14, "AnchorPoint", Vector2.new(0.5,0.5))
+pcall(chilliSetProperty, objects.obj14, "AnchorPoint", Vector2.new(1, 0.5))
 pcall(chilliSetProperty, objects.obj14, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj14, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj14, "BorderColor3", Color3.fromRGB(27,42,53))
-pcall(chilliSetProperty, objects.obj14, "BorderSizePixel", 1)
+pcall(chilliSetProperty, objects.obj14, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj14, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(0.9549999833106995,0,0.4339999854564667,0))
+pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(1, -8, 0.5, 0))
 pcall(chilliSetProperty, objects.obj14, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj14, "Selectable", true)
 pcall(chilliSetProperty, objects.obj14, "SelectionOrder", 0)
@@ -653,8 +659,8 @@ pcall(chilliSetProperty, objects.obj25, "ZIndex", 5)
 pcall(chilliSetProperty, objects.obj25, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj25, "LayoutOrder", 1)
 pcall(chilliSetProperty, objects.obj25, "CanvasPosition", Vector2.new(0,0))
-pcall(chilliSetProperty, objects.obj25, "CanvasSize", UDim2.new(0,0,0,642))
-pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSize.None)
+pcall(chilliSetProperty, objects.obj25, "CanvasSize", UDim2.new(0,0,0,0))
+pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSize.Y)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarThickness", 6)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageColor3", Color3.fromRGB(120,210,255))
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
@@ -2450,53 +2456,20 @@ end))
 
 
 ContentScale.OnChanged(function(scaleX, scaleY)
-    resizeGrip.Position = UDim2.fromScale(
-        1 - 0.002 / scaleX,
-        1 - 0.005 / scaleY
-    )
-    resizeGrip.Size = UDim2.fromScale(0.05 / scaleX, 0.05 / scaleY)
+    resizeGrip.Position = UDim2.new(1, -4, 1, -4)
+    resizeGrip.Size = UDim2.fromOffset(22, 22)
 end)
 
 
 
 ContentScale.OnChanged(function(scaleX, scaleY)
-    topBar.Size = UDim2.new(1, 0, 0.125 / scaleY, 0)
-    objects.obj12.Position = UDim2.new(
-        0.06700000166893005 / scaleX,
-        0,
-        0.44999998807907104,
-        0
-    )
-    objects.obj12.Size = UDim2.new(
-        0.11656716465950012 / scaleX,
-        0,
-        1.1833335161209106,
-        0
-    )
-    objects.obj9.Position = UDim2.new(
-        0.5687711238861084 / scaleX,
-        0,
-        0.5,
-        0
-    )
-    objects.obj9.Size = UDim2.new(
-        0.8620089292526245 / scaleX,
-        0,
-        0.7499999403953552,
-        0
-    )
-    objects.obj14.Position = UDim2.new(
-        1 - 0.045000016689300537 / scaleX,
-        0,
-        0.4339999854564667,
-        0
-    )
-    objects.obj14.Size = UDim2.new(
-        0.06637302041053772 / scaleX,
-        0,
-        0.6588137149810791,
-        0
-    )
+    topBar.Size = UDim2.new(1, 0, 0.135, 0)
+    objects.obj12.Position = UDim2.new(0, 10, 0.5, 0)
+    objects.obj12.Size = UDim2.fromOffset(22, 22)
+    objects.obj9.Position = UDim2.new(0, 38, 0.5, 0)
+    objects.obj9.Size = UDim2.new(1, -74, 0.75, 0)
+    objects.obj14.Position = UDim2.new(1, -8, 0.5, 0)
+    objects.obj14.Size = UDim2.fromOffset(24, 24)
 end)
 
 local normalTextFont = Font.new(
@@ -2695,6 +2668,21 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     highlight.ZIndex = 2
     highlight.Parent = colorFrame
     addRedGradient(highlight, "RedGradient", rebirthInnerGradient)
+
+    -- Framewisp Button Texture (Asset 109248302930363)
+    local tabBtnPattern = Instance.new("ImageLabel")
+    tabBtnPattern.Name = "ButtonPattern"
+    tabBtnPattern.BackgroundTransparency = 1
+    tabBtnPattern.BorderSizePixel = 0
+    tabBtnPattern.AnchorPoint = Vector2.new(0.5, 0.5)
+    tabBtnPattern.Position = UDim2.fromScale(0.5, 0.5)
+    tabBtnPattern.Size = UDim2.fromScale(1, 1)
+    tabBtnPattern.Image = "rbxassetid://109248302930363"
+    tabBtnPattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+    tabBtnPattern.ImageTransparency = 0.35
+    tabBtnPattern.ScaleType = Enum.ScaleType.Stretch
+    tabBtnPattern.ZIndex = 3
+    tabBtnPattern.Parent = highlight
 
     local label = Instance.new("TextLabel")
     label.Name = "Label"
@@ -3949,6 +3937,21 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     highlight.ZIndex = 2
     highlight.Parent = colorFrame
     addRedGradient(highlight, "RedGradient", rebirthInnerGradient)
+
+    -- Framewisp Button Texture (Asset 109248302930363)
+    local btnPattern = Instance.new("ImageLabel")
+    btnPattern.Name = "ButtonPattern"
+    btnPattern.BackgroundTransparency = 1
+    btnPattern.BorderSizePixel = 0
+    btnPattern.AnchorPoint = Vector2.new(0.5, 0.5)
+    btnPattern.Position = UDim2.fromScale(0.5, 0.5)
+    btnPattern.Size = UDim2.fromScale(1, 1)
+    btnPattern.Image = "rbxassetid://109248302930363"
+    btnPattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+    btnPattern.ImageTransparency = 0.35
+    btnPattern.ScaleType = Enum.ScaleType.Stretch
+    btnPattern.ZIndex = 3
+    btnPattern.Parent = highlight
 
     local caption = Instance.new("TextLabel")
     caption.Name = "Label"
@@ -5627,6 +5630,21 @@ local function createLibraryToggleRow(config)
     onGradient.Rotation = 90
     onGradient.Parent = switch
 
+    -- Framewisp Toggle Texture (Asset 88378644467789)
+    local togglePattern = Instance.new("ImageLabel")
+    togglePattern.Name = "TogglePattern"
+    togglePattern.BackgroundTransparency = 1
+    togglePattern.BorderSizePixel = 0
+    togglePattern.AnchorPoint = Vector2.new(0.5, 0.5)
+    togglePattern.Position = UDim2.fromScale(0.5, 0.5)
+    togglePattern.Size = UDim2.fromScale(1, 1)
+    togglePattern.Image = "rbxassetid://88378644467789"
+    togglePattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+    togglePattern.ImageTransparency = 0.25
+    togglePattern.ScaleType = Enum.ScaleType.Fit
+    togglePattern.ZIndex = 4
+    togglePattern.Parent = switch
+
     local knob = Instance.new("Frame")
     knob.Name = "Hold"
     knob.Active = false
@@ -6609,34 +6627,43 @@ WindowMethods.__index = WindowMethods
 WindowMethods.GetDefaultTab = function(self)
     return self.DefaultTab or (self.Tabs and self.Tabs[1])
 end
-WindowMethods.AddTab = function(self, ...)
-    if type(self.CreateTab) == "function" then
-        return self:CreateTab(...)
-    end
+WindowMethods.CreateTab = function(self, config) return ApiImpl[95](self, config) end
+WindowMethods.AddTab = function(self, config) return ApiImpl[95](self, config) end
+WindowMethods.SelectTab = function(self, tabOrName) return ApiImpl[94](self, tabOrName) end
+WindowMethods.Select = function(self, tabOrName) return ApiImpl[94](self, tabOrName or self.DefaultTab) end
+WindowMethods.CreateSection = function(self, config)
+    local tab = self.DefaultTab or (self.Tabs and self.Tabs[1])
+    if tab then return ApiImpl[90](tab, config) end
+end
+WindowMethods.AddSection = function(self, config)
+    local tab = self.DefaultTab or (self.Tabs and self.Tabs[1])
+    if tab then return ApiImpl[90](tab, config) end
 end
 
 TabMethods.__index = TabMethods
-TabMethods.AddSection = function(self, ...)
-    if type(self.CreateSection) == "function" then
-        return self:CreateSection(...)
-    end
-end
+TabMethods.CreateSection = function(self, config) return ApiImpl[90](self, config) end
+TabMethods.AddSection = function(self, config) return ApiImpl[90](self, config) end
+TabMethods.Select = function(self) return ApiImpl[94](self.Window, self) end
 
 SectionMethods.__index = SectionMethods
+SectionMethods.CreateButton = function(self, config) return ApiImpl[86](self, "Button", config) end
+SectionMethods.CreateToggle = function(self, config) return ApiImpl[86](self, "Toggle", config) end
+SectionMethods.CreateSlider = function(self, config) return ApiImpl[86](self, "Slider", config) end
+SectionMethods.CreateDropdown = function(self, config) return ApiImpl[86](self, "Dropdown", config) end
+SectionMethods.CreateMultiDropdown = function(self, config) return ApiImpl[86](self, "MultiDropdown", config) end
+SectionMethods.CreateInput = function(self, config) return ApiImpl[86](self, "Input", config) end
+SectionMethods.CreateText = function(self, config) return ApiImpl[86](self, "Text", config) end
+SectionMethods.CreateLabel = function(self, config) return ApiImpl[86](self, "Text", config) end
 SectionMethods.CreateParagraph = function(self, config)
     config = config or {}
     config.Text = config.Text or config.Content or config.Value or ""
-    if type(self.CreateText) == "function" then
-        return self:CreateText(config)
-    end
+    return ApiImpl[86](self, "Text", config)
 end
 SectionMethods.CreateKeybind = function(self, config)
     config = config or {}
     local keyName = config.Default and (config.Default.Name or tostring(config.Default)) or "None"
     config.Text = "[Keybind: " .. keyName .. "]"
-    if type(self.CreateText) == "function" then
-        return self:CreateText(config)
-    end
+    return ApiImpl[86](self, "Text", config)
 end
 
 OptionMethods.__index = OptionMethods
