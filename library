@@ -199,23 +199,53 @@ objects.obj2.Parent = objects.obj1
 -- No UICorner on obj2 for clean boxy look
 
 -- Ocean Blue Gradient Background (sleek modern, semi-transparent glassmorphic)
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(14, 40, 80))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.22)
+-- Liquid Glass Aquatic Acrylic Background (Frosted translucent with caustic depth)
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(10, 42, 85))
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.32)
 pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", true)
 
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "OceanDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0,    Color3.fromRGB(25, 78, 150)),
-    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(18, 56, 115)),
-    ColorSequenceKeypoint.new(0.7,  Color3.fromRGB(14, 42, 88)),
-    ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 32, 68))
+    ColorSequenceKeypoint.new(0,    Color3.fromRGB(28, 92, 172)),
+    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(18, 62, 128)),
+    ColorSequenceKeypoint.new(0.70, Color3.fromRGB(12, 45, 96)),
+    ColorSequenceKeypoint.new(1,    Color3.fromRGB(8, 28, 68))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.10),
-    NumberSequenceKeypoint.new(1, 0.22)
+    NumberSequenceKeypoint.new(0, 0.18),
+    NumberSequenceKeypoint.new(0.45, 0.28),
+    NumberSequenceKeypoint.new(1, 0.38)
 }))
+
+-- Liquid Glass Specular Highlight Sheen (Simulates light refracting off curved glass)
+do
+    local glassSheen = Instance.new("Frame")
+    glassSheen.Name = "LiquidGlassSheen"
+    glassSheen.Active = false
+    glassSheen.BorderSizePixel = 0
+    glassSheen.Position = UDim2.new(0, 0, 0, 0)
+    glassSheen.Size = UDim2.new(1, 0, 0.65, 0)
+    glassSheen.ZIndex = 0
+    glassSheen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    glassSheen.Parent = objects.obj2
+
+    local sheenGrad = Instance.new("UIGradient")
+    sheenGrad.Name = "SheenGradient"
+    sheenGrad.Rotation = 75
+    sheenGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 245, 255)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(120, 210, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+    })
+    sheenGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.82),
+        NumberSequenceKeypoint.new(0.45, 0.94),
+        NumberSequenceKeypoint.new(1, 1.0)
+    })
+    sheenGrad.Parent = glassSheen
+end
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 45)
@@ -2808,7 +2838,7 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     button.BackgroundTransparency = 1
     button.BorderSizePixel = 0
     button.LayoutOrder = layoutOrder
-    button.Size = UDim2.new(1, 0, 0, 38)
+    button.Size = UDim2.new(1, 0, 0, 39)
     button.Position = UDim2.new(0.5, 0, 0, 0)
     button.Text = ""
     button.ZIndex = 99
@@ -6677,10 +6707,10 @@ do
         isSyncingLayout = true
         
         local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
-        local sidebarW = 138
+        local sidebarW = 144
         local margin = 8
-        local contentX = margin + sidebarW + 10 -- 156px from left
-        local contentW = -(contentX + margin)   -- -164px offset from width
+        local contentX = margin + sidebarW + 10 -- 162px from left
+        local contentW = -(contentX + margin)   -- -170px offset from width
         
         -- 1. NavSidebar on the left inside mainFrame
         if navSidebar then
@@ -12825,11 +12855,13 @@ ApiImpl[93] = function(self)
             end
         end
         if #columnTabs > 0 then
-            column.Layout.Padding = UDim.new(0, 5)
+            -- Generous 9px spacing between buttons for clean, uncrowded layout
+            column.Layout.Padding = UDim.new(0, 9)
             for index, tab in ipairs(columnTabs) do
                 tab.Button.LayoutOrder = index
                 tab.Button.AnchorPoint = Vector2.new(0.5, 0)
-                tab.Button.Size = UDim2.new(1, 0, 0, 32)
+                -- Enlarged to 39px height for bold, modern gaming feel
+                tab.Button.Size = UDim2.new(1, 0, 0, 39)
             end
         end
     end
