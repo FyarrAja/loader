@@ -12652,49 +12652,42 @@ function ChilliLibrary:Finalize(config)
         pcall(function() win:Select(tab) end)
     end
 end
-ChilliLibrary.finalize = ChilliLibrary.Finalize;
+ChilliLibrary.finalize = ChilliLibrary.Finalize
 
-
-
-
-
-
-
-
-;(function()
-local U0 = "https://raw.githubusercontent.com/tienkhanh1/spicy/refs/heads/main/ChilliLibraryEngine"
-local B0 = {
-    [1] = 0x43534833,
-    [2] = Protected, [3] = Runtime,
-    [4] = UserInputService, [5] = TweenService, [6] = RunService,
-    [7] = OWNER_ATTRIBUTE, [8] = parent, [9] = objects,
-    [10] = rootGui, [11] = mainFrame, [12] = topBar,
-    [13] = closeButton, [14] = trackRootConnection,
-    [15] = launcherGui, [16] = chilliButton,
-    [17] = applyOriginalStrokeSizing, [18] = makeDraggable,
-    [19] = connectSafeActivation, [20] = makeButtonFeedback,
-    [21] = closedWindowPosition, [22] = ContentScale,
-    [23] = setLeftCenterHidden, [24] = RESIZE_KEEPS_OPTION_WIDTH,
-    [25] = applyResizeSize, [26] = normalTextFont,
-    [27] = italicTextFont, [28] = applyShinyTextStyle,
-    [29] = applyPlainTextStyle, [30] = rebirthOuterGradient,
-    [31] = addRedGradient, [32] = addScaledStroke,
-    [33] = createRebirthStyleButton, [34] = ACCENT_GRADIENT,
-    [35] = ROW_ASPECT, [36] = ROW_WIDTH_SCALE,
-    [37] = CHEVRON_COLOR, [38] = UNIT_CHEVRON_COLOR,
-    [39] = ROW_ASPECT_WITH_NOTE, [40] = attachScaleFeedback,
-    [41] = buildFixedRow, [42] = closeActiveDropdown,
-    [43] = safeCallback, [44] = copyTable, [45] = ChilliLibrary,
-    [46] = ApiImpl,
-    [47] = { ChilliLibrary, WindowMethods, TabMethods, SectionMethods, OptionMethods, StateMethods, ExclusiveGroupMethods, SurfaceMethods },
-}
-local S0 = game:HttpGet(U0)
-local F0, E0 = loadstring(S0)
-assert(F0, E0)
-local O0, I0 = pcall(F0)
-assert(O0 and type(I0) == "function", tostring(I0))
-local O1, R1 = pcall(I0, B0, C0)
-assert(O1 and R1 == 0x51C71AA, tostring(R1))
-end)()
+do
+    local U0 = "https://raw.githubusercontent.com/tienkhanh1/spicy/refs/heads/main/ChilliLibraryEngine"
+    local B0 = {
+        [1] = 0x43534833,
+        [2] = Protected, [3] = Runtime,
+        [4] = UserInputService, [5] = TweenService, [6] = RunService,
+        [7] = OWNER_ATTRIBUTE, [8] = parent, [9] = objects,
+        [10] = rootGui, [11] = mainFrame, [12] = topBar,
+        [13] = closeButton, [14] = trackRootConnection,
+        [15] = launcherGui, [16] = chilliButton,
+        [17] = applyOriginalStrokeSizing, [18] = makeDraggable,
+        [19] = connectSafeActivation, [20] = makeButtonFeedback,
+        [21] = closedWindowPosition, [22] = ContentScale,
+        [23] = setLeftCenterHidden, [24] = RESIZE_KEEPS_OPTION_WIDTH,
+        [25] = applyResizeSize, [26] = normalTextFont,
+        [27] = italicTextFont, [28] = applyShinyTextStyle,
+        [29] = applyPlainTextStyle, [30] = rebirthOuterGradient,
+        [31] = addRedGradient, [32] = addScaledStroke,
+        [33] = createRebirthStyleButton, [34] = ACCENT_GRADIENT,
+        [35] = ROW_ASPECT, [36] = ROW_WIDTH_SCALE,
+        [37] = CHEVRON_COLOR, [38] = UNIT_CHEVRON_COLOR,
+        [39] = ROW_ASPECT_WITH_NOTE, [40] = attachScaleFeedback,
+        [41] = buildFixedRow, [42] = closeActiveDropdown,
+        [43] = safeCallback, [44] = copyTable, [45] = ChilliLibrary,
+        [46] = ApiImpl,
+        [47] = { ChilliLibrary, WindowMethods, TabMethods, SectionMethods, OptionMethods, StateMethods, ExclusiveGroupMethods, SurfaceMethods },
+    }
+    local S0 = game:HttpGet(U0)
+    local F0, E0 = loadstring(S0)
+    assert(F0, E0)
+    local O0, I0 = pcall(F0)
+    assert(O0 and type(I0) == "function", tostring(I0))
+    local O1, R1 = pcall(I0, B0, C0)
+    assert(O1 and R1 == 0x51C71AA, tostring(R1))
+end
 return ChilliLibrary
 end
