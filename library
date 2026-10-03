@@ -179,7 +179,7 @@ pcall(chilliSetProperty, objects.obj2, "Visible", true)
 pcall(chilliSetProperty, objects.obj2, "Active", false)
 pcall(chilliSetProperty, objects.obj2, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.38)
+pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.20)
 pcall(chilliSetProperty, objects.obj2, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj2, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", false)
@@ -197,7 +197,12 @@ objects.obj2.Parent = objects.obj1
 objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
-pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(15,75,180)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,18,65))}))
+pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(26, 120, 240)),
+    ColorSequenceKeypoint.new(0.135, Color3.fromRGB(16, 75, 175)),
+    ColorSequenceKeypoint.new(0.55, Color3.fromRGB(10, 48, 125)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 18, 55))
+}))
 pcall(chilliSetProperty, objects.obj2_gradient, "Enabled", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj2_gradient, "Rotation", 90)
@@ -207,11 +212,11 @@ objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
 pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(0,80,200))
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(40, 140, 255))
 pcall(chilliSetProperty, objects.obj3, "Enabled", true)
 pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj3, "Thickness", 0.00800000037997961)
-pcall(chilliSetProperty, objects.obj3, "Transparency", 0)
+pcall(chilliSetProperty, objects.obj3, "Thickness", 1.2)
+pcall(chilliSetProperty, objects.obj3, "Transparency", 0.45)
 objects.obj3.Parent = objects.obj2
 
 objects.obj2_studs = Instance.new("ImageLabel")
@@ -219,22 +224,22 @@ pcall(chilliSetProperty, objects.obj2_studs, "Name", "StudsBackground")
 pcall(chilliSetProperty, objects.obj2_studs, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Visible", true)
 pcall(chilliSetProperty, objects.obj2_studs, "Active", false)
-pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0.5,0))
+pcall(chilliSetProperty, objects.obj2_studs, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj2_studs, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0.5,0,0.13500000536441803,0))
-pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1,0,0.865,0))
+pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0.5,0,0.5,0))
+pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
 pcall(chilliSetProperty, objects.obj2_studs, "Image", "rbxassetid://6927295847")
 pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.72)
+pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.70)
 pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Tile)
 pcall(chilliSetProperty, objects.obj2_studs, "SliceCenter", Rect.new(0,0,0,0))
 pcall(chilliSetProperty, objects.obj2_studs, "SliceScale", 1)
-pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.new(0,100,0,100))
+pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.new(0,90,0,90))
 pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
 objects.obj2_studs.Parent = objects.obj2
 
@@ -244,8 +249,8 @@ pcall(chilliSetProperty, objects.obj4, "Archivable", true)
 pcall(chilliSetProperty, objects.obj4, "Visible", true)
 pcall(chilliSetProperty, objects.obj4, "Active", false)
 pcall(chilliSetProperty, objects.obj4, "AnchorPoint", Vector2.new(0.5,0))
-pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(15,80,190))
-pcall(chilliSetProperty, objects.obj4, "BackgroundTransparency", 0.15)
+pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(255,255,255))
+pcall(chilliSetProperty, objects.obj4, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj4, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj4, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj4, "ClipsDescendants", false)
@@ -255,7 +260,7 @@ pcall(chilliSetProperty, objects.obj4, "Selectable", false)
 pcall(chilliSetProperty, objects.obj4, "SelectionOrder", 0)
 pcall(chilliSetProperty, objects.obj4, "Size", UDim2.new(1,0,0.13500000536441803,0))
 pcall(chilliSetProperty, objects.obj4, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj4, "ZIndex", 1)
+pcall(chilliSetProperty, objects.obj4, "ZIndex", 2)
 pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
 objects.obj4.Parent = objects.obj2
@@ -264,12 +269,21 @@ objects.obj4_divider = Instance.new("Frame")
 pcall(chilliSetProperty, objects.obj4_divider, "Name", "HeaderDivider")
 pcall(chilliSetProperty, objects.obj4_divider, "Archivable", true)
 pcall(chilliSetProperty, objects.obj4_divider, "Visible", true)
-pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(120, 200, 255))
-pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0.65)
+pcall(chilliSetProperty, objects.obj4_divider, "BackgroundColor3", Color3.fromRGB(80, 195, 255))
+pcall(chilliSetProperty, objects.obj4_divider, "BackgroundTransparency", 0.3)
 pcall(chilliSetProperty, objects.obj4_divider, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj4_divider, "Position", UDim2.new(0, 0, 1, -1))
 pcall(chilliSetProperty, objects.obj4_divider, "Size", UDim2.new(1, 0, 0, 1))
 pcall(chilliSetProperty, objects.obj4_divider, "ZIndex", 8)
+local obj4_div_gradient = Instance.new("UIGradient")
+pcall(chilliSetProperty, obj4_div_gradient, "Color", ColorSequence.new(Color3.fromRGB(110, 215, 255)))
+pcall(chilliSetProperty, obj4_div_gradient, "Transparency", NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.85),
+    NumberSequenceKeypoint.new(0.3, 0.2),
+    NumberSequenceKeypoint.new(0.7, 0.2),
+    NumberSequenceKeypoint.new(1, 0.85)
+}))
+obj4_div_gradient.Parent = objects.obj4_divider
 objects.obj4_divider.Parent = objects.obj4
 
 objects.obj5 = Instance.new("UIStroke")
@@ -277,10 +291,10 @@ pcall(chilliSetProperty, objects.obj5, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj5, "Archivable", true)
 pcall(chilliSetProperty, objects.obj5, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
 pcall(chilliSetProperty, objects.obj5, "Color", Color3.fromRGB(0,20,100))
-pcall(chilliSetProperty, objects.obj5, "Enabled", true)
+pcall(chilliSetProperty, objects.obj5, "Enabled", false)
 pcall(chilliSetProperty, objects.obj5, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj5, "Thickness", 0.05999999865889549)
-pcall(chilliSetProperty, objects.obj5, "Transparency", 0)
+pcall(chilliSetProperty, objects.obj5, "Thickness", 0)
+pcall(chilliSetProperty, objects.obj5, "Transparency", 1)
 objects.obj5.Parent = objects.obj4
 
 objects.obj6 = Instance.new("Frame")
@@ -288,19 +302,19 @@ pcall(chilliSetProperty, objects.obj6, "Name", "Color")
 pcall(chilliSetProperty, objects.obj6, "Archivable", true)
 pcall(chilliSetProperty, objects.obj6, "Visible", true)
 pcall(chilliSetProperty, objects.obj6, "Active", false)
-pcall(chilliSetProperty, objects.obj6, "AnchorPoint", Vector2.new(0.5,0))
+pcall(chilliSetProperty, objects.obj6, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj6, "BackgroundColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj6, "BackgroundTransparency", 0)
+pcall(chilliSetProperty, objects.obj6, "BackgroundTransparency", 0.88)
 pcall(chilliSetProperty, objects.obj6, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj6, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj6, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj6, "Position", UDim2.new(0.5,0,0,0))
+pcall(chilliSetProperty, objects.obj6, "Position", UDim2.new(0.5,0,0.5,0))
 pcall(chilliSetProperty, objects.obj6, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj6, "Selectable", false)
 pcall(chilliSetProperty, objects.obj6, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj6, "Size", UDim2.new(1,0,0.8799999952316284,0))
+pcall(chilliSetProperty, objects.obj6, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj6, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj6, "ZIndex", 1)
+pcall(chilliSetProperty, objects.obj6, "ZIndex", 2)
 pcall(chilliSetProperty, objects.obj6, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj6, "LayoutOrder", 0)
 objects.obj6.Parent = objects.obj4
@@ -312,7 +326,7 @@ pcall(chilliSetProperty, objects.obj7, "Visible", true)
 pcall(chilliSetProperty, objects.obj7, "Active", false)
 pcall(chilliSetProperty, objects.obj7, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj7, "BackgroundColor3", Color3.fromRGB(0,0,0))
-pcall(chilliSetProperty, objects.obj7, "BackgroundTransparency", 0.8999999761581421)
+pcall(chilliSetProperty, objects.obj7, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj7, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj7, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj7, "ClipsDescendants", false)
@@ -320,9 +334,9 @@ pcall(chilliSetProperty, objects.obj7, "Position", UDim2.new(0.5,0,0.5,0))
 pcall(chilliSetProperty, objects.obj7, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj7, "Selectable", false)
 pcall(chilliSetProperty, objects.obj7, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj7, "Size", UDim2.new(0.9879999756813049,0,0.8700000047683716,0))
+pcall(chilliSetProperty, objects.obj7, "Size", UDim2.new(1,0,1,0))
 pcall(chilliSetProperty, objects.obj7, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
-pcall(chilliSetProperty, objects.obj7, "ZIndex", 1)
+pcall(chilliSetProperty, objects.obj7, "ZIndex", 2)
 pcall(chilliSetProperty, objects.obj7, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj7, "LayoutOrder", 0)
 objects.obj7.Parent = objects.obj6
@@ -330,7 +344,7 @@ objects.obj7.Parent = objects.obj6
 objects.obj8 = Instance.new("ImageLabel")
 pcall(chilliSetProperty, objects.obj8, "Name", "Pattern")
 pcall(chilliSetProperty, objects.obj8, "Archivable", true)
-pcall(chilliSetProperty, objects.obj8, "Visible", true)
+pcall(chilliSetProperty, objects.obj8, "Visible", false)
 pcall(chilliSetProperty, objects.obj8, "Active", false)
 pcall(chilliSetProperty, objects.obj8, "AnchorPoint", Vector2.new(0.5,0.5))
 pcall(chilliSetProperty, objects.obj8, "BackgroundColor3", Color3.fromRGB(255,255,255))
@@ -347,13 +361,13 @@ pcall(chilliSetProperty, objects.obj8, "SizeConstraint", Enum.SizeConstraint.Rel
 pcall(chilliSetProperty, objects.obj8, "ZIndex", 2)
 pcall(chilliSetProperty, objects.obj8, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj8, "LayoutOrder", 0)
-pcall(chilliSetProperty, objects.obj8, "Image", "rbxassetid://6927295847")
+pcall(chilliSetProperty, objects.obj8, "Image", "")
 pcall(chilliSetProperty, objects.obj8, "ImageColor3", Color3.fromRGB(255,255,255))
-pcall(chilliSetProperty, objects.obj8, "ImageTransparency", 0.45)
+pcall(chilliSetProperty, objects.obj8, "ImageTransparency", 1)
 pcall(chilliSetProperty, objects.obj8, "ScaleType", Enum.ScaleType.Tile)
 pcall(chilliSetProperty, objects.obj8, "SliceCenter", Rect.new(0,0,0,0))
 pcall(chilliSetProperty, objects.obj8, "SliceScale", 1)
-pcall(chilliSetProperty, objects.obj8, "TileSize", UDim2.new(0,80,0,80))
+pcall(chilliSetProperty, objects.obj8, "TileSize", UDim2.new(0,90,0,90))
 pcall(chilliSetProperty, objects.obj8, "ResampleMode", Enum.ResamplerMode.Default)
 objects.obj8.Parent = objects.obj7
 
@@ -407,11 +421,11 @@ objects.obj10.Parent = objects.obj9
 objects.obj11 = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj11, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj11, "Archivable", true)
-pcall(chilliSetProperty, objects.obj11, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(35,150,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(15,75,180))}))
+pcall(chilliSetProperty, objects.obj11, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(120,200,255))}))
 pcall(chilliSetProperty, objects.obj11, "Enabled", true)
 pcall(chilliSetProperty, objects.obj11, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj11, "Rotation", 90)
-pcall(chilliSetProperty, objects.obj11, "Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)}))
+pcall(chilliSetProperty, objects.obj11, "Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.70),NumberSequenceKeypoint.new(1,0.98)}))
 objects.obj11.Parent = objects.obj6
 
 objects.obj12 = Instance.new("ImageLabel")
@@ -2337,9 +2351,9 @@ resizeGrip.AutoButtonColor = false
 resizeGrip.AnchorPoint = Vector2.new(1, 1)
 resizeGrip.BackgroundTransparency = 1
 resizeGrip.BorderSizePixel = 0
-resizeGrip.Position = UDim2.fromScale(0.998, 0.995)
+resizeGrip.Position = UDim2.new(1, -2, 1, -2)
 resizeGrip.Selectable = false
-resizeGrip.Size = UDim2.fromScale(0.05, 0.05)
+resizeGrip.Size = UDim2.fromOffset(24, 24)
 resizeGrip.Text = ""
 resizeGrip.ZIndex = 120
 resizeGrip.Parent = mainFrame
@@ -2352,30 +2366,37 @@ resizeGripAspect.Parent = resizeGrip
 
 
 local resizeGripBars = {}
-for _, bar in ipairs({
-    { 0.5, 0.5, 0.9 },
-    { 0.68, 0.68, 0.54 },
-    { 0.84, 0.84, 0.22 },
-}) do
-    local piece = Instance.new("Frame")
-    piece.Name = "GripBar"
-    piece.Active = false
-    piece.AnchorPoint = Vector2.new(0.5, 0.5)
-    piece.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    piece.BackgroundTransparency = 0.35
-    piece.BorderSizePixel = 0
-    piece.Position = UDim2.fromScale(bar[1], bar[2])
-    piece.Rotation = -45
-    piece.Size = UDim2.fromScale(bar[3], 0.13)
-    piece.ZIndex = 121
-    piece.Parent = resizeGrip
-    table.insert(resizeGripBars, piece)
+local gripDotLayout = {
+    { 0.82, 0.28 },
+    { 0.55, 0.55 }, { 0.82, 0.55 },
+    { 0.28, 0.82 }, { 0.55, 0.82 }, { 0.82, 0.82 },
+}
+for _, dotPos in ipairs(gripDotLayout) do
+    local dot = Instance.new("Frame")
+    dot.Name = "GripDot"
+    dot.Active = false
+    dot.AnchorPoint = Vector2.new(0.5, 0.5)
+    dot.BackgroundColor3 = Color3.fromRGB(70, 185, 255)
+    dot.BackgroundTransparency = 0.45
+    dot.BorderSizePixel = 0
+    dot.Position = UDim2.fromScale(dotPos[1], dotPos[2])
+    dot.Size = UDim2.fromOffset(4, 4)
+    dot.ZIndex = 121
+    
+    local dotCorner = Instance.new("UICorner")
+    dotCorner.CornerRadius = UDim.new(1, 0)
+    dotCorner.Parent = dot
+    
+    dot.Parent = resizeGrip
+    table.insert(resizeGripBars, dot)
 end
 
 local function setResizeGripHighlight(highlighted)
-    for _, piece in ipairs(resizeGripBars) do
-        TweenService:Create(piece, TweenInfo.new(0.1), {
-            BackgroundTransparency = highlighted and 0.05 or 0.35,
+    for _, dot in ipairs(resizeGripBars) do
+        TweenService:Create(dot, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundColor3 = highlighted and Color3.fromRGB(195, 240, 255) or Color3.fromRGB(70, 185, 255),
+            BackgroundTransparency = highlighted and 0.05 or 0.45,
+            Size = highlighted and UDim2.fromOffset(5, 5) or UDim2.fromOffset(4, 4),
         }):Play()
     end
 end
