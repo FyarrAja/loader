@@ -429,20 +429,27 @@ do
     pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
     
     local function resolveCatAsset(id)
-        local target = (id and id ~= "") and id or "120217172563852"
+        local target = (id and id ~= "") and id or "125229870206242"
         local str = tostring(target)
         local num = str:match("%d+")
-        if not num then return str end
-        -- Direct mapping for known Figma decal/image assets
-        if num == "125229870206242" or num == "120217172563852" then
-            return "rbxassetid://120217172563852"
+        if not num then return "rbxthumb://type=Asset&id=125229870206242&w=420&h=420" end
+        -- 1. Try parsing exact texture from decal XML via executor HttpGet
+        local okHttp, xml = pcall(function()
+            return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
+        end)
+        if okHttp and type(xml) == "string" and #xml > 0 then
+            local trueId = xml:match("<url>[^%d]*(%d+)[^<]*</url>") or xml:match("id=(%d+)")
+            if trueId and trueId ~= num then
+                return "rbxassetid://" .. trueId
+            end
         end
-        local direct = "rbxassetid://" .. num
-        local ok, objs = pcall(function() return game:GetObjects(direct) end)
-        if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
+        -- 2. Try game:GetObjects
+        local okObj, objs = pcall(function() return game:GetObjects("rbxassetid://" .. num) end)
+        if okObj and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
             return objs[1].Texture
         end
-        return direct
+        -- 3. rbxthumb fallback
+        return "rbxthumb://type=Asset&id=" .. num .. "&w=420&h=420"
     end
     
     local resolvedImage = resolveCatAsset(_G.BH_CatMascotId)
@@ -644,17 +651,17 @@ pcall(chilliSetProperty, objects.obj25, "Name", "List")
 pcall(chilliSetProperty, objects.obj25, "Archivable", true)
 pcall(chilliSetProperty, objects.obj25, "Visible", true)
 pcall(chilliSetProperty, objects.obj25, "Active", true)
-pcall(chilliSetProperty, objects.obj25, "AnchorPoint", Vector2.new(0.5,0.5))
+pcall(chilliSetProperty, objects.obj25, "AnchorPoint", Vector2.new(0, 0))
 pcall(chilliSetProperty, objects.obj25, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj25, "BackgroundTransparency", 1)
 pcall(chilliSetProperty, objects.obj25, "BorderColor3", Color3.fromRGB(27,42,53))
 pcall(chilliSetProperty, objects.obj25, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj25, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj25, "Position", UDim2.new(0.5000000596046448,0,0.5701961517333984,0))
+pcall(chilliSetProperty, objects.obj25, "Position", UDim2.new(0, 138, 0, 88))
 pcall(chilliSetProperty, objects.obj25, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj25, "Selectable", true)
 pcall(chilliSetProperty, objects.obj25, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj25, "Size", UDim2.new(0.9900000095367432,0,0.8296076059341431,0))
+pcall(chilliSetProperty, objects.obj25, "Size", UDim2.new(1, -146, 1, -96))
 pcall(chilliSetProperty, objects.obj25, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
 pcall(chilliSetProperty, objects.obj25, "ZIndex", 5)
 pcall(chilliSetProperty, objects.obj25, "AutomaticSize", Enum.AutomaticSize.None)
@@ -2621,21 +2628,22 @@ do
         local barH = topBar.AbsoluteSize.Y
         if barH <= 0 then barH = 48 end
         
-        -- Cat Mascot: scales with header height
-        local catH = math.clamp(math.round(barH * 1.2), 48, 68)
-        local catW = math.round(catH * 1.52)
-        objects.obj12.Size = UDim2.fromOffset(catW, catH)
-        objects.obj12.Position = UDim2.new(0, 4, 0.44, -3)
+        -- Cat Mascot: proportional 38-42px on the left
+        local catDim = math.clamp(math.round(barH * 0.78), 32, 42)
+        objects.obj12.Size = UDim2.fromOffset(catDim, catDim)
+        objects.obj12.Position = UDim2.new(0, 10, 0.5, 0)
+        objects.obj12.AnchorPoint = Vector2.new(0, 0.5)
         
-        -- Close button: proportional square
-        local closeDim = math.clamp(math.round(barH * 0.8), 34, 44)
+        -- Close button: proportional square on the right
+        local closeDim = math.clamp(math.round(barH * 0.76), 32, 40)
         objects.obj14.Position = UDim2.new(1, -8, 0.5, 0)
         objects.obj14.Size = UDim2.fromOffset(closeDim, closeDim)
         
-        -- Title: centered, bold cartoon FredokaOne
-        objects.obj9.Position = UDim2.new(0.51, 0, 0.5, 0)
-        objects.obj9.Size = UDim2.new(1, -(catW + closeDim + 24), 1, 0)
-        objects.obj9.TextSize = math.clamp(math.round(barH * 0.62), 26, 32)
+        -- Title: centered, bold cartoon style
+        objects.obj9.Position = UDim2.new(0.5, 0, 0.5, 0)
+        objects.obj9.AnchorPoint = Vector2.new(0.5, 0.5)
+        objects.obj9.Size = UDim2.new(1, -(catDim * 2 + closeDim * 2 + 16), 1, 0)
+        objects.obj9.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
     end
 
     topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncHeaderElements)
@@ -2903,21 +2911,71 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     return button
 end
 
+-- Dedicated Navigation Sidebar INSIDE mainFrame (Left Column)
+local navSidebar = Instance.new("Frame")
+navSidebar.Name = "NavSidebar"
+navSidebar.Active = false
+navSidebar.AnchorPoint = Vector2.new(0, 0)
+navSidebar.BackgroundColor3 = Color3.fromRGB(10, 24, 46)
+navSidebar.BackgroundTransparency = 0.45
+navSidebar.BorderSizePixel = 0
+navSidebar.Position = UDim2.new(0, 8, 0, 52)
+navSidebar.Size = UDim2.new(0, 122, 1, -60)
+navSidebar.ZIndex = 8
+navSidebar.Parent = mainFrame
+
+local navSidebarStroke = Instance.new("UIStroke")
+navSidebarStroke.Name = "NavStroke"
+navSidebarStroke.Color = Color3.fromRGB(0, 140, 230)
+navSidebarStroke.Transparency = 0.65
+navSidebarStroke.Thickness = 1
+navSidebarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+navSidebarStroke.Parent = navSidebar
+
+local navScroll = Instance.new("ScrollingFrame")
+navScroll.Name = "NavScroll"
+navScroll.Active = true
+navScroll.BackgroundTransparency = 1
+navScroll.BorderSizePixel = 0
+navScroll.Position = UDim2.new(0, 0, 0, 4)
+navScroll.Size = UDim2.new(1, 0, 1, -8)
+navScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+navScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+navScroll.ScrollBarThickness = 3
+navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
+navScroll.ScrollBarImageTransparency = 0.4
+navScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+navScroll.ZIndex = 9
+navScroll.Parent = navSidebar
+
+local navScrollLayout = Instance.new("UIListLayout")
+navScrollLayout.Name = "NavScrollLayout"
+navScrollLayout.FillDirection = Enum.FillDirection.Vertical
+navScrollLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+navScrollLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+navScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
+navScrollLayout.Padding = UDim.new(0, 8)
+navScrollLayout.Parent = navScroll
+
+local navScrollPadding = Instance.new("UIPadding")
+navScrollPadding.PaddingLeft = UDim.new(0, 3)
+navScrollPadding.PaddingRight = UDim.new(0, 3)
+navScrollPadding.PaddingTop = UDim.new(0, 2)
+navScrollPadding.PaddingBottom = UDim.new(0, 4)
+navScrollPadding.Parent = navScroll
+
 local sideButtons = Instance.new("Frame")
 sideButtons.Name = "SideButtons"
 sideButtons.Active = false
-sideButtons.AnchorPoint = Vector2.new(1, 0.5)
+sideButtons.AnchorPoint = Vector2.new(0.5, 0)
 sideButtons.BackgroundTransparency = 1
 sideButtons.BorderSizePixel = 0
-
-
-
-sideButtons.Position = UDim2.new(-0.025, 0, 0.558, 0)
-sideButtons.Size = UDim2.new(0.2612044513, 0, 1, 0)
-sideButtons.ZIndex = 99
-sideButtons.Parent = mainFrame
-
-
+sideButtons.Position = UDim2.new(0.5, 0, 0, 0)
+sideButtons.Size = UDim2.new(1, 0, 0, 0)
+sideButtons.AutomaticSize = Enum.AutomaticSize.Y
+sideButtons.LayoutOrder = 1
+sideButtons.ZIndex = 10
+sideButtons.Parent = navScroll
 
 
 
@@ -6522,17 +6580,19 @@ sideButtonPadding.Parent = sideButtons
 
 local TabColumns = {}
 do
-    local function buildColumn(name, anchorX, edgeX)
+    local function buildColumn(name, layoutOrder)
         local frame = Instance.new("Frame")
         frame.Name = name
         frame.Active = false
-        frame.AnchorPoint = Vector2.new(anchorX, 0.5)
+        frame.AnchorPoint = Vector2.new(0.5, 0)
         frame.BackgroundTransparency = 1
         frame.BorderSizePixel = 0
-        frame.Position = UDim2.new(edgeX, 0, 0.558, 0)
-        frame.Size = UDim2.new(0.2612044513, 0, 1, 0)
-        frame.ZIndex = 99
-        frame.Parent = mainFrame
+        frame.Position = UDim2.new(0.5, 0, 0, 0)
+        frame.Size = UDim2.new(1, 0, 0, 0)
+        frame.AutomaticSize = Enum.AutomaticSize.Y
+        frame.LayoutOrder = layoutOrder or 2
+        frame.ZIndex = 10
+        frame.Parent = navScroll
 
         local layout = Instance.new("UIListLayout")
         layout.Name = "TabLayout"
@@ -6540,19 +6600,20 @@ do
         layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
         layout.VerticalAlignment = Enum.VerticalAlignment.Top
         layout.SortOrder = Enum.SortOrder.LayoutOrder
+        layout.Padding = UDim.new(0, 5)
         layout.Parent = frame
 
         local padding = Instance.new("UIPadding")
         padding.Name = "TabPadding"
-        padding.PaddingTop = UDim.new(0.077, 0)
+        padding.PaddingTop = UDim.new(0, 0)
         padding.Parent = frame
 
         return {
             Frame = frame,
             Layout = layout,
             Padding = padding,
-            AnchorX = anchorX,
-            EdgeX = edgeX,
+            AnchorX = 0.5,
+            EdgeX = 0,
         }
     end
 
@@ -6560,44 +6621,100 @@ do
         Frame = sideButtons,
         Layout = sideButtonLayout,
         Padding = sideButtonPadding,
-        AnchorX = 1,
-        EdgeX = -0.025,
-        CenterY = 0.558,
-        TopPadding = 0.067,
-        Width = 0.2612044513,
+        AnchorX = 0.5,
+        EdgeX = 0,
+        CenterY = 0.5,
+        TopPadding = 0,
+        Width = 1,
         GapRatio = TAB_LAYOUT.GapRatio,
     }
-    TabColumns.Right = buildColumn("SideButtonsRight", 0, 1.025)
-    TabColumns.Right.CenterY = 0.558
-    TabColumns.Right.TopPadding = 0.067
-    TabColumns.Right.Width = 0.2612044513
+    TabColumns.Right = buildColumn("SideButtonsRight", 2)
+    TabColumns.Right.CenterY = 0.5
+    TabColumns.Right.TopPadding = 0
+    TabColumns.Right.Width = 1
 end
 
+-- Layout Synchronizer: Coordinates NavSidebar, Top Search Bar, and Content ScrollingFrame
+local activeWindowSearch = nil
+local function syncAllWindowLayout()
+    local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
+    
+    -- 1. NavSidebar on the left inside mainFrame
+    if navSidebar then
+        navSidebar.Position = UDim2.new(0, 8, 0, topH + 6)
+        navSidebar.Size = UDim2.new(0, 122, 1, -(topH + 14))
+    end
+    
+    -- 2. Search Bar at the TOP (right below topBar, spanning content width)
+    local hasTopSearch = false
+    if activeWindowSearch and activeWindowSearch.Parent then
+        hasTopSearch = true
+        activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
+        activeWindowSearch.Position = UDim2.new(0, 138, 0, topH + 6)
+        activeWindowSearch.Size = UDim2.new(1, -146, 0, 28)
+        activeWindowSearch.ZIndex = 25
+        for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
+            if desc:IsA("GuiObject") then
+                desc.ZIndex = math.max(desc.ZIndex, 26)
+            end
+        end
+    end
+    
+    -- 3. Content list & Tab Pages below Search Bar
+    local contentTop = topH + (hasTopSearch and 38 or 6)
+    local contentPos = UDim2.new(0, 138, 0, contentTop)
+    local contentSize = UDim2.new(1, -146, 1, -(contentTop + 8))
+    
+    if objects.obj25 then
+        objects.obj25.Position = contentPos
+        objects.obj25.Size = contentSize
+    end
+    
+    if ChilliLibrary and ChilliLibrary.Window and ChilliLibrary.Window.Tabs then
+        for _, tab in ipairs(ChilliLibrary.Window.Tabs) do
+            if tab.Page and tab.Page ~= objects.obj25 then
+                tab.Page.Position = contentPos
+                tab.Page.Size = contentSize
+            end
+        end
+    end
+end
 
+-- Relocate any Search Bar created by ChilliLibraryEngine from bottom to TOP
+local function monitorSearchBar(child)
+    if not child:IsA("GuiObject") or child == topBar or child == navSidebar or child == objects.obj25 then
+        return
+    end
+    local isSearch = false
+    if child.Name:lower():find("search") or child.Name:lower():find("filter") then
+        isSearch = true
+    else
+        for _, desc in ipairs(child:GetDescendants()) do
+            if desc:IsA("TextBox") and (desc.PlaceholderText:lower():find("filter") or desc.PlaceholderText:lower():find("search")) then
+                isSearch = true
+                break
+            end
+        end
+    end
+    if isSearch then
+        activeWindowSearch = child
+        syncAllWindowLayout()
+        child:GetPropertyChangedSignal("Position"):Connect(function()
+            if child.Position.Y.Scale > 0.4 or child.Position.Y.Offset > 80 then
+                syncAllWindowLayout()
+            end
+        end)
+    end
+end
+
+mainFrame.ChildAdded:Connect(monitorSearchBar)
+for _, child in ipairs(mainFrame:GetChildren()) do
+    monitorSearchBar(child)
+end
 
 ContentScale.OnChanged(function(scaleX, scaleY)
-    for _, column in pairs(TabColumns) do
-        local gap = (column.EdgeX < 0) and (-0.025 / scaleX)
-            or (1 + 0.025 / scaleX)
-        column.Frame.Position = UDim2.new(
-            gap,
-            0,
-            column.CenterY or 0.558,
-            0
-        )
-        column.Frame.Size = UDim2.new(
-            (column.Width or 0.2612044513) / scaleX,
-            0,
-            1,
-            0
-        )
-        column.Padding.PaddingTop = UDim.new(
-            (column.TopPadding or 0.067) / scaleY,
-            0
-        )
-    end
+    syncAllWindowLayout()
 end)
-
 
 local function createSectionHeader(title, layoutOrder, clipViewport)
     local header = Instance.new("TextLabel")
@@ -12202,14 +12319,6 @@ end
 
 ApiImpl[93] = function(self)
     assertObject(self, "Window")
-    local count = #self.Tabs
-    if count == 0 then
-        return
-    end
-    
-    
-    local scale = ContentScale.Y
-    
     for _, column in pairs(TabColumns) do
         local columnTabs = {}
         for _, tab in ipairs(self.Tabs) do
@@ -12217,29 +12326,15 @@ ApiImpl[93] = function(self)
                 table.insert(columnTabs, tab)
             end
         end
-        local columnCount = #columnTabs
-        if columnCount > 0 then
-            local gapRatio = column.GapRatio or TAB_LAYOUT.GapRatio
-            local fittedHeight = TAB_LAYOUT.Span
-                * scale
-                / (
-                    columnCount
-                    + math.max(columnCount - 1, 0) * gapRatio
-                )
-            local tabHeight = math.min(
-                TAB_LAYOUT.NormalHeight,
-                fittedHeight
-            ) / scale
-            column.Layout.Padding = UDim.new(
-                tabHeight * gapRatio,
-                0
-            )
+        if #columnTabs > 0 then
+            column.Layout.Padding = UDim.new(0, 5)
             for index, tab in ipairs(columnTabs) do
                 tab.Button.LayoutOrder = index
-                tab.Button.Size = UDim2.new(1, 0, tabHeight, 0)
+                tab.Button.Size = UDim2.new(1, 0, 0, 32)
             end
         end
     end
+    syncAllWindowLayout()
 end
 
 local function setTabSelected(tab, selected)
@@ -12255,8 +12350,8 @@ local function setTabSelected(tab, selected)
             ),
             {
                 BackgroundColor3 = selected
-                        and Color3.fromRGB(255, 54, 54)
-                    or Color3.fromRGB(175, 0, 0),
+                        and Color3.fromRGB(0, 170, 255)
+                    or Color3.fromRGB(8, 45, 95),
             }
         ):Play()
     end
@@ -12301,12 +12396,22 @@ ApiImpl[95] = function(self, config)
         page = objects.obj25
     else
         page = Instance.new("ScrollingFrame")
+        page.AnchorPoint = Vector2.new(0, 0)
+        page.Position = objects.obj25.Position
+        page.Size = objects.obj25.Size
+        page.BackgroundTransparency = 1
+        page.BorderSizePixel = 0
+        page.ScrollBarThickness = 6
+        page.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
+        page.AutomaticCanvasSize = Enum.AutomaticSize.Y
         page.Parent = mainFrame
     end
     local _, updateCanvas = Protected[3](page, tabConfig.Name)
     if not page.Parent then
         page.Parent = mainFrame
     end
+    page.Position = objects.obj25.Position
+    page.Size = objects.obj25.Size
 
     
     local side = tostring(tabConfig.Side or "Left")
