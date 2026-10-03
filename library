@@ -2387,7 +2387,12 @@ local function playOpenAnimation(completed)
     if not resumeFromCurrentPosition then
         mainFrame.Position = openingWindowPosition()
     end
+    mainFrame.Visible = true
     mainFrame.Size = Runtime.menuSize
+
+    if Runtime.hideRestorePill then
+        Runtime.hideRestorePill()
+    end
 
     tweenWindowPosition(Runtime.windowRestPosition, TweenInfo.new(
         WINDOW_OPEN_DURATION,
@@ -2402,11 +2407,10 @@ local function playOpenAnimation(completed)
     end)
 end
 
-local function playCloseAnimation()
+local function playCloseAnimation(completed)
     if not Runtime.chilliIsOpen then
         return
     end
-    
     
     if Runtime.windowDragController then
         Runtime.windowDragController.Cancel()
@@ -2426,6 +2430,145 @@ local function playCloseAnimation()
     ), function()
         animationLocked = false
         Runtime.windowAnimating = false
+        mainFrame.Visible = false
+        if Runtime.showRestorePill then
+            Runtime.showRestorePill()
+        end
+        if completed then
+            completed()
+        end
+    end)
+end
+
+-- Floating Restore Pill Widget & Global Hotkey (RightControl / Insert)
+do
+    local restorePill = Instance.new("TextButton")
+    restorePill.Name = "BlueHavenRestorePill"
+    restorePill.Active = true
+    restorePill.AutoButtonColor = false
+    restorePill.AnchorPoint = Vector2.new(0, 0.5)
+    restorePill.Position = UDim2.new(0, 16, 0.45, 0)
+    restorePill.Size = UDim2.new(0, 152, 0, 36)
+    restorePill.BackgroundColor3 = Color3.fromRGB(8, 24, 48)
+    restorePill.BackgroundTransparency = 0.15
+    restorePill.BorderSizePixel = 0
+    restorePill.Visible = false
+    restorePill.ZIndex = 999
+    restorePill.Text = ""
+    restorePill.Parent = rootGui
+
+    local pillCorner = Instance.new("UICorner")
+    pillCorner.CornerRadius = UDim.new(0, 18)
+    pillCorner.Parent = restorePill
+
+    local pillStroke = Instance.new("UIStroke")
+    pillStroke.Name = "PillStroke"
+    pillStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    pillStroke.Color = Color3.fromRGB(0, 215, 255)
+    pillStroke.Thickness = 1.4
+    pillStroke.Transparency = 0.2
+    pillStroke.Parent = restorePill
+
+    local pillGrad = Instance.new("UIGradient")
+    pillGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(14, 46, 86)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 20, 40)),
+    })
+    pillGrad.Rotation = 90
+    pillGrad.Parent = restorePill
+
+    local pillIcon = Instance.new("TextLabel")
+    pillIcon.Name = "Icon"
+    pillIcon.Active = false
+    pillIcon.BackgroundTransparency = 1
+    pillIcon.BorderSizePixel = 0
+    pillIcon.Position = UDim2.new(0, 8, 0.5, 0)
+    pillIcon.AnchorPoint = Vector2.new(0, 0.5)
+    pillIcon.Size = UDim2.new(0, 20, 0, 20)
+    pillIcon.Font = Enum.Font.FredokaOne
+    pillIcon.Text = "◈"
+    pillIcon.TextColor3 = Color3.fromRGB(0, 230, 255)
+    pillIcon.TextSize = 16
+    pillIcon.ZIndex = 1000
+    pillIcon.Parent = restorePill
+
+    local pillTitle = Instance.new("TextLabel")
+    pillTitle.Name = "Title"
+    pillTitle.Active = false
+    pillTitle.BackgroundTransparency = 1
+    pillTitle.BorderSizePixel = 0
+    pillTitle.Position = UDim2.new(0, 30, 0, 3)
+    pillTitle.Size = UDim2.new(1, -34, 0, 16)
+    pillTitle.Font = Enum.Font.FredokaOne
+    pillTitle.Text = "Blue Haven Hub"
+    pillTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    pillTitle.TextSize = 12
+    pillTitle.TextXAlignment = Enum.TextXAlignment.Left
+    pillTitle.ZIndex = 1000
+    pillTitle.Parent = restorePill
+
+    local pillSub = Instance.new("TextLabel")
+    pillSub.Name = "Sub"
+    pillSub.Active = false
+    pillSub.BackgroundTransparency = 1
+    pillSub.BorderSizePixel = 0
+    pillSub.Position = UDim2.new(0, 30, 0, 18)
+    pillSub.Size = UDim2.new(1, -34, 0, 14)
+    pillSub.Font = Enum.Font.FredokaOne
+    pillSub.Text = "▶ Buka / Restore"
+    pillSub.TextColor3 = Color3.fromRGB(0, 215, 255)
+    pillSub.TextSize = 10
+    pillSub.TextXAlignment = Enum.TextXAlignment.Left
+    pillSub.ZIndex = 1000
+    pillSub.Parent = restorePill
+
+    makeDraggable(restorePill, restorePill)
+
+    restorePill.MouseEnter:Connect(function()
+        TweenService:Create(pillStroke, TweenInfo.new(0.12), {
+            Color = Color3.fromRGB(80, 245, 255),
+            Transparency = 0,
+        }):Play()
+        TweenService:Create(restorePill, TweenInfo.new(0.12), {
+            BackgroundTransparency = 0.05,
+        }):Play()
+    end)
+    restorePill.MouseLeave:Connect(function()
+        TweenService:Create(pillStroke, TweenInfo.new(0.12), {
+            Color = Color3.fromRGB(0, 215, 255),
+            Transparency = 0.2,
+        }):Play()
+        TweenService:Create(restorePill, TweenInfo.new(0.12), {
+            BackgroundTransparency = 0.15,
+        }):Play()
+    end)
+
+    restorePill.MouseButton1Click:Connect(function()
+        if not Runtime.chilliIsOpen then
+            playOpenAnimation()
+        end
+    end)
+
+    Runtime.showRestorePill = function()
+        restorePill.Visible = true
+        restorePill.Size = UDim2.new(0, 120, 0, 28)
+        TweenService:Create(restorePill, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 152, 0, 36),
+        }):Play()
+    end
+
+    Runtime.hideRestorePill = function()
+        restorePill.Visible = false
+    end
+
+    UserInputService.InputBegan:Connect(function(input, gpe)
+        if not gpe and (input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.Insert) then
+            if Runtime.chilliIsOpen then
+                playCloseAnimation()
+            else
+                playOpenAnimation()
+            end
+        end
     end)
 end
 
@@ -3235,16 +3378,55 @@ local function createDropdownRow(
     box.Active = true
     box.AutoButtonColor = false
     box.AnchorPoint = Vector2.new(0.5, 0.5)
-    box.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    box.BackgroundTransparency = 0.6
+    box.BackgroundColor3 = Color3.fromRGB(12, 34, 62)
+    box.BackgroundTransparency = 0.18
     box.BorderSizePixel = 0
     box.Position = UDim2.fromScale(CONTROL_LAYOUT.WideCenterX, 0.5)
     box.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62)
     box.Text = ""
     box.ZIndex = 6
     box.Parent = main
-    addScaledStroke(box, Enum.ApplyStrokeMode.Border, 0.1)
-    attachScaleFeedback(box, 1.025, 0.975)
+
+    local boxCorner = Instance.new("UICorner")
+    boxCorner.CornerRadius = UDim.new(0, 6)
+    boxCorner.Parent = box
+
+    local boxStroke = Instance.new("UIStroke")
+    boxStroke.Name = "BoxStroke"
+    boxStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    boxStroke.Color = Color3.fromRGB(0, 200, 255)
+    boxStroke.Thickness = 1.2
+    boxStroke.Transparency = 0.35
+    boxStroke.Parent = box
+
+    local boxGrad = Instance.new("UIGradient")
+    boxGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(18, 52, 94)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 24, 48)),
+    })
+    boxGrad.Rotation = 90
+    boxGrad.Parent = box
+
+    box.MouseEnter:Connect(function()
+        TweenService:Create(boxStroke, TweenInfo.new(0.12), {
+            Color = Color3.fromRGB(80, 235, 255),
+            Transparency = 0,
+        }):Play()
+        TweenService:Create(box, TweenInfo.new(0.12), {
+            BackgroundTransparency = 0.08,
+        }):Play()
+    end)
+    box.MouseLeave:Connect(function()
+        if not isOpen then
+            TweenService:Create(boxStroke, TweenInfo.new(0.12), {
+                Color = Color3.fromRGB(0, 200, 255),
+                Transparency = 0.35,
+            }):Play()
+            TweenService:Create(box, TweenInfo.new(0.12), {
+                BackgroundTransparency = 0.18,
+            }):Play()
+        end
+    end)
 
     local currentNote = tostring(noteText or "")
     local noteVScale = ROW_ASPECT_WITH_NOTE / ROW_ASPECT
@@ -3293,68 +3475,49 @@ local function createDropdownRow(
     local value = Instance.new("TextLabel")
     value.Name = "Value"
     value.Active = false
-    value.AnchorPoint = Vector2.new(0.5, 0.5)
+    value.AnchorPoint = Vector2.new(0, 0.5)
     value.BackgroundTransparency = 1
     value.BorderSizePixel = 0
-    
-    value.Position = UDim2.fromScale(0.405, 0.5)
-    value.Size = UDim2.fromScale(0.7, 0.58)
+    value.Position = UDim2.new(0, 12, 0.5, 0)
+    value.Size = UDim2.new(1, -38, 0.8, 0)
     value.Text = options[defaultIndex] or options[1]
-    value.TextWrapped = true
-    value.TextXAlignment = Enum.TextXAlignment.Center
+    value.TextWrapped = false
+    value.TextTruncate = Enum.TextTruncate.AtEnd
+    value.TextXAlignment = Enum.TextXAlignment.Left
     value.TextYAlignment = Enum.TextYAlignment.Center
+    value.Font = Enum.Font.FredokaOne
+    value.TextColor3 = Color3.fromRGB(240, 252, 255)
+    value.TextSize = 12
     value.ZIndex = 7
     value.Parent = box
-    applyPlainTextStyle(value)
-
-    
-    local divider = Instance.new("Frame")
-    divider.Name = "Divider"
-    divider.Active = false
-    divider.AnchorPoint = Vector2.new(0.5, 0.5)
-    divider.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    divider.BackgroundTransparency = 0.3
-    divider.BorderSizePixel = 0
-    divider.Position = UDim2.fromScale(0.8, 0.5)
-    divider.Size = UDim2.fromScale(0.014, 0.66)
-    divider.ZIndex = 7
-    divider.Parent = box
 
     local caret = Instance.new("Frame")
     caret.Name = "Caret"
     caret.Active = false
-    caret.AnchorPoint = Vector2.new(0.5, 0.5)
+    caret.AnchorPoint = Vector2.new(1, 0.5)
     caret.BackgroundTransparency = 1
     caret.BorderSizePixel = 0
-    caret.Position = UDim2.fromScale(0.888, 0.5)
-    caret.Size = UDim2.fromScale(0.16, 0.56)
+    caret.Position = UDim2.new(1, -8, 0.5, 0)
+    caret.Size = UDim2.new(0, 20, 0, 20)
     caret.ZIndex = 7
     caret.Parent = box
 
-    local caretAspect = Instance.new("UIAspectRatioConstraint")
-    caretAspect.AspectRatio = 1
-    caretAspect.AspectType = Enum.AspectType.FitWithinMaxSize
-    caretAspect.DominantAxis = Enum.DominantAxis.Height
-    caretAspect.Parent = caret
-
-    
-    
-    
-    
-    
-    for _, arm in ipairs({ { 0.335355, 45 }, { 0.664645, -45 } }) do
-        local piece = Instance.new("Frame")
-        piece.Name = "Arm"
-        piece.Active = false
-        piece.AnchorPoint = Vector2.new(0.5, 0.5)
-        piece.BackgroundColor3 = CHEVRON_COLOR
-        piece.BorderSizePixel = 0
-        piece.Position = UDim2.fromScale(arm[1], 0.535355)
-        piece.Rotation = arm[2]
-        piece.Size = UDim2.fromScale(0.6657, 0.2)
-        piece.ZIndex = 8
-        piece.Parent = caret
-    end
+    local caretLabel = Instance.new("TextLabel")
+    caretLabel.Name = "Arrow"
+    caretLabel.Active = false
+    caretLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+    caretLabel.BackgroundTransparency = 1
+    caretLabel.BorderSizePixel = 0
+    caretLabel.Position = UDim2.fromScale(0.5, 0.5)
+    caretLabel.Size = UDim2.fromScale(1, 1)
+    caretLabel.Font = Enum.Font.FredokaOne
+    caretLabel.Text = "▾"
+    caretLabel.TextColor3 = Color3.fromRGB(0, 215, 255)
+    caretLabel.TextSize = 14
+    caretLabel.TextXAlignment = Enum.TextXAlignment.Center
+    caretLabel.TextYAlignment = Enum.TextYAlignment.Center
+    caretLabel.ZIndex = 8
+    caretLabel.Parent = caret
 
     
     
@@ -3368,13 +3531,25 @@ local function createDropdownRow(
     menuClip.Name = "Menu"
     menuClip.Active = false
     menuClip.AnchorPoint = Vector2.new(0.5, 0)
-    menuClip.BackgroundTransparency = 1
+    menuClip.BackgroundColor3 = Color3.fromRGB(6, 20, 38)
+    menuClip.BackgroundTransparency = 0.12
     menuClip.BorderSizePixel = 0
     menuClip.ClipsDescendants = true
     menuClip.Position = UDim2.new(0.5, 0, 0, 0)
     menuClip.Size = UDim2.new(1, 0, 0, 0)
     menuClip.ZIndex = 6
     menuClip.Parent = row
+
+    local menuCorner = Instance.new("UICorner")
+    menuCorner.CornerRadius = UDim.new(0, 6)
+    menuCorner.Parent = menuClip
+
+    local menuStroke = Instance.new("UIStroke")
+    menuStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    menuStroke.Color = Color3.fromRGB(0, 195, 255)
+    menuStroke.Thickness = 1.2
+    menuStroke.Transparency = 0.3
+    menuStroke.Parent = menuClip
 
     
     local searchField, searchBox
@@ -3613,7 +3788,7 @@ local function createDropdownRow(
         item.Active = true
         item.AutoButtonColor = false
         item.AnchorPoint = Vector2.new(0, 0)
-        item.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        item.BackgroundColor3 = Color3.fromRGB(12, 34, 60)
         item.BackgroundTransparency = 0.45
         item.BorderSizePixel = 0
         item.LayoutOrder = index
@@ -3622,7 +3797,17 @@ local function createDropdownRow(
         item.Text = ""
         item.ZIndex = 7
         item.Parent = menuClip
-        addScaledStroke(item, Enum.ApplyStrokeMode.Border, 0.07)
+
+        local itemCorner = Instance.new("UICorner")
+        itemCorner.CornerRadius = UDim.new(0, 4)
+        itemCorner.Parent = item
+
+        local itemStroke = Instance.new("UIStroke")
+        itemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        itemStroke.Color = Color3.fromRGB(0, 195, 255)
+        itemStroke.Thickness = 1
+        itemStroke.Transparency = 0.65
+        itemStroke.Parent = item
 
         
         local accent
@@ -4032,8 +4217,15 @@ local function createDropdownRow(
             { Rotation = open and 180 or 0 }
         ):Play()
         TweenService:Create(box, TweenInfo.new(0.16), {
-            BackgroundTransparency = open and 0.42 or 0.6,
+            BackgroundTransparency = open and 0.08 or 0.18,
         }):Play()
+        local boxStroke = box:FindFirstChild("BoxStroke")
+        if boxStroke then
+            TweenService:Create(boxStroke, TweenInfo.new(0.16), {
+                Transparency = open and 0 or 0.35,
+                Color = open and Color3.fromRGB(80, 235, 255) or Color3.fromRGB(0, 200, 255),
+            }):Play()
+        end
 
         refreshGeometry(true)
     end
@@ -5864,56 +6056,66 @@ local function createLibraryToggleRow(config)
     label.Size = UDim2.new(1, -66, 0.72, 0)
     label.AnchorPoint = Vector2.new(0, 0.5)
 
-    -- Pill Capsule Outer Track (Clean dark outline, rounded rectangle)
+    -- Track: Dark groove with rounded corners & dark stroke, directly matching the Slider's track!
     local switch = Instance.new("Frame")
     switch.Name = "Switch"
     switch.Active = false
     switch.AnchorPoint = Vector2.new(1, 0.5)
-    switch.BackgroundColor3 = Color3.fromRGB(10, 24, 40)
+    switch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    switch.BackgroundTransparency = 0.6
     switch.BorderSizePixel = 0
+    switch.ClipsDescendants = true
     switch.Position = UDim2.new(1, -10, 0.5, 0)
-    switch.Size = UDim2.fromOffset(46, 24)
+    switch.Size = UDim2.fromOffset(46, 22)
     switch.ZIndex = 3
     switch.Parent = main
 
     local switchCorner = Instance.new("UICorner")
-    switchCorner.CornerRadius = UDim.new(0, 6)
+    switchCorner.CornerRadius = UDim.new(0, 5)
     switchCorner.Parent = switch
 
     local switchStroke = Instance.new("UIStroke")
     switchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     switchStroke.Color = Color3.fromRGB(8, 16, 26)
-    switchStroke.Thickness = 1.5
+    switchStroke.Thickness = 1.2
     switchStroke.LineJoinMode = Enum.LineJoinMode.Round
     switchStroke.Parent = switch
 
-    -- Squircle Knob (Rounded square with thick dark stroke & vibrant ocean cyan gradient, directly matching reference)
-    local knob = Instance.new("Frame")
-    knob.Name = "Hold"
-    knob.Active = false
-    knob.AnchorPoint = Vector2.new(0, 0.5)
-    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    knob.BorderSizePixel = 0
-    knob.Position = UDim2.new(0, 2, 0.5, 0)
-    knob.Size = UDim2.fromOffset(20, 20)
-    knob.ZIndex = 5
-    knob.Parent = switch
+    -- Fill Bar: Vibrant cyan-to-azure gradient, identical to the Slider's Bar!
+    local bar = Instance.new("Frame")
+    bar.Name = "Bar"
+    bar.Active = false
+    bar.AnchorPoint = Vector2.new(0, 0.5)
+    bar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    bar.BorderSizePixel = 0
+    bar.Position = UDim2.fromScale(0, 0.5)
+    bar.Size = UDim2.fromScale(0, 1)
+    bar.ZIndex = 4
+    bar.Parent = switch
+    addAccentGradient(bar)
 
-    local knobCorner = Instance.new("UICorner")
-    knobCorner.CornerRadius = UDim.new(0, 4)
-    knobCorner.Parent = knob
+    -- Thumb / Knob: Rounded rectangular metallic/white hold, directly matching the Slider's Hold!
+    local hold = Instance.new("Frame")
+    hold.Name = "Hold"
+    hold.Active = false
+    hold.AnchorPoint = Vector2.new(0, 0.5)
+    hold.BackgroundColor3 = Color3.fromRGB(245, 250, 255)
+    hold.BorderSizePixel = 0
+    hold.Position = UDim2.new(0, 2, 0.5, 0)
+    hold.Size = UDim2.fromOffset(16, 18)
+    hold.ZIndex = 5
+    hold.Parent = switch
 
-    local knobStroke = Instance.new("UIStroke")
-    knobStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    knobStroke.Color = Color3.fromRGB(8, 14, 22)
-    knobStroke.Thickness = 1.5
-    knobStroke.LineJoinMode = Enum.LineJoinMode.Round
-    knobStroke.Parent = knob
+    local holdCorner = Instance.new("UICorner")
+    holdCorner.CornerRadius = UDim.new(0, 4)
+    holdCorner.Parent = hold
 
-    local knobGrad = Instance.new("UIGradient")
-    knobGrad.Name = "KnobGradient"
-    knobGrad.Rotation = 90
-    knobGrad.Parent = knob
+    local holdStroke = Instance.new("UIStroke")
+    holdStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    holdStroke.Color = Color3.fromRGB(35, 38, 48)
+    holdStroke.Thickness = 1.2
+    holdStroke.LineJoinMode = Enum.LineJoinMode.Round
+    holdStroke.Parent = hold
 
     local button = Instance.new("TextButton")
     button.Name = "Button"
@@ -5932,32 +6134,21 @@ local function createLibraryToggleRow(config)
 
     local function setValue(value, fireCallback, animated)
         enabled = value == true
-        
-        -- Vibrant ocean cyan gradient when ON, sleek muted steel gradient when OFF
-        if enabled then
-            knobGrad.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0,    Color3.fromRGB(115, 248, 255)),
-                ColorSequenceKeypoint.new(0.45, Color3.fromRGB(0, 210, 255)),
-                ColorSequenceKeypoint.new(1,    Color3.fromRGB(0, 135, 240))
-            })
-            switch.BackgroundColor3 = Color3.fromRGB(6, 42, 75)
-        else
-            knobGrad.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(145, 175, 205)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(65, 88, 118))
-            })
-            switch.BackgroundColor3 = Color3.fromRGB(10, 22, 38)
-        end
 
-        local target = enabled and UDim2.new(1, -22, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+        local targetHoldPos = enabled and UDim2.new(1, -18, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+        local targetBarSize = enabled and UDim2.fromScale(1, 1) or UDim2.fromScale(0, 1)
+
         if animated == false then
-            knob.Position = target
+            hold.Position = targetHoldPos
+            bar.Size = targetBarSize
+            hold.BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 225, 235)
         else
-            TweenService:Create(
-                knob,
-                TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                { Position = target }
-            ):Play()
+            local tweenInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            TweenService:Create(hold, tweenInfo, { Position = targetHoldPos }):Play()
+            TweenService:Create(bar, tweenInfo, { Size = targetBarSize }):Play()
+            TweenService:Create(hold, tweenInfo, {
+                BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 225, 235)
+            }):Play()
         end
         if fireCallback ~= false then
             safeCallback(config.Callback, enabled)
@@ -6943,7 +7134,7 @@ do
     modalCard.Active = true
     modalCard.AnchorPoint = Vector2.new(0.5, 0.5)
     modalCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-    modalCard.Size = UDim2.new(0, 310, 0, 136)
+    modalCard.Size = UDim2.new(0, 330, 0, 154)
     modalCard.BackgroundColor3 = Color3.fromRGB(4, 14, 28)
     modalCard.BackgroundTransparency = 0
     modalCard.BorderSizePixel = 0
@@ -7000,7 +7191,7 @@ do
     modalTitle.Position = UDim2.new(0, 10, 0, 0)
     modalTitle.Size = UDim2.new(1, -40, 1, 0)
     modalTitle.Font = Enum.Font.FredokaOne
-    modalTitle.Text = "KONFIRMASI"
+    modalTitle.Text = "KONFIRMASI KELUAR"
     modalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     modalTitle.TextSize = 13
     modalTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -7024,35 +7215,50 @@ do
     modalCloseBtn.AutoButtonColor = false
     modalCloseBtn.Parent = modalHeader
 
-    -- Modal Question (Punchy, Clean, Non-AI)
+    -- Modal Question (Clear, Professional, High Quality)
     local modalPrompt = Instance.new("TextLabel")
     modalPrompt.Name = "Prompt"
     modalPrompt.BackgroundTransparency = 1
     modalPrompt.BorderSizePixel = 0
-    modalPrompt.Position = UDim2.new(0.5, 0, 0, 38)
+    modalPrompt.Position = UDim2.new(0.5, 0, 0, 35)
     modalPrompt.AnchorPoint = Vector2.new(0.5, 0)
-    modalPrompt.Size = UDim2.new(1, -20, 0, 20)
+    modalPrompt.Size = UDim2.new(1, -20, 0, 16)
     modalPrompt.Font = Enum.Font.FredokaOne
-    modalPrompt.Text = "Ingin Minimize atau Tutup Script?"
-    modalPrompt.TextColor3 = Color3.fromRGB(240, 250, 255)
+    modalPrompt.Text = "PILIH TINDAKAN WINDOW"
+    modalPrompt.TextColor3 = Color3.fromRGB(240, 252, 255)
     modalPrompt.TextSize = 13
     modalPrompt.TextXAlignment = Enum.TextXAlignment.Center
     modalPrompt.ZIndex = 206
     modalPrompt.Parent = modalCard
+
+    local modalSubPrompt = Instance.new("TextLabel")
+    modalSubPrompt.Name = "SubPrompt"
+    modalSubPrompt.BackgroundTransparency = 1
+    modalSubPrompt.BorderSizePixel = 0
+    modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 52)
+    modalSubPrompt.AnchorPoint = Vector2.new(0.5, 0)
+    modalSubPrompt.Size = UDim2.new(1, -20, 0, 16)
+    modalSubPrompt.Font = normalTextFont
+    modalSubPrompt.Text = "Sembunyikan GUI sementara atau matikan script permanen?"
+    modalSubPrompt.TextColor3 = Color3.fromRGB(150, 210, 255)
+    modalSubPrompt.TextSize = 11
+    modalSubPrompt.TextXAlignment = Enum.TextXAlignment.Center
+    modalSubPrompt.ZIndex = 206
+    modalSubPrompt.Parent = modalCard
 
     -- Action Buttons Container
     local modalBtnContainer = Instance.new("Frame")
     modalBtnContainer.Name = "BtnContainer"
     modalBtnContainer.BackgroundTransparency = 1
     modalBtnContainer.BorderSizePixel = 0
-    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 66)
+    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 74)
     modalBtnContainer.AnchorPoint = Vector2.new(0.5, 0)
-    modalBtnContainer.Size = UDim2.new(1, -24, 0, 34)
+    modalBtnContainer.Size = UDim2.new(1, -24, 0, 42)
     modalBtnContainer.ZIndex = 206
     modalBtnContainer.Parent = modalCard
 
-    -- Helper to create styled action button (Boxy, FredokaOne, Ocean/Crimson)
-    local function createModalActionBtn(parent, name, titleText, pos, size, isAlert)
+    -- Helper to create styled action button with title + subtitle
+    local function createModalActionBtn(parent, name, titleText, subText, pos, size, isAlert)
         local btn = Instance.new("TextButton")
         btn.Name = name
         btn.Active = true
@@ -7061,18 +7267,18 @@ do
         btn.Size = size
         btn.BackgroundColor3 = isAlert and Color3.fromRGB(215, 45, 65) or Color3.fromRGB(0, 140, 230)
         btn.BorderSizePixel = 0
-        btn.Font = Enum.Font.FredokaOne
-        btn.Text = titleText
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        btn.TextSize = 13
+        btn.Text = ""
         btn.ZIndex = 207
         btn.Parent = parent
+
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.Parent = btn
 
         local btnStroke = Instance.new("UIStroke")
         btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         btnStroke.Color = isAlert and Color3.fromRGB(255, 100, 120) or Color3.fromRGB(80, 220, 255)
         btnStroke.Thickness = 1.2
-        btnStroke.LineJoinMode = Enum.LineJoinMode.Miter
         btnStroke.Parent = btn
 
         local btnGrad = Instance.new("UIGradient")
@@ -7086,11 +7292,33 @@ do
         btnGrad.Rotation = 90
         btnGrad.Parent = btn
 
-        local textStroke = Instance.new("UIStroke")
-        textStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-        textStroke.Color = isAlert and Color3.fromRGB(60, 0, 10) or Color3.fromRGB(0, 30, 80)
-        textStroke.Thickness = 1
-        textStroke.Parent = btn
+        local btnTitle = Instance.new("TextLabel")
+        btnTitle.Name = "Title"
+        btnTitle.Active = false
+        btnTitle.BackgroundTransparency = 1
+        btnTitle.BorderSizePixel = 0
+        btnTitle.Position = UDim2.new(0, 0, 0, 4)
+        btnTitle.Size = UDim2.new(1, 0, 0, 18)
+        btnTitle.Font = Enum.Font.FredokaOne
+        btnTitle.Text = titleText
+        btnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btnTitle.TextSize = 13
+        btnTitle.ZIndex = 208
+        btnTitle.Parent = btn
+
+        local btnSub = Instance.new("TextLabel")
+        btnSub.Name = "Sub"
+        btnSub.Active = false
+        btnSub.BackgroundTransparency = 1
+        btnSub.BorderSizePixel = 0
+        btnSub.Position = UDim2.new(0, 0, 0, 22)
+        btnSub.Size = UDim2.new(1, 0, 0, 14)
+        btnSub.Font = normalTextFont
+        btnSub.Text = subText
+        btnSub.TextColor3 = isAlert and Color3.fromRGB(255, 210, 220) or Color3.fromRGB(190, 240, 255)
+        btnSub.TextSize = 9
+        btnSub.ZIndex = 208
+        btnSub.Parent = btn
 
         btn.MouseEnter:Connect(function()
             TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.15 }):Play()
@@ -7106,6 +7334,7 @@ do
         modalBtnContainer,
         "MinimizeBtn",
         "MINIMIZE",
+        "(Sembunyikan GUI)",
         UDim2.new(0, 0, 0, 0),
         UDim2.new(0.485, 0, 1, 0),
         false
@@ -7114,7 +7343,8 @@ do
     local closePermBtn = createModalActionBtn(
         modalBtnContainer,
         "ClosePermBtn",
-        "CLOSE",
+        "CLOSE PERMANENT",
+        "(Matikan Script)",
         UDim2.new(0.515, 0, 0, 0),
         UDim2.new(0.485, 0, 1, 0),
         true
@@ -7128,15 +7358,19 @@ do
     cancelBtn.BackgroundColor3 = Color3.fromRGB(10, 26, 50)
     cancelBtn.BackgroundTransparency = 0.3
     cancelBtn.BorderSizePixel = 0
-    cancelBtn.Position = UDim2.new(0.5, 0, 0, 106)
+    cancelBtn.Position = UDim2.new(0.5, 0, 0, 124)
     cancelBtn.AnchorPoint = Vector2.new(0.5, 0)
-    cancelBtn.Size = UDim2.new(1, -24, 0, 20)
+    cancelBtn.Size = UDim2.new(1, -24, 0, 22)
     cancelBtn.Font = Enum.Font.FredokaOne
-    cancelBtn.Text = "BATAL"
+    cancelBtn.Text = "BATAL / KEMBALI"
     cancelBtn.TextColor3 = Color3.fromRGB(150, 200, 240)
     cancelBtn.TextSize = 10
     cancelBtn.ZIndex = 207
     cancelBtn.Parent = modalCard
+
+    local cancelCorner = Instance.new("UICorner")
+    cancelCorner.CornerRadius = UDim.new(0, 4)
+    cancelCorner.Parent = cancelBtn
 
     local cancelBtnStroke = Instance.new("UIStroke")
     cancelBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -7206,26 +7440,28 @@ do
 
     minimizeBtn.MouseButton1Click:Connect(function()
         hideCloseConfirmationModal(function()
-            if currentConfirmWindow then
-                ApiImpl[103](currentConfirmWindow)
-            end
+            playCloseAnimation()
         end)
     end)
 
     closePermBtn.MouseButton1Click:Connect(function()
         hideCloseConfirmationModal(function()
-            if currentConfirmWindow then
-                ApiImpl[105](currentConfirmWindow)
-                pcall(function()
-                    if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
-                end)
-            else
-                pcall(function()
-                    disconnectRootConnections()
-                    if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
-                    if rootGui and rootGui.Parent then rootGui:Destroy() end
-                end)
-            end
+            pcall(function()
+                if Runtime.hideRestorePill then Runtime.hideRestorePill() end
+            end)
+            pcall(function()
+                if currentConfirmWindow then
+                    ApiImpl[105](currentConfirmWindow)
+                end
+            end)
+            pcall(disconnectRootConnections)
+            pcall(disconnectSourceConnections)
+            pcall(function()
+                if launcherGui and launcherGui.Parent then launcherGui:Destroy() end
+            end)
+            pcall(function()
+                if rootGui and rootGui.Parent then rootGui:Destroy() end
+            end)
         end)
     end)
 end
@@ -13243,42 +13479,43 @@ end
 
 
 ApiImpl[105] = function(self)
-    assertObject(self, "Window")
-    clearAllNotifications()
-    closeActiveDropdown()
+    pcall(clearAllNotifications)
+    pcall(closeActiveDropdown)
 
-    for index = #self.Tabs, 1, -1 do
-        local tab = self.Tabs[index]
-        if tab ~= self.DefaultTab and not tab._destroyed then
-            ApiImpl[92](tab)
-        end
-    end
-    if self.DefaultTab and not self.DefaultTab._destroyed then
-        for index = #self.DefaultTab.Sections, 1, -1 do
-            local section = self.DefaultTab.Sections[index]
-            if not section._destroyed then
-                ApiImpl[89](section)
+    pcall(function()
+        for index = #self.Tabs, 1, -1 do
+            local tab = self.Tabs[index]
+            if tab ~= self.DefaultTab and not tab._destroyed then
+                pcall(ApiImpl[92], tab)
             end
         end
-        self.DefaultTab._destroyed = true
-    end
-
-    for index = #self.ExclusiveGroups, 1, -1 do
-        local group = self.ExclusiveGroups[index]
-        if not group._destroyed then
-            ApiImpl[28](group)
+        if self.DefaultTab and not self.DefaultTab._destroyed then
+            for index = #self.DefaultTab.Sections, 1, -1 do
+                local section = self.DefaultTab.Sections[index]
+                if not section._destroyed then
+                    pcall(ApiImpl[89], section)
+                end
+            end
+            self.DefaultTab._destroyed = true
         end
-    end
 
-    local states = {}
-    for state in pairs(self._stateObjects) do
-        table.insert(states, state)
-    end
-    for _, state in ipairs(states) do
-        if not state._destroyed then
-            ApiImpl[13](state)
+        for index = #self.ExclusiveGroups, 1, -1 do
+            local group = self.ExclusiveGroups[index]
+            if not group._destroyed then
+                pcall(ApiImpl[28], group)
+            end
         end
-    end
+
+        local states = {}
+        for state in pairs(self._stateObjects) do
+            table.insert(states, state)
+        end
+        for _, state in ipairs(states) do
+            if not state._destroyed then
+                pcall(ApiImpl[13], state)
+            end
+        end
+    end)
 
     self._destroyed = true
     ChilliLibrary.Window = nil
@@ -13286,27 +13523,37 @@ ApiImpl[105] = function(self)
     hudAnimationSerial = hudAnimationSerial + 1
     cancelHudTween()
     if Runtime.windowDragController then
-        Runtime.windowDragController.Cancel()
+        pcall(Runtime.windowDragController.Cancel)
     end
     cancelWindowTween()
-    if leftCenterFrame and leftCenterFrame.Parent then
-        leftCenterFrame.Position = hudRestorePosition
-        leftCenterFrame.Visible = true
-    end
-    if sourceLeftCenterScreen and sourceLeftCenterScreen.Parent then
-        sourceLeftCenterScreen.Enabled = true
-    end
-    launcherGui:SetAttribute("HudRestorePosition", nil)
-    launcherGui:SetAttribute("LeftCenterHiddenByLibrary", nil)
-    launcherGui:SetAttribute("LeftCenterScreenDisabledByLibrary", nil)
-    disconnectRootConnections()
-    disconnectSourceConnections()
-    if rootGui.Parent then
-        rootGui:Destroy()
-    end
-    if launcherGui.Parent then
-        launcherGui:Destroy()
-    end
+    pcall(function()
+        if leftCenterFrame and leftCenterFrame.Parent then
+            leftCenterFrame.Position = hudRestorePosition
+            leftCenterFrame.Visible = true
+        end
+    end)
+    pcall(function()
+        if sourceLeftCenterScreen and sourceLeftCenterScreen.Parent then
+            sourceLeftCenterScreen.Enabled = true
+        end
+    end)
+    pcall(function()
+        launcherGui:SetAttribute("HudRestorePosition", nil)
+        launcherGui:SetAttribute("LeftCenterHiddenByLibrary", nil)
+        launcherGui:SetAttribute("LeftCenterScreenDisabledByLibrary", nil)
+    end)
+    pcall(disconnectRootConnections)
+    pcall(disconnectSourceConnections)
+    pcall(function()
+        if rootGui and rootGui.Parent then
+            rootGui:Destroy()
+        end
+    end)
+    pcall(function()
+        if launcherGui and launcherGui.Parent then
+            launcherGui:Destroy()
+        end
+    end)
 end
 
 ApiImpl[106] = function(self, config)
