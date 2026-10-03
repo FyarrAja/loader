@@ -768,32 +768,14 @@ do
         local sndHover = buttonSound(btn, "139800881181209")
         local sndClick = buttonSound(btn, "102702078778790")
 
-        local scale = btn:FindFirstChild("FW_Scale")
-        if not scale then
-            scale = Instance.new("UIScale")
-            scale.Name = "FW_Scale"
-            scale.Scale = 1
-            scale.Parent = btn
-        end
-
-        local function glide(target, t)
-            TweenService:Create(scale, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = target }):Play()
-        end
-
         btn.MouseEnter:Connect(function()
-            glide(1.04, 0.12)
             if sndHover then playSound(sndHover) end
         end)
 
-        btn.MouseLeave:Connect(function()
-            glide(1.0, 0.12)
-        end)
-
         btn.MouseButton1Down:Connect(function()
-            glide(0.93, 0.08)
             if sndClick then playSound(sndClick) end
 
-            -- Clean Material Ripple Effect
+            -- Clean Material Ripple Effect (Contained within button, zero layout movement)
             task.spawn(function()
                 local host = Instance.new("Frame")
                 host.BackgroundTransparency = 1
@@ -828,10 +810,6 @@ do
 
                 task.delay(0.4, function() host:Destroy() end)
             end)
-        end)
-
-        btn.MouseButton1Up:Connect(function()
-            glide(1.04, 0.10)
         end)
     end
 
@@ -2827,15 +2805,11 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     button.BackgroundTransparency = 1
     button.BorderSizePixel = 0
     button.LayoutOrder = layoutOrder
-    button.Size = UDim2.new(1, 0, 0, 32)
+    button.Size = UDim2.new(1, 0, 0, 38)
     button.Position = UDim2.new(0.5, 0, 0, 0)
     button.Text = ""
     button.ZIndex = 99
     button.Parent = parent
-
-    local buttonScale = Instance.new("UIScale")
-    buttonScale.Scale = 1
-    buttonScale.Parent = button
 
     local base = Instance.new("Frame")
     base.Name = "Main"
@@ -2856,7 +2830,7 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     colorFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     colorFrame.BorderSizePixel = 0
     colorFrame.Position = UDim2.fromScale(0.5, 0)
-    colorFrame.Size = UDim2.fromScale(1, 0.9)
+    colorFrame.Size = UDim2.fromScale(1, 0.92)
     colorFrame.ZIndex = 1
     colorFrame.Parent = base
     addRedGradient(colorFrame, "RedGradient", rebirthOuterGradient)
@@ -2895,39 +2869,24 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     label.BackgroundTransparency = 1
     label.BorderSizePixel = 0
     label.Position = UDim2.fromScale(0.5, 0.5)
-    label.Size = UDim2.fromScale(0.94, 0.72)
+    label.Size = UDim2.fromScale(0.95, 0.76)
     label.Text = text
     label.ZIndex = 6
     label.Parent = colorFrame
     applyShinyTextStyle(label, normalTextFont)
 
-    local activeTween
-    local hovered = false
-    local function tweenScale(value, duration)
-        if activeTween then
-            activeTween:Cancel()
-        end
-        activeTween = TweenService:Create(
-            buttonScale,
-            TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            { Scale = value }
-        )
-        activeTween:Play()
-    end
-
+    -- Visual hover & click states WITHOUT changing button size (Zero sibling movement in UIListLayout!)
     button.MouseEnter:Connect(function()
-        hovered = true
-        tweenScale(1.035, 0.1)
+        TweenService:Create(base, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundColor3 = Color3.fromRGB(0, 115, 245) }):Play()
     end)
     button.MouseLeave:Connect(function()
-        hovered = false
-        tweenScale(1, 0.1)
+        TweenService:Create(base, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundColor3 = Color3.fromRGB(0, 70, 180) }):Play()
     end)
     button.MouseButton1Down:Connect(function()
-        tweenScale(0.96, 0.055)
+        TweenService:Create(colorFrame, TweenInfo.new(0.06, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.25 }):Play()
     end)
     button.MouseButton1Up:Connect(function()
-        tweenScale(hovered and 1.035 or 1, 0.08)
+        TweenService:Create(colorFrame, TweenInfo.new(0.08, Enum.EasingStyle.Quad), { BackgroundTransparency = 0 }):Play()
     end)
 
     return button
@@ -2942,7 +2901,7 @@ navSidebar.BackgroundColor3 = Color3.fromRGB(8, 22, 44)
 navSidebar.BackgroundTransparency = 0.35
 navSidebar.BorderSizePixel = 0
 navSidebar.Position = UDim2.new(0, 8, 0, 56)
-navSidebar.Size = UDim2.new(0, 132, 1, -64)
+navSidebar.Size = UDim2.new(0, 138, 1, -64)
 navSidebar.ZIndex = 8
 navSidebar.Parent = mainFrame
 
@@ -2959,8 +2918,8 @@ navScroll.Name = "NavScroll"
 navScroll.Active = true
 navScroll.BackgroundTransparency = 1
 navScroll.BorderSizePixel = 0
-navScroll.Position = UDim2.new(0, 4, 0, 6)
-navScroll.Size = UDim2.new(1, -8, 1, -12)
+navScroll.Position = UDim2.new(0, 3, 0, 6)
+navScroll.Size = UDim2.new(1, -6, 1, -12)
 navScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 navScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 navScroll.ScrollBarThickness = 3
@@ -2976,14 +2935,14 @@ navScrollLayout.FillDirection = Enum.FillDirection.Vertical
 navScrollLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 navScrollLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 navScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
-navScrollLayout.Padding = UDim.new(0, 5)
+navScrollLayout.Padding = UDim.new(0, 8)
 navScrollLayout.Parent = navScroll
 
 local navScrollPadding = Instance.new("UIPadding")
-navScrollPadding.PaddingLeft = UDim.new(0, 2)
-navScrollPadding.PaddingRight = UDim.new(0, 2)
-navScrollPadding.PaddingTop = UDim.new(0, 2)
-navScrollPadding.PaddingBottom = UDim.new(0, 4)
+navScrollPadding.PaddingLeft = UDim.new(0, 4)
+navScrollPadding.PaddingRight = UDim.new(0, 4)
+navScrollPadding.PaddingTop = UDim.new(0, 6)
+navScrollPadding.PaddingBottom = UDim.new(0, 8)
 navScrollPadding.Parent = navScroll
 
 local sideButtons = Instance.new("Frame")
@@ -6622,7 +6581,7 @@ do
         layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
         layout.VerticalAlignment = Enum.VerticalAlignment.Top
         layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Padding = UDim.new(0, 5)
+        layout.Padding = UDim.new(0, 8)
         layout.Parent = frame
 
         local padding = Instance.new("UIPadding")
@@ -6639,7 +6598,7 @@ do
         }
     end
 
-    sideButtonLayout.Padding = UDim.new(0, 5)
+    sideButtonLayout.Padding = UDim.new(0, 8)
     sideButtonPadding.PaddingTop = UDim.new(0, 0)
 
     TabColumns.Left = {
@@ -6710,10 +6669,10 @@ do
         isSyncingLayout = true
         
         local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
-        local sidebarW = 132
+        local sidebarW = 138
         local margin = 8
-        local contentX = margin + sidebarW + margin -- 148
-        local contentW = -(contentX + margin)       -- -156
+        local contentX = margin + sidebarW + 10 -- 156px from left
+        local contentW = -(contentX + margin)   -- -164px offset from width
         
         -- 1. NavSidebar on the left inside mainFrame
         if navSidebar then
@@ -6724,10 +6683,11 @@ do
         
         -- 2. Search Bar at the TOP (right next to sidebar, below topBar)
         local hasTopSearch = false
+        local searchH = 30
         if activeWindowSearch and activeWindowSearch.Parent then
             hasTopSearch = true
             local searchPos = UDim2.new(0, contentX, 0, topH + margin)
-            local searchSize = UDim2.new(1, contentW, 0, 28)
+            local searchSize = UDim2.new(1, contentW, 0, searchH)
             
             activeWindowSearch.AnchorPoint = Vector2.new(0, 0)
             activeWindowSearch.Position = searchPos
@@ -6737,8 +6697,8 @@ do
             activeWindowSearch.ClipsDescendants = true
             
             if activeWindowSearch:IsA("Frame") then
-                activeWindowSearch.BackgroundColor3 = Color3.fromRGB(8, 25, 52)
-                activeWindowSearch.BackgroundTransparency = 0.25
+                activeWindowSearch.BackgroundColor3 = Color3.fromRGB(6, 18, 38)
+                activeWindowSearch.BackgroundTransparency = 0.15
                 activeWindowSearch.BorderSizePixel = 0
                 
                 local searchStroke = activeWindowSearch:FindFirstChild("SearchBorderStroke")
@@ -6746,36 +6706,52 @@ do
                     searchStroke = Instance.new("UIStroke")
                     searchStroke.Name = "SearchBorderStroke"
                     searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                    searchStroke.Color = Color3.fromRGB(0, 160, 240)
+                    searchStroke.Color = Color3.fromRGB(0, 180, 255)
                     searchStroke.Thickness = 1.2
-                    searchStroke.Transparency = 0.3
+                    searchStroke.Transparency = 0.2
+                    searchStroke.LineJoinMode = Enum.LineJoinMode.Miter
                     searchStroke.Parent = activeWindowSearch
                 end
             end
             
             for _, desc in ipairs(activeWindowSearch:GetDescendants()) do
                 if desc:IsA("GuiObject") then
-                    desc.ZIndex = math.max(desc.ZIndex, 36)
                     if desc:IsA("TextBox") then
-                        desc.TextColor3 = Color3.fromRGB(240, 248, 255)
-                        desc.PlaceholderColor3 = Color3.fromRGB(130, 170, 210)
-                        desc.Size = UDim2.new(1, -70, 1, 0)
-                        desc.Position = UDim2.new(0, 65, 0, 0)
+                        desc.Visible = true
+                        desc.ZIndex = 38
+                        desc.TextColor3 = Color3.fromRGB(240, 250, 255)
+                        desc.PlaceholderColor3 = Color3.fromRGB(120, 165, 210)
+                        desc.Size = UDim2.new(1, -75, 1, -4)
+                        desc.Position = UDim2.new(0, 70, 0, 2)
                         desc.AnchorPoint = Vector2.new(0, 0)
                         desc.ClipsDescendants = true
                     elseif desc:IsA("TextLabel") and desc.Text:lower():find("search") then
-                        desc.TextColor3 = Color3.fromRGB(120, 215, 255)
+                        desc.Visible = true
+                        desc.ZIndex = 38
+                        desc.TextColor3 = Color3.fromRGB(0, 210, 255)
                         desc.Font = Enum.Font.FredokaOne
                         desc.Size = UDim2.new(0, 60, 1, 0)
-                        desc.Position = UDim2.new(0, 4, 0, 0)
+                        desc.Position = UDim2.new(0, 8, 0, 0)
                         desc.AnchorPoint = Vector2.new(0, 0)
+                    elseif desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("ImageLabel") then
+                        -- Hide any stray overlapping labels (like "Quick Access") inside the search bar frame
+                        if not desc:IsDescendantOf(desc.Parent:FindFirstChildWhichIsA("TextBox") or desc) then
+                            desc.Visible = false
+                        end
                     end
                 end
             end
         end
         
-        -- 3. Content list & Tab Pages below Search Bar
-        local searchOffset = hasTopSearch and (28 + 6) or 0
+        -- Also hide ANY floating "Quick Access" text label in mainFrame that collides with content
+        for _, desc in ipairs(mainFrame:GetDescendants()) do
+            if desc:IsA("TextLabel") and desc.Text:lower():find("quick access") then
+                desc.Visible = false
+            end
+        end
+        
+        -- 3. Content list & Tab Pages below Search Bar with 12px clean gap
+        local searchOffset = hasTopSearch and (searchH + 12) or 0
         local contentTop = topH + margin + searchOffset
         local contentPos = UDim2.new(0, contentX, 0, contentTop)
         local contentSize = UDim2.new(1, contentW, 1, -(contentTop + margin))
@@ -6848,7 +6824,7 @@ end
 
 -- ============================================================
 -- BlueHaven Close & Minimize Confirmation Modal
--- Boxy Ocean Blue style matching BlueHaven Hub
+-- Exact Boxy Ocean Blue Style matching BlueHaven Hub
 -- ============================================================
 local showCloseConfirmationModal
 do
@@ -6861,7 +6837,7 @@ do
     closeConfirmationModal.AnchorPoint = Vector2.new(0, 0)
     closeConfirmationModal.Position = UDim2.new(0, 0, 0, 0)
     closeConfirmationModal.Size = UDim2.new(1, 0, 1, 0)
-    closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 5, 15)
+    closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 4, 12)
     closeConfirmationModal.BackgroundTransparency = 1
     closeConfirmationModal.BorderSizePixel = 0
     closeConfirmationModal.ZIndex = 200
@@ -6884,9 +6860,9 @@ do
     modalCard.Active = true
     modalCard.AnchorPoint = Vector2.new(0.5, 0.5)
     modalCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-    modalCard.Size = UDim2.new(0, 360, 0, 196)
-    modalCard.BackgroundColor3 = Color3.fromRGB(10, 24, 48)
-    modalCard.BackgroundTransparency = 0.05
+    modalCard.Size = UDim2.new(0, 310, 0, 136)
+    modalCard.BackgroundColor3 = Color3.fromRGB(4, 14, 28)
+    modalCard.BackgroundTransparency = 0
     modalCard.BorderSizePixel = 0
     modalCard.ZIndex = 205
     modalCard.Parent = closeConfirmationModal
@@ -6899,49 +6875,38 @@ do
     local modalCardStroke = Instance.new("UIStroke")
     modalCardStroke.Name = "CardStroke"
     modalCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    modalCardStroke.Color = Color3.fromRGB(0, 170, 255)
+    modalCardStroke.Color = Color3.fromRGB(0, 190, 255)
     modalCardStroke.Thickness = 1.5
-    modalCardStroke.Transparency = 0.15
+    modalCardStroke.Transparency = 0
     modalCardStroke.LineJoinMode = Enum.LineJoinMode.Miter
     modalCardStroke.Parent = modalCard
-
-    local modalCardGrad = Instance.new("UIGradient")
-    modalCardGrad.Name = "CardGradient"
-    modalCardGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 45, 90)),
-        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(10, 26, 52)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 18, 36)),
-    })
-    modalCardGrad.Rotation = 45
-    modalCardGrad.Parent = modalCard
 
     -- Modal Header
     local modalHeader = Instance.new("Frame")
     modalHeader.Name = "ModalHeader"
     modalHeader.Active = false
-    modalHeader.BackgroundColor3 = Color3.fromRGB(20, 80, 160)
-    modalHeader.BackgroundTransparency = 0.2
+    modalHeader.BackgroundColor3 = Color3.fromRGB(0, 110, 220)
     modalHeader.BorderSizePixel = 0
     modalHeader.Position = UDim2.new(0, 0, 0, 0)
-    modalHeader.Size = UDim2.new(1, 0, 0, 34)
+    modalHeader.Size = UDim2.new(1, 0, 0, 28)
     modalHeader.ZIndex = 206
     modalHeader.Parent = modalCard
 
     local modalHeaderGrad = Instance.new("UIGradient")
     modalHeaderGrad.Name = "HeaderGrad"
     modalHeaderGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 140, 230)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 75, 170)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 140, 240)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 85, 185)),
     })
     modalHeaderGrad.Rotation = 90
     modalHeaderGrad.Parent = modalHeader
 
     local modalHeaderLine = Instance.new("Frame")
     modalHeaderLine.Name = "DividerLine"
-    modalHeaderLine.BackgroundColor3 = Color3.fromRGB(80, 200, 255)
+    modalHeaderLine.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
     modalHeaderLine.BorderSizePixel = 0
     modalHeaderLine.Position = UDim2.new(0, 0, 1, 0)
-    modalHeaderLine.Size = UDim2.new(1, 0, 0, 1.5)
+    modalHeaderLine.Size = UDim2.new(1, 0, 0, 1)
     modalHeaderLine.ZIndex = 207
     modalHeaderLine.Parent = modalHeader
 
@@ -6949,112 +6914,88 @@ do
     modalTitle.Name = "ModalTitle"
     modalTitle.BackgroundTransparency = 1
     modalTitle.BorderSizePixel = 0
-    modalTitle.Position = UDim2.new(0, 12, 0, 0)
-    modalTitle.Size = UDim2.new(1, -50, 1, 0)
+    modalTitle.Position = UDim2.new(0, 10, 0, 0)
+    modalTitle.Size = UDim2.new(1, -40, 1, 0)
     modalTitle.Font = Enum.Font.FredokaOne
-    modalTitle.Text = "BLUE HAVEN HUB"
+    modalTitle.Text = "KONFIRMASI"
     modalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    modalTitle.TextSize = 16
+    modalTitle.TextSize = 13
     modalTitle.TextXAlignment = Enum.TextXAlignment.Left
     modalTitle.TextYAlignment = Enum.TextYAlignment.Center
     modalTitle.ZIndex = 208
     modalTitle.Parent = modalHeader
 
-    local modalTitleStroke = Instance.new("UIStroke")
-    modalTitleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-    modalTitleStroke.Color = Color3.fromRGB(0, 0, 0)
-    modalTitleStroke.Thickness = 1.5
-    modalTitleStroke.Parent = modalTitle
-
     local modalCloseBtn = Instance.new("TextButton")
     modalCloseBtn.Name = "ModalCloseBtn"
     modalCloseBtn.Active = true
     modalCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
-    modalCloseBtn.Position = UDim2.new(1, -6, 0.5, 0)
-    modalCloseBtn.Size = UDim2.new(0, 24, 0, 24)
-    modalCloseBtn.BackgroundColor3 = Color3.fromRGB(200, 45, 65)
+    modalCloseBtn.Position = UDim2.new(1, -4, 0.5, 0)
+    modalCloseBtn.Size = UDim2.new(0, 20, 0, 20)
+    modalCloseBtn.BackgroundColor3 = Color3.fromRGB(210, 45, 60)
     modalCloseBtn.BorderSizePixel = 0
     modalCloseBtn.Font = Enum.Font.FredokaOne
     modalCloseBtn.Text = "X"
     modalCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    modalCloseBtn.TextSize = 13
+    modalCloseBtn.TextSize = 11
     modalCloseBtn.ZIndex = 209
     modalCloseBtn.AutoButtonColor = false
     modalCloseBtn.Parent = modalHeader
 
-    local modalCloseBtnStroke = Instance.new("UIStroke")
-    modalCloseBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    modalCloseBtnStroke.Color = Color3.fromRGB(140, 20, 30)
-    modalCloseBtnStroke.Thickness = 1
-    modalCloseBtnStroke.Parent = modalCloseBtn
-
-    -- Modal Body Text
+    -- Modal Question (Punchy, Clean, Non-AI)
     local modalPrompt = Instance.new("TextLabel")
     modalPrompt.Name = "Prompt"
     modalPrompt.BackgroundTransparency = 1
     modalPrompt.BorderSizePixel = 0
-    modalPrompt.Position = UDim2.new(0.5, 0, 0, 44)
+    modalPrompt.Position = UDim2.new(0.5, 0, 0, 38)
     modalPrompt.AnchorPoint = Vector2.new(0.5, 0)
-    modalPrompt.Size = UDim2.new(1, -24, 0, 20)
-    modalPrompt.Font = Enum.Font.GothamBold
-    modalPrompt.Text = "Tutup atau Minimalkan GUI?"
-    modalPrompt.TextColor3 = Color3.fromRGB(255, 255, 255)
-    modalPrompt.TextSize = 14
+    modalPrompt.Size = UDim2.new(1, -20, 0, 20)
+    modalPrompt.Font = Enum.Font.FredokaOne
+    modalPrompt.Text = "Ingin Minimize atau Tutup Script?"
+    modalPrompt.TextColor3 = Color3.fromRGB(240, 250, 255)
+    modalPrompt.TextSize = 13
     modalPrompt.TextXAlignment = Enum.TextXAlignment.Center
     modalPrompt.ZIndex = 206
     modalPrompt.Parent = modalCard
-
-    local modalSubPrompt = Instance.new("TextLabel")
-    modalSubPrompt.Name = "SubPrompt"
-    modalSubPrompt.BackgroundTransparency = 1
-    modalSubPrompt.BorderSizePixel = 0
-    modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 66)
-    modalSubPrompt.AnchorPoint = Vector2.new(0.5, 0)
-    modalSubPrompt.Size = UDim2.new(1, -24, 0, 28)
-    modalSubPrompt.Font = Enum.Font.Gotham
-    modalSubPrompt.Text = "Pilih Minimize untuk menyembunyikan GUI, atau Close untuk menghentikan script secara permanen."
-    modalSubPrompt.TextColor3 = Color3.fromRGB(150, 195, 235)
-    modalSubPrompt.TextSize = 11
-    modalSubPrompt.TextWrapped = true
-    modalSubPrompt.TextXAlignment = Enum.TextXAlignment.Center
-    modalSubPrompt.ZIndex = 206
-    modalSubPrompt.Parent = modalCard
 
     -- Action Buttons Container
     local modalBtnContainer = Instance.new("Frame")
     modalBtnContainer.Name = "BtnContainer"
     modalBtnContainer.BackgroundTransparency = 1
     modalBtnContainer.BorderSizePixel = 0
-    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 102)
+    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 66)
     modalBtnContainer.AnchorPoint = Vector2.new(0.5, 0)
-    modalBtnContainer.Size = UDim2.new(1, -28, 0, 48)
+    modalBtnContainer.Size = UDim2.new(1, -24, 0, 34)
     modalBtnContainer.ZIndex = 206
     modalBtnContainer.Parent = modalCard
 
-    -- Helper to create styled modal button
-    local function createModalActionBtn(parent, name, titleText, subText, pos, size, isAlert)
+    -- Helper to create styled action button (Boxy, FredokaOne, Ocean/Crimson)
+    local function createModalActionBtn(parent, name, titleText, pos, size, isAlert)
         local btn = Instance.new("TextButton")
         btn.Name = name
         btn.Active = true
         btn.AutoButtonColor = false
         btn.Position = pos
         btn.Size = size
-        btn.BackgroundColor3 = isAlert and Color3.fromRGB(220, 50, 70) or Color3.fromRGB(0, 140, 230)
+        btn.BackgroundColor3 = isAlert and Color3.fromRGB(215, 45, 65) or Color3.fromRGB(0, 140, 230)
         btn.BorderSizePixel = 0
-        btn.Text = ""
+        btn.Font = Enum.Font.FredokaOne
+        btn.Text = titleText
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 13
         btn.ZIndex = 207
         btn.Parent = parent
 
         local btnStroke = Instance.new("UIStroke")
         btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        btnStroke.Color = isAlert and Color3.fromRGB(255, 90, 110) or Color3.fromRGB(60, 210, 255)
+        btnStroke.Color = isAlert and Color3.fromRGB(255, 100, 120) or Color3.fromRGB(80, 220, 255)
         btnStroke.Thickness = 1.2
+        btnStroke.LineJoinMode = Enum.LineJoinMode.Miter
         btnStroke.Parent = btn
 
         local btnGrad = Instance.new("UIGradient")
         btnGrad.Color = isAlert and ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 65, 85)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 25, 45)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 55, 75)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 20, 35)),
         }) or ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 195, 255)),
             ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 110, 220)),
@@ -7062,49 +7003,17 @@ do
         btnGrad.Rotation = 90
         btnGrad.Parent = btn
 
-        local titleLbl = Instance.new("TextLabel")
-        titleLbl.BackgroundTransparency = 1
-        titleLbl.Position = UDim2.new(0, 0, 0, 4)
-        titleLbl.Size = UDim2.new(1, 0, 0, 20)
-        titleLbl.Font = Enum.Font.FredokaOne
-        titleLbl.Text = titleText
-        titleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-        titleLbl.TextSize = 14
-        titleLbl.ZIndex = 208
-        titleLbl.Parent = btn
-
-        local titleStroke = Instance.new("UIStroke")
-        titleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-        titleStroke.Color = Color3.fromRGB(0, 0, 0)
-        titleStroke.Thickness = 1
-        titleStroke.Parent = titleLbl
-
-        local subLbl = Instance.new("TextLabel")
-        subLbl.BackgroundTransparency = 1
-        subLbl.Position = UDim2.new(0, 0, 0, 25)
-        subLbl.Size = UDim2.new(1, 0, 0, 16)
-        subLbl.Font = Enum.Font.GothamMedium
-        subLbl.Text = subText
-        subLbl.TextColor3 = isAlert and Color3.fromRGB(255, 215, 215) or Color3.fromRGB(205, 240, 255)
-        subLbl.TextSize = 10
-        subLbl.ZIndex = 208
-        subLbl.Parent = btn
-
-        local btnScale = Instance.new("UIScale")
-        btnScale.Scale = 1
-        btnScale.Parent = btn
+        local textStroke = Instance.new("UIStroke")
+        textStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        textStroke.Color = isAlert and Color3.fromRGB(60, 0, 10) or Color3.fromRGB(0, 30, 80)
+        textStroke.Thickness = 1
+        textStroke.Parent = btn
 
         btn.MouseEnter:Connect(function()
-            TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1.03 }):Play()
+            TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.15 }):Play()
         end)
         btn.MouseLeave:Connect(function()
-            TweenService:Create(btnScale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
-        end)
-        btn.MouseButton1Down:Connect(function()
-            TweenService:Create(btnScale, TweenInfo.new(0.06, Enum.EasingStyle.Quad), { Scale = 0.96 }):Play()
-        end)
-        btn.MouseButton1Up:Connect(function()
-            TweenService:Create(btnScale, TweenInfo.new(0.08, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+            TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0 }):Play()
         end)
 
         return btn
@@ -7114,7 +7023,6 @@ do
         modalBtnContainer,
         "MinimizeBtn",
         "MINIMIZE",
-        "Sembunyikan ke ikon",
         UDim2.new(0, 0, 0, 0),
         UDim2.new(0.485, 0, 1, 0),
         false
@@ -7123,8 +7031,7 @@ do
     local closePermBtn = createModalActionBtn(
         modalBtnContainer,
         "ClosePermBtn",
-        "CLOSE PERMANENT",
-        "Hentikan script total",
+        "CLOSE",
         UDim2.new(0.515, 0, 0, 0),
         UDim2.new(0.485, 0, 1, 0),
         true
@@ -7135,16 +7042,16 @@ do
     cancelBtn.Name = "CancelBtn"
     cancelBtn.Active = true
     cancelBtn.AutoButtonColor = false
-    cancelBtn.BackgroundColor3 = Color3.fromRGB(15, 32, 60)
-    cancelBtn.BackgroundTransparency = 0.5
+    cancelBtn.BackgroundColor3 = Color3.fromRGB(10, 26, 50)
+    cancelBtn.BackgroundTransparency = 0.3
     cancelBtn.BorderSizePixel = 0
-    cancelBtn.Position = UDim2.new(0.5, 0, 0, 158)
+    cancelBtn.Position = UDim2.new(0.5, 0, 0, 106)
     cancelBtn.AnchorPoint = Vector2.new(0.5, 0)
-    cancelBtn.Size = UDim2.new(1, -28, 0, 26)
-    cancelBtn.Font = Enum.Font.GothamMedium
-    cancelBtn.Text = "Batal (Kembali ke GUI)"
-    cancelBtn.TextColor3 = Color3.fromRGB(160, 200, 235)
-    cancelBtn.TextSize = 11
+    cancelBtn.Size = UDim2.new(1, -24, 0, 20)
+    cancelBtn.Font = Enum.Font.FredokaOne
+    cancelBtn.Text = "BATAL"
+    cancelBtn.TextColor3 = Color3.fromRGB(150, 200, 240)
+    cancelBtn.TextSize = 10
     cancelBtn.ZIndex = 207
     cancelBtn.Parent = modalCard
 
@@ -7153,13 +7060,14 @@ do
     cancelBtnStroke.Color = Color3.fromRGB(0, 140, 220)
     cancelBtnStroke.Transparency = 0.6
     cancelBtnStroke.Thickness = 1
+    cancelBtnStroke.LineJoinMode = Enum.LineJoinMode.Miter
     cancelBtnStroke.Parent = cancelBtn
 
     cancelBtn.MouseEnter:Connect(function()
-        TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.2 }):Play()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.1 }):Play()
     end)
     cancelBtn.MouseLeave:Connect(function()
-        TweenService:Create(cancelBtn, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.5 }):Play()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.3 }):Play()
     end)
 
     -- Modal Animation Controllers
@@ -7167,12 +7075,12 @@ do
         if not isModalOpen then return end
         isModalOpen = false
         
-        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
             BackgroundTransparency = 1
         }):Play()
         
-        local scaleTween = TweenService:Create(modalCardScale, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-            Scale = 0.88
+        local scaleTween = TweenService:Create(modalCardScale, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Scale = 0.9
         })
         scaleTween:Play()
         scaleTween.Completed:Connect(function()
@@ -7190,13 +7098,13 @@ do
         
         closeConfirmationModal.Visible = true
         closeConfirmationModal.BackgroundTransparency = 1
-        modalCardScale.Scale = 0.85
+        modalCardScale.Scale = 0.9
         
-        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            BackgroundTransparency = 0.45
+        TweenService:Create(closeConfirmationModal, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 0.5
         }):Play()
         
-        TweenService:Create(modalCardScale, TweenInfo.new(0.24, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        TweenService:Create(modalCardScale, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
             Scale = 1
         }):Play()
     end
