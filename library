@@ -1,4 +1,4 @@
-return function(C0)
+﻿return function(C0)
 local player = game:GetService("Players").LocalPlayer
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
@@ -178,7 +178,7 @@ pcall(chilliSetProperty, objects.obj2, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2, "Visible", true)
 pcall(chilliSetProperty, objects.obj2, "Active", false)
 pcall(chilliSetProperty, objects.obj2, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(0,0,0))
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(0,30,90))
 pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.4000000059604645)
 pcall(chilliSetProperty, objects.obj2, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj2, "BorderSizePixel", 0)
@@ -198,7 +198,7 @@ objects.obj3 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj3, "Archivable", true)
 pcall(chilliSetProperty, objects.obj3, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(0,0,0))
+pcall(chilliSetProperty, objects.obj3, "Color", Color3.fromRGB(0,80,200))
 pcall(chilliSetProperty, objects.obj3, "Enabled", true)
 pcall(chilliSetProperty, objects.obj3, "LineJoinMode", Enum.LineJoinMode.Round)
 pcall(chilliSetProperty, objects.obj3, "Thickness", 0.00800000037997961)
@@ -211,7 +211,7 @@ pcall(chilliSetProperty, objects.obj4, "Archivable", true)
 pcall(chilliSetProperty, objects.obj4, "Visible", true)
 pcall(chilliSetProperty, objects.obj4, "Active", false)
 pcall(chilliSetProperty, objects.obj4, "AnchorPoint", Vector2.new(0.5,0))
-pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(111,0,2))
+pcall(chilliSetProperty, objects.obj4, "BackgroundColor3", Color3.fromRGB(0,80,200))
 pcall(chilliSetProperty, objects.obj4, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj4, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj4, "BorderSizePixel", 0)
@@ -231,7 +231,7 @@ objects.obj5 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj5, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj5, "Archivable", true)
 pcall(chilliSetProperty, objects.obj5, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj5, "Color", Color3.fromRGB(58,0,0))
+pcall(chilliSetProperty, objects.obj5, "Color", Color3.fromRGB(0,20,100))
 pcall(chilliSetProperty, objects.obj5, "Enabled", true)
 pcall(chilliSetProperty, objects.obj5, "LineJoinMode", Enum.LineJoinMode.Round)
 pcall(chilliSetProperty, objects.obj5, "Thickness", 0.05999999865889549)
@@ -332,7 +332,7 @@ pcall(chilliSetProperty, objects.obj9, "SizeConstraint", Enum.SizeConstraint.Rel
 pcall(chilliSetProperty, objects.obj9, "ZIndex", 6)
 pcall(chilliSetProperty, objects.obj9, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj9, "LayoutOrder", 0)
-pcall(chilliSetProperty, objects.obj9, "Text", "Chilli Hub")
+pcall(chilliSetProperty, objects.obj9, "Text", "BlueHaven Hub")
 pcall(chilliSetProperty, objects.obj9, "TextColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj9, "TextTransparency", 0)
 pcall(chilliSetProperty, objects.obj9, "TextStrokeColor3", Color3.fromRGB(0,0,0))
@@ -362,7 +362,7 @@ objects.obj10.Parent = objects.obj9
 objects.obj11 = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj11, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj11, "Archivable", true)
-pcall(chilliSetProperty, objects.obj11, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(253,86,89)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,11,15))}))
+pcall(chilliSetProperty, objects.obj11, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(30,150,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,100,220))}))
 pcall(chilliSetProperty, objects.obj11, "Enabled", true)
 pcall(chilliSetProperty, objects.obj11, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj11, "Rotation", 90)
@@ -458,7 +458,7 @@ pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
 pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0.5,0.5))
-pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(126,0,0))
+pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(0,60,170))
 pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj16, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
@@ -598,7 +598,7 @@ objects.obj21.Parent = objects.obj20
 objects.obj22 = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj22, "Name", "UIGradient")
 pcall(chilliSetProperty, objects.obj22, "Archivable", true)
-pcall(chilliSetProperty, objects.obj22, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(255,130,130)),ColorSequenceKeypoint.new(1,Color3.fromRGB(239,28,28))}))
+pcall(chilliSetProperty, objects.obj22, "Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(120,200,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,120,240))}))
 pcall(chilliSetProperty, objects.obj22, "Enabled", true)
 pcall(chilliSetProperty, objects.obj22, "Offset", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj22, "Rotation", 90)
@@ -609,7 +609,7 @@ objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(76,0,0))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(0,20,100))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
 pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
 pcall(chilliSetProperty, objects.obj23, "Thickness", 0.09000000357627869)
@@ -648,7 +648,7 @@ pcall(chilliSetProperty, objects.obj25, "CanvasPosition", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj25, "CanvasSize", UDim2.new(0,0,0,642))
 pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarThickness", 6)
-pcall(chilliSetProperty, objects.obj25, "ScrollBarImageColor3", Color3.fromRGB(255,255,255))
+pcall(chilliSetProperty, objects.obj25, "ScrollBarImageColor3", Color3.fromRGB(120,210,255))
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
 pcall(chilliSetProperty, objects.obj25, "ScrollingDirection", Enum.ScrollingDirection.XY)
 pcall(chilliSetProperty, objects.obj25, "ScrollingEnabled", true)
@@ -940,15 +940,15 @@ chilliButton.Parent = launcherButtons
 
 local fallbackButtonGradient = Instance.new("UIGradient")
 fallbackButtonGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(111, 145, 161)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(52, 72, 84)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30,150,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,70,180)),
 })
 fallbackButtonGradient.Rotation = 90
 fallbackButtonGradient.Enabled = false
 fallbackButtonGradient.Parent = chilliButton
 
 local fallbackButtonStroke = Instance.new("UIStroke")
-fallbackButtonStroke.Color = Color3.fromRGB(34, 45, 52)
+fallbackButtonStroke.Color = Color3.fromRGB(0,20,100)
 fallbackButtonStroke.Thickness = 0.025
 fallbackButtonStroke.Enabled = false
 pcall(function()
@@ -1059,7 +1059,7 @@ chilliText.FontFace = sourceShopText and sourceShopText.FontFace or Font.new(
     "rbxasset://fonts/families/GothamSSm.json",
     Enum.FontWeight.ExtraBold
 )
-chilliText.Text = "Chilli Hub"
+chilliText.Text = "BlueHaven Hub"
 chilliText.TextColor3 = sourceShopText and sourceShopText.TextColor3 or Color3.fromRGB(255, 255, 255)
 chilliText.TextTransparency = sourceShopText and sourceShopText.TextTransparency or 0
 chilliText.TextScaled = sourceShopText == nil or sourceShopText.TextScaled
@@ -2504,8 +2504,8 @@ local shinyTextGradient = ColorSequence.new({
 })
 
 local blueStrokeGradient = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 36, 84)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 31, 54)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,30,120)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,20,90)),
 })
 
 local function clearDirectGradients(container)
@@ -2555,7 +2555,7 @@ local function applyShinyTextStyle(label, fontFace)
 
     local stroke = getTextStroke(label)
     clearDirectGradients(stroke)
-    configureScaledStroke(stroke, Color3.fromRGB(255, 255, 255), 0.06499999761581421)
+    configureScaledStroke(stroke, Color3.fromRGB(120,210,255), 0.06499999761581421)
 
     local strokeGradient = Instance.new("UIGradient")
     strokeGradient.Name = "StrokeStyleGradient"
@@ -2591,15 +2591,15 @@ local function applyPlainTextStyle(label)
 end
 
 local rebirthOuterGradient = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 193, 194)),
-    ColorSequenceKeypoint.new(0.0570934266, Color3.fromRGB(255, 132, 123)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(239, 28, 28)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(180,225,255)),
+    ColorSequenceKeypoint.new(0.0570934266, Color3.fromRGB(30,150,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,90,220)),
 })
 
 local rebirthInnerGradient = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 193, 194)),
-    ColorSequenceKeypoint.new(0.0155709349, Color3.fromRGB(255, 132, 123)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(239, 28, 28)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(180,225,255)),
+    ColorSequenceKeypoint.new(0.0155709349, Color3.fromRGB(30,150,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,90,220)),
 })
 
 local function addRedGradient(parent, name, color)
@@ -2614,7 +2614,7 @@ end
 local function addScaledStroke(parent, mode, thickness)
     local stroke = Instance.new("UIStroke")
     stroke.ApplyStrokeMode = mode
-    stroke.Color = Color3.fromRGB(0, 0, 0)
+    stroke.Color = Color3.fromRGB(0,20,100)
     stroke.LineJoinMode = Enum.LineJoinMode.Round
     stroke.Thickness = thickness
     stroke.Transparency = 0
@@ -2649,7 +2649,7 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     base.Name = "Main"
     base.Active = false
     base.AnchorPoint = Vector2.new(0.5, 0.5)
-    base.BackgroundColor3 = Color3.fromRGB(175, 0, 0)
+    base.BackgroundColor3 = Color3.fromRGB(0,70,180)
     base.BorderSizePixel = 0
     base.Position = UDim2.fromScale(0.5, 0.5)
     base.Size = UDim2.fromScale(1, 0.92)
@@ -2754,8 +2754,8 @@ sideButtons.Parent = mainFrame
 
 
 local ACCENT_GRADIENT = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(58, 255, 55)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 109, 0)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,210,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,120,220)),
 })
 
 
@@ -2775,7 +2775,7 @@ local CONTROL_LAYOUT = {
 
 
 
-local CHEVRON_COLOR = Color3.fromRGB(58, 255, 55)
+local CHEVRON_COLOR = Color3.fromRGB(0,210,255)
 
 
 local UNIT_CHEVRON_COLOR = Color3.fromRGB(255, 255, 255)
@@ -3265,7 +3265,7 @@ local function createDropdownRow(
         applyBase.Name = "Main"
         applyBase.Active = false
         applyBase.AnchorPoint = Vector2.new(0.5, 0.5)
-        applyBase.BackgroundColor3 = Color3.fromRGB(175, 0, 0)
+        applybase.BackgroundColor3 = Color3.fromRGB(0,70,180)
         applyBase.BorderSizePixel = 0
         applyBase.Position = UDim2.fromScale(0.5, 0.5)
         applyBase.Size = UDim2.fromScale(1, 1)
@@ -3903,7 +3903,7 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     base.Name = "Main"
     base.Active = false
     base.AnchorPoint = Vector2.new(0.5, 0.5)
-    base.BackgroundColor3 = Color3.fromRGB(175, 0, 0)
+    base.BackgroundColor3 = Color3.fromRGB(0,70,180)
     base.BorderSizePixel = 0
     base.Position = UDim2.fromScale(0.5, 0.5)
     base.Size = UDim2.fromScale(1, 0.92)
@@ -8599,7 +8599,7 @@ optionFactories[10] = (function()
         local stroke = Instance.new("UIStroke")
         stroke.Name = "TextOutline"
         stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-        stroke.Color = Color3.fromRGB(0, 0, 0)
+        stroke.Color = Color3.fromRGB(0,20,100)
         stroke.LineJoinMode = Enum.LineJoinMode.Round
         pcall(function()
             stroke.StrokeSizingMode = Enum.StrokeSizingMode.FixedSize
@@ -12382,8 +12382,8 @@ end
 ApiImpl[106] = function(self, config)
     assert(not self.Window, "ChilliLibrary chi quan ly 1 Window cho UI nay")
     local windowConfig = normalizeConfig(config or {
-        Name = "Chilli Hub",
-    }, "Chilli Hub")
+        Name = "BlueHaven Hub",
+    }, "BlueHaven Hub")
     local window = setmetatable({
         _kind = "Window",
         _destroyed = false,
