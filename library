@@ -7264,7 +7264,7 @@ do
     closeConfirmationModal.AnchorPoint = Vector2.new(0, 0)
     closeConfirmationModal.Position = UDim2.new(0, 0, 0, 0)
     closeConfirmationModal.Size = UDim2.new(1, 0, 1, 0)
-    closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 4, 12)
+    closeConfirmationModal.BackgroundColor3 = Color3.fromRGB(0, 8, 20)
     closeConfirmationModal.BackgroundTransparency = 1
     closeConfirmationModal.BorderSizePixel = 0
     closeConfirmationModal.ZIndex = 200
@@ -7287,123 +7287,151 @@ do
     modalCard.Active = true
     modalCard.AnchorPoint = Vector2.new(0.5, 0.5)
     modalCard.Position = UDim2.new(0.5, 0, 0.5, 0)
-    modalCard.Size = UDim2.new(0, 330, 0, 154)
-    modalCard.BackgroundColor3 = Color3.fromRGB(4, 14, 28)
-    modalCard.BackgroundTransparency = 0
+    modalCard.Size = UDim2.new(0, 340, 0, 162)
+    modalCard.BackgroundColor3 = Color3.fromRGB(16, 52, 102)
+    modalCard.BackgroundTransparency = 0.05
     modalCard.BorderSizePixel = 0
     modalCard.ZIndex = 205
     modalCard.Parent = closeConfirmationModal
+
+    -- Synchronize Card Background with Main GUI Canvas Ocean Gradient
+    local cardGrad = Instance.new("UIGradient")
+    cardGrad.Name = "CardOceanGradient"
+    cardGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0,    Color3.fromRGB(36, 105, 185)),
+        ColorSequenceKeypoint.new(0.40, Color3.fromRGB(22, 68, 130)),
+        ColorSequenceKeypoint.new(0.75, Color3.fromRGB(14, 46, 92)),
+        ColorSequenceKeypoint.new(1,    Color3.fromRGB(10, 32, 68))
+    })
+    cardGrad.Rotation = 90
+    cardGrad.Parent = modalCard
+
+    -- Synchronize Outer Border: Crisp White 1.8px (Identical to Main GUI CanvasOuterBorder)
+    local modalCardStroke = Instance.new("UIStroke")
+    modalCardStroke.Name = "CardOuterBorder"
+    modalCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    modalCardStroke.Color = Color3.fromRGB(255, 255, 255)
+    modalCardStroke.Thickness = 1.8
+    modalCardStroke.Transparency = 0
+    modalCardStroke.LineJoinMode = Enum.LineJoinMode.Round
+    modalCardStroke.Parent = modalCard
 
     local modalCardScale = Instance.new("UIScale")
     modalCardScale.Name = "CardScale"
     modalCardScale.Scale = 1
     modalCardScale.Parent = modalCard
 
-    local modalCardStroke = Instance.new("UIStroke")
-    modalCardStroke.Name = "CardStroke"
-    modalCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    modalCardStroke.Color = Color3.fromRGB(0, 190, 255)
-    modalCardStroke.Thickness = 1.5
-    modalCardStroke.Transparency = 0
-    modalCardStroke.LineJoinMode = Enum.LineJoinMode.Miter
-    modalCardStroke.Parent = modalCard
-
-    -- Modal Header
+    -- Modal Header: Synchronized with Main GUI Header (HeaderOceanGradient)
     local modalHeader = Instance.new("Frame")
     modalHeader.Name = "ModalHeader"
     modalHeader.Active = false
-    modalHeader.BackgroundColor3 = Color3.fromRGB(0, 110, 220)
+    modalHeader.BackgroundColor3 = Color3.fromRGB(0, 140, 240)
     modalHeader.BorderSizePixel = 0
     modalHeader.Position = UDim2.new(0, 0, 0, 0)
-    modalHeader.Size = UDim2.new(1, 0, 0, 28)
+    modalHeader.Size = UDim2.new(1, 0, 0, 32)
     modalHeader.ZIndex = 206
     modalHeader.Parent = modalCard
 
     local modalHeaderGrad = Instance.new("UIGradient")
-    modalHeaderGrad.Name = "HeaderGrad"
+    modalHeaderGrad.Name = "HeaderOceanGradient"
     modalHeaderGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 140, 240)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 85, 185)),
+        ColorSequenceKeypoint.new(0,    Color3.fromRGB(0, 185, 255)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(0, 145, 242)),
+        ColorSequenceKeypoint.new(0.70, Color3.fromRGB(0, 110, 218)),
+        ColorSequenceKeypoint.new(1,    Color3.fromRGB(2, 75, 178))
     })
     modalHeaderGrad.Rotation = 90
     modalHeaderGrad.Parent = modalHeader
 
+    local modalTopRim = Instance.new("Frame")
+    modalTopRim.Name = "TopRimLight"
+    modalTopRim.BackgroundColor3 = Color3.fromRGB(160, 220, 255)
+    modalTopRim.BackgroundTransparency = 0.35
+    modalTopRim.BorderSizePixel = 0
+    modalTopRim.Position = UDim2.new(0, 0, 0, 0)
+    modalTopRim.Size = UDim2.new(1, 0, 0, 1.5)
+    modalTopRim.ZIndex = 207
+    modalTopRim.Parent = modalHeader
+
     local modalHeaderLine = Instance.new("Frame")
-    modalHeaderLine.Name = "DividerLine"
-    modalHeaderLine.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+    modalHeaderLine.Name = "HeaderDivider"
+    modalHeaderLine.BackgroundColor3 = Color3.fromRGB(0, 225, 255)
+    modalHeaderLine.BackgroundTransparency = 0.1
     modalHeaderLine.BorderSizePixel = 0
     modalHeaderLine.Position = UDim2.new(0, 0, 1, 0)
-    modalHeaderLine.Size = UDim2.new(1, 0, 0, 1)
+    modalHeaderLine.Size = UDim2.new(1, 0, 0, 2)
     modalHeaderLine.ZIndex = 207
     modalHeaderLine.Parent = modalHeader
 
+    -- Header Title (Centered, Pure Cartoon White + Black Stroke, NO 'X' button)
     local modalTitle = Instance.new("TextLabel")
     modalTitle.Name = "ModalTitle"
     modalTitle.BackgroundTransparency = 1
     modalTitle.BorderSizePixel = 0
-    modalTitle.Position = UDim2.new(0, 10, 0, 0)
-    modalTitle.Size = UDim2.new(1, -40, 1, 0)
+    modalTitle.AnchorPoint = Vector2.new(0.5, 0.5)
+    modalTitle.Position = UDim2.new(0.5, 0, 0.5, 0)
+    modalTitle.Size = UDim2.new(1, -20, 1, 0)
     modalTitle.Font = Enum.Font.FredokaOne
     modalTitle.Text = "KONFIRMASI KELUAR"
     modalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    modalTitle.TextSize = 13
-    modalTitle.TextXAlignment = Enum.TextXAlignment.Left
+    modalTitle.TextSize = 15
+    modalTitle.TextXAlignment = Enum.TextXAlignment.Center
     modalTitle.TextYAlignment = Enum.TextYAlignment.Center
     modalTitle.ZIndex = 208
+    do
+        local tStroke = Instance.new("UIStroke")
+        tStroke.Name = "TitleCartoonStroke"
+        tStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        tStroke.Color = Color3.fromRGB(0, 0, 0)
+        tStroke.Thickness = 2.0
+        tStroke.Parent = modalTitle
+    end
     modalTitle.Parent = modalHeader
 
-    local modalCloseBtn = Instance.new("TextButton")
-    modalCloseBtn.Name = "ModalCloseBtn"
-    modalCloseBtn.Active = true
-    modalCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
-    modalCloseBtn.Position = UDim2.new(1, -4, 0.5, 0)
-    modalCloseBtn.Size = UDim2.new(0, 20, 0, 20)
-    modalCloseBtn.BackgroundColor3 = Color3.fromRGB(210, 45, 60)
-    modalCloseBtn.BorderSizePixel = 0
-    modalCloseBtn.Font = Enum.Font.FredokaOne
-    modalCloseBtn.Text = "X"
-    modalCloseBtn.TextColor3 = Color3.fromRGB(253, 112, 142)
-    modalCloseBtn.TextSize = 12
-    modalCloseBtn.ZIndex = 209
-    modalCloseBtn.AutoButtonColor = false
-    do
-        local mStroke = Instance.new("UIStroke")
-        mStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-        mStroke.Color = Color3.fromRGB(0, 0, 0)
-        mStroke.Thickness = 2
-        mStroke.Parent = modalCloseBtn
-    end
-    modalCloseBtn.Parent = modalHeader
-
-    -- Modal Question (Clear, Professional, High Quality)
+    -- Prompt (Clean White Cartoon Text + Black Outline)
     local modalPrompt = Instance.new("TextLabel")
     modalPrompt.Name = "Prompt"
     modalPrompt.BackgroundTransparency = 1
     modalPrompt.BorderSizePixel = 0
-    modalPrompt.Position = UDim2.new(0.5, 0, 0, 35)
+    modalPrompt.Position = UDim2.new(0.5, 0, 0, 38)
     modalPrompt.AnchorPoint = Vector2.new(0.5, 0)
-    modalPrompt.Size = UDim2.new(1, -20, 0, 16)
+    modalPrompt.Size = UDim2.new(1, -20, 0, 18)
     modalPrompt.Font = Enum.Font.FredokaOne
     modalPrompt.Text = "PILIH TINDAKAN WINDOW"
-    modalPrompt.TextColor3 = Color3.fromRGB(240, 252, 255)
+    modalPrompt.TextColor3 = Color3.fromRGB(255, 255, 255)
     modalPrompt.TextSize = 13
     modalPrompt.TextXAlignment = Enum.TextXAlignment.Center
     modalPrompt.ZIndex = 206
+    do
+        local pStroke = Instance.new("UIStroke")
+        pStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        pStroke.Color = Color3.fromRGB(0, 0, 0)
+        pStroke.Thickness = 1.8
+        pStroke.Parent = modalPrompt
+    end
     modalPrompt.Parent = modalCard
 
+    -- SubPrompt (Crisp White Cartoon Text, NOT plain blue! + Black Outline)
     local modalSubPrompt = Instance.new("TextLabel")
     modalSubPrompt.Name = "SubPrompt"
     modalSubPrompt.BackgroundTransparency = 1
     modalSubPrompt.BorderSizePixel = 0
-    modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 52)
+    modalSubPrompt.Position = UDim2.new(0.5, 0, 0, 58)
     modalSubPrompt.AnchorPoint = Vector2.new(0.5, 0)
     modalSubPrompt.Size = UDim2.new(1, -20, 0, 16)
     modalSubPrompt.Font = Enum.Font.FredokaOne
     modalSubPrompt.Text = "Sembunyikan GUI sementara atau matikan script permanen?"
-    modalSubPrompt.TextColor3 = Color3.fromRGB(150, 210, 255)
+    modalSubPrompt.TextColor3 = Color3.fromRGB(255, 255, 255)
     modalSubPrompt.TextSize = 11
     modalSubPrompt.TextXAlignment = Enum.TextXAlignment.Center
     modalSubPrompt.ZIndex = 206
+    do
+        local spStroke = Instance.new("UIStroke")
+        spStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        spStroke.Color = Color3.fromRGB(0, 0, 0)
+        spStroke.Thickness = 1.4
+        spStroke.Parent = modalSubPrompt
+    end
     modalSubPrompt.Parent = modalCard
 
     -- Action Buttons Container
@@ -7411,13 +7439,13 @@ do
     modalBtnContainer.Name = "BtnContainer"
     modalBtnContainer.BackgroundTransparency = 1
     modalBtnContainer.BorderSizePixel = 0
-    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 74)
+    modalBtnContainer.Position = UDim2.new(0.5, 0, 0, 80)
     modalBtnContainer.AnchorPoint = Vector2.new(0.5, 0)
     modalBtnContainer.Size = UDim2.new(1, -24, 0, 42)
     modalBtnContainer.ZIndex = 206
     modalBtnContainer.Parent = modalCard
 
-    -- Helper to create styled action button with title + subtitle
+    -- Helper to create styled action button with synchronized typography & borders
     local function createModalActionBtn(parent, name, titleText, subText, pos, size, isAlert)
         local btn = Instance.new("TextButton")
         btn.Name = name
@@ -7432,22 +7460,22 @@ do
         btn.Parent = parent
 
         local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.CornerRadius = UDim.new(0, 5)
         btnCorner.Parent = btn
 
         local btnStroke = Instance.new("UIStroke")
         btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        btnStroke.Color = isAlert and Color3.fromRGB(255, 100, 120) or Color3.fromRGB(80, 220, 255)
+        btnStroke.Color = Color3.fromRGB(255, 255, 255)
         btnStroke.Thickness = 1.2
         btnStroke.Parent = btn
 
         local btnGrad = Instance.new("UIGradient")
         btnGrad.Color = isAlert and ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 55, 75)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 20, 35)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 20, 35)),
         }) or ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 195, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 110, 220)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 185, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(2, 85, 195)),
         })
         btnGrad.Rotation = 90
         btnGrad.Parent = btn
@@ -7464,6 +7492,13 @@ do
         btnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
         btnTitle.TextSize = 13
         btnTitle.ZIndex = 208
+        do
+            local tStroke = Instance.new("UIStroke")
+            tStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+            tStroke.Color = Color3.fromRGB(0, 0, 0)
+            tStroke.Thickness = 1.8
+            tStroke.Parent = btnTitle
+        end
         btnTitle.Parent = btn
 
         local btnSub = Instance.new("TextLabel")
@@ -7475,9 +7510,16 @@ do
         btnSub.Size = UDim2.new(1, 0, 0, 14)
         btnSub.Font = Enum.Font.FredokaOne
         btnSub.Text = subText
-        btnSub.TextColor3 = isAlert and Color3.fromRGB(255, 210, 220) or Color3.fromRGB(190, 240, 255)
+        btnSub.TextColor3 = Color3.fromRGB(255, 255, 255)
         btnSub.TextSize = 9
         btnSub.ZIndex = 208
+        do
+            local sStroke = Instance.new("UIStroke")
+            sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+            sStroke.Color = Color3.fromRGB(0, 0, 0)
+            sStroke.Thickness = 1.2
+            sStroke.Parent = btnSub
+        end
         btnSub.Parent = btn
 
         btn.MouseEnter:Connect(function()
@@ -7510,41 +7552,55 @@ do
         true
     )
 
-    -- Cancel button at bottom of card
+    -- Cancel button at bottom of card: Synchronized with GUI buttons
     local cancelBtn = Instance.new("TextButton")
     cancelBtn.Name = "CancelBtn"
     cancelBtn.Active = true
     cancelBtn.AutoButtonColor = false
-    cancelBtn.BackgroundColor3 = Color3.fromRGB(10, 26, 50)
-    cancelBtn.BackgroundTransparency = 0.3
+    cancelBtn.BackgroundColor3 = Color3.fromRGB(24, 70, 135)
+    cancelBtn.BackgroundTransparency = 0.1
     cancelBtn.BorderSizePixel = 0
-    cancelBtn.Position = UDim2.new(0.5, 0, 0, 124)
+    cancelBtn.Position = UDim2.new(0.5, 0, 0, 128)
     cancelBtn.AnchorPoint = Vector2.new(0.5, 0)
-    cancelBtn.Size = UDim2.new(1, -24, 0, 22)
+    cancelBtn.Size = UDim2.new(1, -24, 0, 24)
     cancelBtn.Font = Enum.Font.FredokaOne
     cancelBtn.Text = "BATAL / KEMBALI"
-    cancelBtn.TextColor3 = Color3.fromRGB(150, 200, 240)
-    cancelBtn.TextSize = 10
+    cancelBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    cancelBtn.TextSize = 11
     cancelBtn.ZIndex = 207
     cancelBtn.Parent = modalCard
 
     local cancelCorner = Instance.new("UICorner")
-    cancelCorner.CornerRadius = UDim.new(0, 4)
+    cancelCorner.CornerRadius = UDim.new(0, 5)
     cancelCorner.Parent = cancelBtn
 
     local cancelBtnStroke = Instance.new("UIStroke")
     cancelBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    cancelBtnStroke.Color = Color3.fromRGB(0, 140, 220)
-    cancelBtnStroke.Transparency = 0.6
-    cancelBtnStroke.Thickness = 1
-    cancelBtnStroke.LineJoinMode = Enum.LineJoinMode.Miter
+    cancelBtnStroke.Color = Color3.fromRGB(255, 255, 255)
+    cancelBtnStroke.Thickness = 1.2
     cancelBtnStroke.Parent = cancelBtn
 
+    local cancelGrad = Instance.new("UIGradient")
+    cancelGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 115, 205)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 55, 110))
+    })
+    cancelGrad.Rotation = 90
+    cancelGrad.Parent = cancelBtn
+
+    do
+        local cTextStroke = Instance.new("UIStroke")
+        cTextStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        cTextStroke.Color = Color3.fromRGB(0, 0, 0)
+        cTextStroke.Thickness = 1.8
+        cTextStroke.Parent = cancelBtn
+    end
+
     cancelBtn.MouseEnter:Connect(function()
-        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.1 }):Play()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.25 }):Play()
     end)
     cancelBtn.MouseLeave:Connect(function()
-        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.3 }):Play()
+        TweenService:Create(cancelBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), { BackgroundTransparency = 0.1 }):Play()
     end)
 
     -- Modal Animation Controllers
@@ -7578,7 +7634,7 @@ do
         modalCardScale.Scale = 0.9
         
         TweenService:Create(closeConfirmationModal, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            BackgroundTransparency = 0.5
+            BackgroundTransparency = 0.45
         }):Play()
         
         TweenService:Create(modalCardScale, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
@@ -7587,10 +7643,6 @@ do
     end
 
     modalBackdropBtn.MouseButton1Click:Connect(function()
-        hideCloseConfirmationModal()
-    end)
-
-    modalCloseBtn.MouseButton1Click:Connect(function()
         hideCloseConfirmationModal()
     end)
 
