@@ -296,6 +296,19 @@ do
                         end
                     end)
                 end
+                if not downloaded and httpReq then
+                    pcall(function()
+                        local res = httpReq({
+                            Url = "https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.jpg?v=6",
+                            Method = "GET",
+                        })
+                        if res and res.Body and #res.Body > 1000 then
+                            fileName = "bh_triangle_canvas_v6.jpg"
+                            pcall(wf, fileName, res.Body)
+                            downloaded = true
+                        end
+                    end)
+                end
                 if not downloaded and game.HttpGet then
                     pcall(function()
                         local raw = game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.png?v=6", true)
