@@ -6685,8 +6685,8 @@ do
 
     TabColumns.Left = {
         Frame = sideButtons,
-        Layout = navScrollLayout,
-        Padding = navScrollPadding,
+        Layout = sideButtonLayout,
+        Padding = sideButtonPadding,
         AnchorX = 0.5,
         EdgeX = 0,
         CenterY = 0.5,
@@ -12947,21 +12947,25 @@ end
 
 ApiImpl[93] = function(self)
     assertObject(self, "Window")
+    local visited = {}
     for _, column in pairs(TabColumns) do
-        local columnTabs = {}
-        for _, tab in ipairs(self.Tabs) do
-            if tab.Column == column then
-                table.insert(columnTabs, tab)
+        if not visited[column] then
+            visited[column] = true
+            local columnTabs = {}
+            for _, tab in ipairs(self.Tabs) do
+                if tab.Column == column then
+                    table.insert(columnTabs, tab)
+                end
             end
-        end
-        if #columnTabs > 0 then
-            -- Generous 9px spacing between buttons for clean, uncrowded layout
-            column.Layout.Padding = UDim.new(0, 9)
-            for index, tab in ipairs(columnTabs) do
-                tab.Button.LayoutOrder = index
-                tab.Button.AnchorPoint = Vector2.new(0.5, 0)
-                -- Enlarged to 39px height for bold, modern gaming feel
-                tab.Button.Size = UDim2.new(1, 0, 0, 39)
+            if #columnTabs > 0 then
+                if column.Layout then
+                    column.Layout.Padding = UDim.new(0, 8)
+                end
+                for index, tab in ipairs(columnTabs) do
+                    tab.Button.LayoutOrder = index
+                    tab.Button.AnchorPoint = Vector2.new(0.5, 0)
+                    tab.Button.Size = UDim2.new(1, -4, 0, 38)
+                end
             end
         end
     end
