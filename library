@@ -3409,7 +3409,7 @@ local function createDropdownRow(
     box.Active = true
     box.AutoButtonColor = false
     box.AnchorPoint = Vector2.new(0.5, 0.5)
-    box.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
+    box.BackgroundColor3 = Color3.fromRGB(18, 64, 128)
     box.BackgroundTransparency = 0.35
     box.BorderSizePixel = 0
     box.Position = UDim2.fromScale(CONTROL_LAYOUT.WideCenterX, 0.5)
@@ -3425,15 +3425,16 @@ local function createDropdownRow(
     local boxStroke = Instance.new("UIStroke")
     boxStroke.Name = "BoxStroke"
     boxStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    boxStroke.Color = Color3.fromRGB(0, 200, 255)
+    boxStroke.Color = Color3.fromRGB(80, 215, 255)
     boxStroke.Thickness = 1.2
-    boxStroke.Transparency = 0.35
+    boxStroke.Transparency = 0.25
     boxStroke.Parent = box
 
     local boxGrad = Instance.new("UIGradient")
     boxGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 60, 112)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 32, 64)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 115, 210)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(18, 70, 140)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 45, 95)),
     })
     boxGrad.Rotation = 90
     boxGrad.Parent = box
@@ -3446,8 +3447,8 @@ local function createDropdownRow(
     boxPattern.Position = UDim2.fromScale(0.5, 0.5)
     boxPattern.Size = UDim2.fromScale(1, 1)
     boxPattern.Image = "rbxassetid://109248302930363"
-    boxPattern.ImageColor3 = Color3.fromRGB(140, 210, 255)
-    boxPattern.ImageTransparency = 0.85
+    boxPattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+    boxPattern.ImageTransparency = 0.80
     boxPattern.ScaleType = Enum.ScaleType.Stretch
     boxPattern.ZIndex = 7
     boxPattern.Parent = box
@@ -3456,7 +3457,7 @@ local function createDropdownRow(
 
     box.MouseEnter:Connect(function()
         TweenService:Create(boxStroke, TweenInfo.new(0.12), {
-            Color = Color3.fromRGB(80, 235, 255),
+            Color = Color3.fromRGB(120, 240, 255),
             Transparency = 0,
         }):Play()
         TweenService:Create(box, TweenInfo.new(0.12), {
@@ -3466,8 +3467,8 @@ local function createDropdownRow(
     box.MouseLeave:Connect(function()
         if not isOpen then
             TweenService:Create(boxStroke, TweenInfo.new(0.12), {
-                Color = Color3.fromRGB(0, 200, 255),
-                Transparency = 0.35,
+                Color = Color3.fromRGB(80, 215, 255),
+                Transparency = 0.25,
             }):Play()
             TweenService:Create(box, TweenInfo.new(0.12), {
                 BackgroundTransparency = 0.35,
@@ -3560,20 +3561,20 @@ local function createDropdownRow(
     caretLabel.Size = UDim2.fromScale(1, 1)
     caretLabel.Font = Enum.Font.FredokaOne
     caretLabel.Text = "v"
-    caretLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
+    caretLabel.TextColor3 = Color3.fromRGB(80, 225, 255)
     caretLabel.TextSize = 13
     caretLabel.TextXAlignment = Enum.TextXAlignment.Center
     caretLabel.TextYAlignment = Enum.TextYAlignment.Center
     caretLabel.ZIndex = 9
     caretLabel.Parent = caret
 
-    -- Dropdown dropdown menu container (Classic vertical card)
+    -- Dropdown dropdown menu container (Frosted Liquid Ocean Glass)
     local menuClip = Instance.new("Frame")
     menuClip.Name = "Menu"
     menuClip.Active = false
     menuClip.AnchorPoint = Vector2.new(0.5, 0)
-    menuClip.BackgroundColor3 = Color3.fromRGB(8, 24, 48)
-    menuClip.BackgroundTransparency = 0.15
+    menuClip.BackgroundColor3 = Color3.fromRGB(18, 58, 112)
+    menuClip.BackgroundTransparency = 0.45
     menuClip.BorderSizePixel = 0
     menuClip.ClipsDescendants = true
     menuClip.Position = UDim2.new(0.5, 0, 0, 0)
@@ -3586,12 +3587,26 @@ local function createDropdownRow(
     menuCorner.CornerRadius = UDim.new(0, 6)
     menuCorner.Parent = menuClip
 
+    local menuGrad = Instance.new("UIGradient")
+    menuGrad.Name = "GlassSheen"
+    menuGrad.Rotation = 90
+    menuGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 150, 245)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(26, 85, 160)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 48, 98)),
+    })
+    menuGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.25),
+        NumberSequenceKeypoint.new(1, 0.48),
+    })
+    menuGrad.Parent = menuClip
+
     local menuStroke = Instance.new("UIStroke")
     menuStroke.Name = "MenuStroke"
     menuStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    menuStroke.Color = Color3.fromRGB(0, 200, 255)
+    menuStroke.Color = Color3.fromRGB(105, 228, 255)
     menuStroke.Thickness = 1.2
-    menuStroke.Transparency = 0.3
+    menuStroke.Transparency = 0.32
     menuStroke.Parent = menuClip
 
     -- Search field (if >= 5 options)
@@ -3601,8 +3616,8 @@ local function createDropdownRow(
         searchField.Name = "Search"
         searchField.Active = false
         searchField.AnchorPoint = Vector2.new(0.5, 0)
-        searchField.BackgroundColor3 = Color3.fromRGB(14, 42, 80)
-        searchField.BackgroundTransparency = 0.45
+        searchField.BackgroundColor3 = Color3.fromRGB(12, 45, 90)
+        searchField.BackgroundTransparency = 0.5
         searchField.BorderSizePixel = 0
         searchField.Position = UDim2.new(0.5, 0, 0, 6)
         searchField.Size = UDim2.new(1, -16, 0, 26)
@@ -3614,9 +3629,9 @@ local function createDropdownRow(
         sCorner.Parent = searchField
 
         local sStroke = Instance.new("UIStroke")
-        sStroke.Color = Color3.fromRGB(0, 180, 240)
+        sStroke.Color = Color3.fromRGB(80, 210, 255)
         sStroke.Thickness = 1
-        sStroke.Transparency = 0.5
+        sStroke.Transparency = 0.45
         sStroke.Parent = searchField
 
         searchBox = Instance.new("TextBox")
@@ -3631,7 +3646,7 @@ local function createDropdownRow(
         searchBox.Size = UDim2.new(1, -12, 0.85, 0)
         searchBox.Text = ""
         searchBox.PlaceholderText = "Cari opsi (Search)..."
-        searchBox.PlaceholderColor3 = Color3.fromRGB(120, 190, 240)
+        searchBox.PlaceholderColor3 = Color3.fromRGB(140, 200, 250)
         searchBox.TextXAlignment = Enum.TextXAlignment.Left
         searchBox.TextYAlignment = Enum.TextYAlignment.Center
         searchBox.FontFace = normalTextFont
@@ -3861,8 +3876,8 @@ local function createDropdownRow(
         item.Active = true
         item.AutoButtonColor = false
         item.AnchorPoint = Vector2.new(0.5, 0)
-        item.BackgroundColor3 = Color3.fromRGB(14, 42, 80)
-        item.BackgroundTransparency = 0.60
+        item.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        item.BackgroundTransparency = 1
         item.BorderSizePixel = 0
         item.LayoutOrder = index
         item.Size = UDim2.new(1, -6, 0, 28)
@@ -3876,9 +3891,9 @@ local function createDropdownRow(
 
         local itemStroke = Instance.new("UIStroke")
         itemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        itemStroke.Color = Color3.fromRGB(0, 190, 245)
+        itemStroke.Color = Color3.fromRGB(80, 215, 255)
         itemStroke.Thickness = 1
-        itemStroke.Transparency = 0.70
+        itemStroke.Transparency = 1
         itemStroke.Parent = item
 
         local tickBox, tickCheck, singleCheck, accentBar
@@ -3888,8 +3903,8 @@ local function createDropdownRow(
             tickBox.Name = "TickBox"
             tickBox.Active = false
             tickBox.AnchorPoint = Vector2.new(0, 0.5)
-            tickBox.BackgroundColor3 = Color3.fromRGB(8, 26, 52)
-            tickBox.BackgroundTransparency = 0.3
+            tickBox.BackgroundColor3 = Color3.fromRGB(15, 48, 92)
+            tickBox.BackgroundTransparency = 0.4
             tickBox.BorderSizePixel = 0
             tickBox.Position = UDim2.new(0, 8, 0.5, 0)
             tickBox.Size = UDim2.new(0, 16, 0, 16)
@@ -3917,6 +3932,8 @@ local function createDropdownRow(
             tickCheck.Font = Enum.Font.FredokaOne
             tickCheck.Text = "\226\156\147"
             tickCheck.TextColor3 = Color3.fromRGB(255, 255, 255)
+            tickCheck.TextStrokeColor3 = Color3.fromRGB(0, 25, 70)
+            tickCheck.TextStrokeTransparency = 0.4
             tickCheck.TextSize = 12
             tickCheck.Visible = false
             tickCheck.ZIndex = 19
@@ -3926,13 +3943,17 @@ local function createDropdownRow(
             accentBar.Name = "Accent"
             accentBar.Active = false
             accentBar.AnchorPoint = Vector2.new(0, 0.5)
-            accentBar.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+            accentBar.BackgroundColor3 = Color3.fromRGB(0, 230, 255)
             accentBar.BorderSizePixel = 0
             accentBar.Position = UDim2.new(0, 0, 0.5, 0)
             accentBar.Size = UDim2.new(0, 0, 1, 0)
             accentBar.Visible = false
             accentBar.ZIndex = 18
             accentBar.Parent = item
+
+            local abCorner = Instance.new("UICorner")
+            abCorner.CornerRadius = UDim.new(0, 2)
+            abCorner.Parent = accentBar
 
             singleCheck = Instance.new("TextLabel")
             singleCheck.Name = "CheckMark"
@@ -3945,6 +3966,8 @@ local function createDropdownRow(
             singleCheck.Font = Enum.Font.FredokaOne
             singleCheck.Text = "\226\156\147"
             singleCheck.TextColor3 = Color3.fromRGB(0, 240, 255)
+            singleCheck.TextStrokeColor3 = Color3.fromRGB(0, 20, 60)
+            singleCheck.TextStrokeTransparency = 0.4
             singleCheck.TextSize = 14
             singleCheck.Visible = false
             singleCheck.ZIndex = 18
@@ -3964,8 +3987,10 @@ local function createDropdownRow(
         text.TextXAlignment = Enum.TextXAlignment.Left
         text.TextYAlignment = Enum.TextYAlignment.Center
         text.FontFace = normalTextFont
-        text.TextColor3 = Color3.fromRGB(200, 230, 255)
-        text.TextSize = 12
+        text.TextColor3 = Color3.fromRGB(225, 242, 255)
+        text.TextSize = 13
+        text.TextStrokeColor3 = Color3.fromRGB(0, 15, 40)
+        text.TextStrokeTransparency = 0.5
         text.ZIndex = 18
         text.Parent = item
 
@@ -3980,14 +4005,16 @@ local function createDropdownRow(
 
         local function paint(animated)
             local chosen = isChosen()
-            local bgAlpha = chosen and 0.20 or (hovered and 0.35 or 0.60)
-            local bgColor = chosen and Color3.fromRGB(0, 100, 210) or (hovered and Color3.fromRGB(20, 58, 108) or Color3.fromRGB(14, 42, 80))
-            local strokeAlpha = chosen and 0.2 or (hovered and 0.4 or 0.70)
-            local strokeColor = chosen and Color3.fromRGB(0, 230, 255) or Color3.fromRGB(0, 190, 245)
+            local bgAlpha = chosen and 0.30 or (hovered and 0.72 or 1)
+            local bgColor = chosen and Color3.fromRGB(0, 135, 245) or (hovered and Color3.fromRGB(0, 160, 255) or Color3.fromRGB(255, 255, 255))
+            local strokeAlpha = chosen and 0.20 or (hovered and 0.55 or 1)
+            local strokeColor = chosen and Color3.fromRGB(80, 235, 255) or Color3.fromRGB(0, 200, 255)
 
             if multiSelect then
-                tickBox.BackgroundColor3 = chosen and Color3.fromRGB(0, 160, 255) or Color3.fromRGB(8, 26, 52)
-                tickBox.BackgroundTransparency = chosen and 0 or 0.3
+                tickBox.BackgroundColor3 = chosen and Color3.fromRGB(0, 175, 255) or Color3.fromRGB(15, 48, 92)
+                tickBox.BackgroundTransparency = chosen and 0 or 0.4
+                tbStroke.Color = chosen and Color3.fromRGB(0, 245, 255) or Color3.fromRGB(0, 200, 255)
+                tbStroke.Transparency = chosen and 0 or 0.35
                 tickCheck.Visible = chosen
             else
                 accentBar.Visible = chosen
@@ -3995,7 +4022,7 @@ local function createDropdownRow(
                 singleCheck.Visible = chosen
             end
 
-            text.TextColor3 = chosen and Color3.fromRGB(255, 255, 255) or (hovered and Color3.fromRGB(230, 245, 255) or Color3.fromRGB(200, 230, 255))
+            text.TextColor3 = chosen and Color3.fromRGB(255, 255, 255) or (hovered and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(225, 242, 255))
 
             if animated then
                 local info = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -4228,8 +4255,8 @@ local function createDropdownRow(
         local bStroke = box:FindFirstChild("BoxStroke")
         if bStroke then
             TweenService:Create(bStroke, TweenInfo.new(0.16), {
-                Transparency = open and 0 or 0.35,
-                Color = open and Color3.fromRGB(80, 235, 255) or Color3.fromRGB(0, 200, 255),
+                Transparency = open and 0 or 0.25,
+                Color = open and Color3.fromRGB(120, 240, 255) or Color3.fromRGB(80, 215, 255),
             }):Play()
         end
 
