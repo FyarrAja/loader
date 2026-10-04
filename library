@@ -276,12 +276,29 @@ do
                       or (type(getsynasset) == "function" and getsynasset)
         local wf = (type(writefile) == "function" and writefile)
         local isf = (type(isfile) == "function" and isfile)
+        local httpReq = (type(request) == "function" and request)
+                     or (type(http_request) == "function" and http_request)
+                     or (syn and type(syn.request) == "function" and syn.request)
+                     or (http and type(http.request) == "function" and http.request)
 
         if getasset and wf then
             if not (isf and isf(fileName)) then
-                if game.HttpGet then
+                local downloaded = false
+                if httpReq then
                     pcall(function()
-                        local raw = game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.png")
+                        local res = httpReq({
+                            Url = "https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.png?v=6",
+                            Method = "GET",
+                        })
+                        if res and res.Body and #res.Body > 1000 then
+                            pcall(wf, fileName, res.Body)
+                            downloaded = true
+                        end
+                    end)
+                end
+                if not downloaded and game.HttpGet then
+                    pcall(function()
+                        local raw = game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.png?v=6", true)
                         if raw and #raw > 1000 then
                             pcall(wf, fileName, raw)
                         end
@@ -294,11 +311,12 @@ do
             end
         end
 
-        if _G.BH_CanvasAssetId and _G.BH_CanvasAssetId ~= "" then
+        if _G.BH_CanvasAssetId and _G.BH_CanvasAssetId ~= "" and not tostring(_G.BH_CanvasAssetId):find("140268358133592") then
             return _G.BH_CanvasAssetId
         end
-        return "rbxassetid://140268358133592"
+        return ""
     end
+    _G.BH_ResolveCanvasAsset = resolveCanvasAsset
 
     objects.obj2_studs = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj2_studs, "Name", "CanvasBackgroundTexture")
@@ -7283,7 +7301,7 @@ do
     cardTexture.Position = UDim2.new(0, 0, 0, 0)
     cardTexture.Size = UDim2.new(1, 0, 1, 0)
     cardTexture.ZIndex = 205
-    cardTexture.Image = "rbxassetid://140268358133592"
+    cardTexture.Image = (_G.BH_ResolveCanvasAsset and _G.BH_ResolveCanvasAsset()) or ""
     cardTexture.ImageColor3 = Color3.fromRGB(255, 255, 255)
     cardTexture.ImageTransparency = 0.55
     cardTexture.ScaleType = Enum.ScaleType.Stretch
