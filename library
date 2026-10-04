@@ -2960,12 +2960,13 @@ do
         local barH = topBar.AbsoluteSize.Y
         if barH <= 0 then barH = 48 end
         
-        -- Cat Mascot: Large, popping OUTSIDE the top-left window frame!
-        local catH = math.clamp(math.round(barH * 1.5), 68, 80)
-        local catW = math.round(catH * (220 / 100))
+        -- Cat Mascot + Bhv Emblem: Sits in top-left header corner matching Figma
+        -- Total height = 1.8 * barH (Bhv sits ~43% inside header, cat & ZZZ poke out ~57% above header)
+        local emblemH = math.clamp(math.round(barH * 1.8), 76, 92)
+        local emblemW = math.round(emblemH * (131 / 104))
         objects.obj12.AnchorPoint = Vector2.new(0, 1)
-        objects.obj12.Position = UDim2.new(0, 6, 0, 8)
-        objects.obj12.Size = UDim2.fromOffset(catW, catH)
+        objects.obj12.Position = UDim2.new(0, 6, 1, -2)
+        objects.obj12.Size = UDim2.fromOffset(emblemW, emblemH)
         objects.obj12.ZIndex = 80
         
         -- Close button: Figma-exact flush right block matching full header height
@@ -2990,9 +2991,9 @@ do
         end
         
         -- Title: centered, bold cartoon style
-        objects.obj9.Position = UDim2.new(0.5, 0, 0.5, 0)
+        objects.obj9.Position = UDim2.new(0.53, 0, 0.5, 0)
         objects.obj9.AnchorPoint = Vector2.new(0.5, 0.5)
-        objects.obj9.Size = UDim2.new(1, -(catW * 2 + closeW * 2 + 16), 1, 0)
+        objects.obj9.Size = UDim2.new(1, -(emblemW + closeW + 28), 1, 0)
         objects.obj9.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
     end
 
