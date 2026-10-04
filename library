@@ -3573,8 +3573,8 @@ local function createDropdownRow(
     menuClip.Name = "Menu"
     menuClip.Active = false
     menuClip.AnchorPoint = Vector2.new(0.5, 0)
-    menuClip.BackgroundColor3 = Color3.fromRGB(18, 58, 112)
-    menuClip.BackgroundTransparency = 0.45
+    menuClip.BackgroundColor3 = Color3.fromRGB(20, 68, 125)
+    menuClip.BackgroundTransparency = 0.55
     menuClip.BorderSizePixel = 0
     menuClip.ClipsDescendants = true
     menuClip.Position = UDim2.new(0.5, 0, 0, 0)
@@ -3591,13 +3591,13 @@ local function createDropdownRow(
     menuGrad.Name = "GlassSheen"
     menuGrad.Rotation = 90
     menuGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 150, 245)),
-        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(26, 85, 160)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 48, 98)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 165, 255)),
+        ColorSequenceKeypoint.new(0.30, Color3.fromRGB(30, 95, 175)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 52, 105)),
     })
     menuGrad.Transparency = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 0.25),
-        NumberSequenceKeypoint.new(1, 0.48),
+        NumberSequenceKeypoint.new(1, 0.50),
     })
     menuGrad.Parent = menuClip
 
@@ -3896,7 +3896,7 @@ local function createDropdownRow(
         itemStroke.Transparency = 1
         itemStroke.Parent = item
 
-        local tickBox, tickCheck, singleCheck, accentBar
+        local tickBox, tbStroke, tickCheck, singleCheck, accentBar
 
         if multiSelect then
             tickBox = Instance.new("Frame")
@@ -3915,7 +3915,7 @@ local function createDropdownRow(
             tbCorner.CornerRadius = UDim.new(0, 3)
             tbCorner.Parent = tickBox
 
-            local tbStroke = Instance.new("UIStroke")
+            tbStroke = Instance.new("UIStroke")
             tbStroke.Color = Color3.fromRGB(0, 200, 255)
             tbStroke.Thickness = 1
             tbStroke.Transparency = 0.35
@@ -4013,8 +4013,10 @@ local function createDropdownRow(
             if multiSelect then
                 tickBox.BackgroundColor3 = chosen and Color3.fromRGB(0, 175, 255) or Color3.fromRGB(15, 48, 92)
                 tickBox.BackgroundTransparency = chosen and 0 or 0.4
-                tbStroke.Color = chosen and Color3.fromRGB(0, 245, 255) or Color3.fromRGB(0, 200, 255)
-                tbStroke.Transparency = chosen and 0 or 0.35
+                if tbStroke then
+                    tbStroke.Color = chosen and Color3.fromRGB(0, 245, 255) or Color3.fromRGB(0, 200, 255)
+                    tbStroke.Transparency = chosen and 0 or 0.35
+                end
                 tickCheck.Visible = chosen
             else
                 accentBar.Visible = chosen
@@ -4471,15 +4473,23 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
             TweenService:Create(
                 scale,
                 TweenInfo.new(0.055, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                { Scale = 0.96 }
+                { Scale = 0.94 }
             ):Play()
             task.delay(0.07, function()
                 if scale.Parent then
                     TweenService:Create(
                         scale,
-                        TweenInfo.new(0.09, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                        TweenInfo.new(0.14, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
                         { Scale = 1 }
                     ):Play()
+                end
+            end)
+        end
+        if baseStroke then
+            TweenService:Create(baseStroke, TweenInfo.new(0.08), { Color = Color3.fromRGB(160, 255, 255), Thickness = 1.6 }):Play()
+            task.delay(0.2, function()
+                if baseStroke.Parent then
+                    TweenService:Create(baseStroke, TweenInfo.new(0.3), { Color = Color3.fromRGB(0, 220, 255), Thickness = 1.2 }):Play()
                 end
             end)
         end
@@ -4506,8 +4516,8 @@ local function createInputRow(name, labelText, placeholder)
     field.Name = "Field"
     field.Active = false
     field.AnchorPoint = Vector2.new(0.5, 0.5)
-    field.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
-    field.BackgroundTransparency = 0.45
+    field.BackgroundColor3 = Color3.fromRGB(18, 64, 128)
+    field.BackgroundTransparency = 0.35
     field.BorderSizePixel = 0
     field.ClipsDescendants = true
     field.Position = UDim2.fromScale(CONTROL_LAYOUT.WideCenterX, 0.5)
@@ -4522,15 +4532,16 @@ local function createInputRow(name, labelText, placeholder)
     local fieldStroke = Instance.new("UIStroke")
     fieldStroke.Name = "FieldStroke"
     fieldStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    fieldStroke.Color = Color3.fromRGB(0, 200, 255)
+    fieldStroke.Color = Color3.fromRGB(80, 215, 255)
     fieldStroke.Thickness = 1.2
-    fieldStroke.Transparency = 0.35
+    fieldStroke.Transparency = 0.25
     fieldStroke.Parent = field
 
     local fieldGrad = Instance.new("UIGradient")
     fieldGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 60, 112)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 32, 64)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 115, 210)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(18, 70, 140)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 45, 95)),
     })
     fieldGrad.Rotation = 90
     fieldGrad.Parent = field
@@ -4543,8 +4554,8 @@ local function createInputRow(name, labelText, placeholder)
     fieldPattern.Position = UDim2.fromScale(0.5, 0.5)
     fieldPattern.Size = UDim2.fromScale(1, 1)
     fieldPattern.Image = "rbxassetid://109248302930363"
-    fieldPattern.ImageColor3 = Color3.fromRGB(140, 210, 255)
-    fieldPattern.ImageTransparency = 0.85
+    fieldPattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+    fieldPattern.ImageTransparency = 0.80
     fieldPattern.ScaleType = Enum.ScaleType.Stretch
     fieldPattern.ZIndex = 5
     fieldPattern.Parent = field
@@ -4590,11 +4601,11 @@ local function createInputRow(name, labelText, placeholder)
 
     local function tweenFocus(focused)
         TweenService:Create(field, TweenInfo.new(0.16), {
-            BackgroundTransparency = focused and 0.20 or 0.45,
+            BackgroundTransparency = focused and 0.20 or 0.35,
         }):Play()
         TweenService:Create(fieldStroke, TweenInfo.new(0.16), {
-            Color = focused and Color3.fromRGB(80, 245, 255) or Color3.fromRGB(0, 200, 255),
-            Transparency = focused and 0 or 0.35,
+            Color = focused and Color3.fromRGB(120, 240, 255) or Color3.fromRGB(80, 215, 255),
+            Transparency = focused and 0 or 0.25,
         }):Play()
         TweenService:Create(
             underline,
@@ -4606,16 +4617,16 @@ local function createInputRow(name, labelText, placeholder)
     field.MouseEnter:Connect(function()
         if not input:IsFocused() then
             TweenService:Create(fieldStroke, TweenInfo.new(0.12), {
-                Color = Color3.fromRGB(80, 235, 255),
-                Transparency = 0.15,
+                Color = Color3.fromRGB(120, 240, 255),
+                Transparency = 0,
             }):Play()
         end
     end)
     field.MouseLeave:Connect(function()
         if not input:IsFocused() then
             TweenService:Create(fieldStroke, TweenInfo.new(0.12), {
-                Color = Color3.fromRGB(0, 200, 255),
-                Transparency = 0.35,
+                Color = Color3.fromRGB(80, 215, 255),
+                Transparency = 0.25,
             }):Play()
         end
     end)
@@ -6250,8 +6261,8 @@ local function createLibraryButtonRow(config)
     local row, playPress = createButtonRow(
         config.Name,
         config.Name,
-        tostring(config.ButtonText or config.Text or "Click"),
-        tostring(config.ConfirmText or "Clicked!")
+        tostring(config.ButtonText or config.Text or "Execute"),
+        tostring(config.ConfirmText or "Executed!")
     )
     local button = findDescendant(row, "Action")
     local noteController = nil
