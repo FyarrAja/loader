@@ -6072,25 +6072,25 @@ end
 local function createLibraryToggleRow(config)
     local row, main, label = buildFixedRow(config.Name, config.Name)
     label.Position = UDim2.new(0, 10, 0.5, 0)
-    label.Size = UDim2.new(1, -66, 0.72, 0)
+    label.Size = UDim2.new(1, -70, 0.72, 0)
     label.AnchorPoint = Vector2.new(0, 0.5)
 
-    -- Compact toggle switch (Fixed offset 38x20px, consistent on ALL rows)
+    -- Toggle Switch Track (Balanced offset 48x24px, clean modern slider)
     local switch = Instance.new("Frame")
     switch.Name = "Switch"
     switch.Active = false
     switch.AnchorPoint = Vector2.new(1, 0.5)
-    switch.BackgroundColor3 = Color3.fromRGB(12, 34, 60)
+    switch.BackgroundColor3 = Color3.fromRGB(14, 30, 52)
     switch.BackgroundTransparency = 0.35
     switch.BorderSizePixel = 0
     switch.ClipsDescendants = true
     switch.Position = UDim2.new(1, -10, 0.5, 0)
-    switch.Size = UDim2.fromOffset(38, 20)
+    switch.Size = UDim2.fromOffset(48, 24)
     switch.ZIndex = 3
     switch.Parent = main
 
     local switchCorner = Instance.new("UICorner")
-    switchCorner.CornerRadius = UDim.new(0, 4)
+    switchCorner.CornerRadius = UDim.new(0, 5)
     switchCorner.Parent = switch
 
     local switchStroke = Instance.new("UIStroke")
@@ -6109,25 +6109,11 @@ local function createLibraryToggleRow(config)
     bar.Size = UDim2.fromScale(0, 1)
     bar.ZIndex = 4
     bar.Parent = switch
-    addAccentGradient(bar)
 
-    local checkIcon = Instance.new("TextLabel")
-    checkIcon.Name = "CheckIcon"
-    checkIcon.Active = false
-    checkIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-    checkIcon.BackgroundTransparency = 1
-    checkIcon.BorderSizePixel = 0
-    checkIcon.Position = UDim2.new(0, 10, 0.5, 0)
-    checkIcon.Size = UDim2.new(0, 14, 0, 14)
-    checkIcon.Font = Enum.Font.FredokaOne
-    checkIcon.Text = "\226\156\147"
-    checkIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-    checkIcon.TextSize = 11
-    checkIcon.TextXAlignment = Enum.TextXAlignment.Center
-    checkIcon.TextYAlignment = Enum.TextYAlignment.Center
-    checkIcon.Visible = false
-    checkIcon.ZIndex = 5
-    checkIcon.Parent = switch
+    local barCorner = Instance.new("UICorner")
+    barCorner.CornerRadius = UDim.new(0, 5)
+    barCorner.Parent = bar
+    addAccentGradient(bar)
 
     local hold = Instance.new("Frame")
     hold.Name = "Hold"
@@ -6136,17 +6122,17 @@ local function createLibraryToggleRow(config)
     hold.BackgroundColor3 = Color3.fromRGB(245, 250, 255)
     hold.BorderSizePixel = 0
     hold.Position = UDim2.new(0, 2, 0.5, 0)
-    hold.Size = UDim2.fromOffset(16, 16)
+    hold.Size = UDim2.fromOffset(20, 20)
     hold.ZIndex = 6
     hold.Parent = switch
 
     local holdCorner = Instance.new("UICorner")
-    holdCorner.CornerRadius = UDim.new(0, 3)
+    holdCorner.CornerRadius = UDim.new(0, 4)
     holdCorner.Parent = hold
 
     local holdStroke = Instance.new("UIStroke")
     holdStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    holdStroke.Color = Color3.fromRGB(35, 38, 48)
+    holdStroke.Color = Color3.fromRGB(25, 45, 70)
     holdStroke.Thickness = 1
     holdStroke.Parent = hold
 
@@ -6168,16 +6154,15 @@ local function createLibraryToggleRow(config)
     local function setValue(value, fireCallback, animated)
         enabled = value == true
 
-        local targetHoldPos = enabled and UDim2.new(1, -18, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
+        local targetHoldPos = enabled and UDim2.new(1, -22, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
         local targetBarSize = enabled and UDim2.fromScale(1, 1) or UDim2.fromScale(0, 1)
         local targetStrokeColor = enabled and Color3.fromRGB(0, 235, 255) or Color3.fromRGB(0, 180, 240)
-        local targetStrokeTrans = enabled and 0 or 0.5
+        local targetStrokeTrans = enabled and 0 or 0.45
 
         if animated == false then
             hold.Position = targetHoldPos
             bar.Size = targetBarSize
-            checkIcon.Visible = enabled
-            hold.BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 215, 230)
+            hold.BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(195, 215, 235)
             switchStroke.Color = targetStrokeColor
             switchStroke.Transparency = targetStrokeTrans
         else
@@ -6189,9 +6174,8 @@ local function createLibraryToggleRow(config)
                 Transparency = targetStrokeTrans,
             }):Play()
             TweenService:Create(hold, tweenInfo, {
-                BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 215, 230)
+                BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(195, 215, 235)
             }):Play()
-            checkIcon.Visible = enabled
         end
         if fireCallback ~= false then
             safeCallback(config.Callback, enabled)
@@ -6375,8 +6359,8 @@ local function createLibraryNoteToggleRow(config)
     note.AnchorPoint = Vector2.new(0, 0.5)
     note.BackgroundTransparency = 1
     note.BorderSizePixel = 0
-    note.Position = UDim2.fromScale(NOTE_LEFT, 0.755)
-    note.Size = UDim2.fromScale(noteWidthFor(switch), 0.3)
+    note.Position = UDim2.fromScale(0.025, 0.755)
+    note.Size = UDim2.fromScale(0.65, 0.3)
     note.Text = tostring(config.Note or config.Description or "")
     note.TextWrapped = false
     note.TextXAlignment = Enum.TextXAlignment.Left
@@ -6392,8 +6376,8 @@ local function createLibraryNoteToggleRow(config)
         noteStroke.Transparency = 0.2
     end
 
-    -- Keep switch compact and consistent at 38x20px, vertically centered!
-    switch.Size = UDim2.fromOffset(38, 20)
+    -- Keep switch balanced and consistent at 48x24px, vertically centered!
+    switch.Size = UDim2.fromOffset(48, 24)
     switch.Position = UDim2.new(1, -10, 0.5, 0)
 
     local currentNote = note.Text
