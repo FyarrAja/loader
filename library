@@ -907,8 +907,8 @@ do
     closeXStroke.LineJoinMode = Enum.LineJoinMode.Round
     closeXStroke.Transparency = 0
     closeXStroke.Parent = closeFallback
-
     objects.obj16.Parent = objects.obj14
+end
 
 -- Smooth Micro-Animation: Sleek close button hover scale and press feedback
 pcall(function()
