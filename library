@@ -3532,7 +3532,7 @@ local function createDropdownRow(
     value.TextTruncate = Enum.TextTruncate.AtEnd
     value.TextXAlignment = Enum.TextXAlignment.Left
     value.TextYAlignment = Enum.TextYAlignment.Center
-    value.Font = normalTextFont
+    value.FontFace = normalTextFont
     value.TextColor3 = Color3.fromRGB(245, 252, 255)
     value.TextSize = 13
     value.ZIndex = 8
@@ -3558,10 +3558,10 @@ local function createDropdownRow(
     caretLabel.BorderSizePixel = 0
     caretLabel.Position = UDim2.fromScale(0.5, 0.5)
     caretLabel.Size = UDim2.fromScale(1, 1)
-    caretLabel.Font = normalTextFont
-    caretLabel.Text = "▾"
+    caretLabel.Font = Enum.Font.FredokaOne
+    caretLabel.Text = "v"
     caretLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
-    caretLabel.TextSize = 14
+    caretLabel.TextSize = 13
     caretLabel.TextXAlignment = Enum.TextXAlignment.Center
     caretLabel.TextYAlignment = Enum.TextYAlignment.Center
     caretLabel.ZIndex = 9
@@ -3634,7 +3634,7 @@ local function createDropdownRow(
         searchBox.PlaceholderColor3 = Color3.fromRGB(120, 190, 240)
         searchBox.TextXAlignment = Enum.TextXAlignment.Left
         searchBox.TextYAlignment = Enum.TextYAlignment.Center
-        searchBox.Font = normalTextFont
+        searchBox.FontFace = normalTextFont
         searchBox.TextColor3 = Color3.fromRGB(240, 252, 255)
         searchBox.TextSize = 12
         searchBox.ZIndex = 17
@@ -3663,7 +3663,7 @@ local function createDropdownRow(
             hintLabel.TextWrapped = true
             hintLabel.TextXAlignment = Enum.TextXAlignment.Center
             hintLabel.TextYAlignment = Enum.TextYAlignment.Center
-            hintLabel.Font = normalTextFont
+            hintLabel.FontFace = normalTextFont
             hintLabel.TextColor3 = Color3.fromRGB(140, 210, 255)
             hintLabel.TextSize = 11
             hintLabel.ZIndex = 16
@@ -3695,10 +3695,6 @@ local function createDropdownRow(
         applyBase.ZIndex = 19
         applyBase.Parent = applyButton
 
-        local apCorner = Instance.new("UICorner")
-        apCorner.CornerRadius = UDim.new(0, 5)
-        apCorner.Parent = applyBase
-
         local apStroke = Instance.new("UIStroke")
         apStroke.Color = Color3.fromRGB(0, 220, 255)
         apStroke.Thickness = 1.2
@@ -3716,10 +3712,6 @@ local function createDropdownRow(
         applyColor.Parent = applyBase
         addRedGradient(applyColor, "RedGradient", rebirthOuterGradient)
 
-        local apColorCorner = Instance.new("UICorner")
-        apColorCorner.CornerRadius = UDim.new(0, 4)
-        apColorCorner.Parent = applyColor
-
         local applyHighlight = Instance.new("Frame")
         applyHighlight.Name = "Transparent"
         applyHighlight.Active = false
@@ -3731,10 +3723,6 @@ local function createDropdownRow(
         applyHighlight.ZIndex = 21
         applyHighlight.Parent = applyColor
         addRedGradient(applyHighlight, "RedGradient", rebirthInnerGradient)
-
-        local apHiCorner = Instance.new("UICorner")
-        apHiCorner.CornerRadius = UDim.new(0, 3)
-        apHiCorner.Parent = applyHighlight
 
         local apPattern = Instance.new("ImageLabel")
         apPattern.Name = "ButtonPattern"
@@ -3759,7 +3747,7 @@ local function createDropdownRow(
         applyCaption.Position = UDim2.fromScale(0.5, 0.5)
         applyCaption.Size = UDim2.fromScale(0.92, 0.72)
         applyCaption.Text = applyBaseText
-        applyCaption.Font = normalTextFont
+        applyCaption.FontFace = normalTextFont
         applyCaption.TextSize = 12
         applyCaption.ZIndex = 23
         applyCaption.Parent = applyColor
@@ -3796,7 +3784,7 @@ local function createDropdownRow(
     emptyLabel.BorderSizePixel = 0
     emptyLabel.Size = UDim2.new(1, -12, 0, 28)
     emptyLabel.Text = "Tidak ada opsi cocok (No match)"
-    emptyLabel.Font = normalTextFont
+    emptyLabel.FontFace = normalTextFont
     emptyLabel.TextColor3 = Color3.fromRGB(140, 185, 225)
     emptyLabel.TextSize = 12
     emptyLabel.Visible = false
@@ -3926,8 +3914,8 @@ local function createDropdownRow(
             tickCheck.BorderSizePixel = 0
             tickCheck.Position = UDim2.fromScale(0.5, 0.5)
             tickCheck.Size = UDim2.fromScale(1, 1)
-            tickCheck.Font = normalTextFont
-            tickCheck.Text = "✓"
+            tickCheck.Font = Enum.Font.FredokaOne
+            tickCheck.Text = "\226\156\147"
             tickCheck.TextColor3 = Color3.fromRGB(255, 255, 255)
             tickCheck.TextSize = 12
             tickCheck.Visible = false
@@ -3954,8 +3942,8 @@ local function createDropdownRow(
             singleCheck.BorderSizePixel = 0
             singleCheck.Position = UDim2.new(1, -10, 0.5, 0)
             singleCheck.Size = UDim2.new(0, 18, 0, 18)
-            singleCheck.Font = normalTextFont
-            singleCheck.Text = "✓"
+            singleCheck.Font = Enum.Font.FredokaOne
+            singleCheck.Text = "\226\156\147"
             singleCheck.TextColor3 = Color3.fromRGB(0, 240, 255)
             singleCheck.TextSize = 14
             singleCheck.Visible = false
@@ -3975,7 +3963,7 @@ local function createDropdownRow(
         text.TextTruncate = Enum.TextTruncate.AtEnd
         text.TextXAlignment = Enum.TextXAlignment.Left
         text.TextYAlignment = Enum.TextYAlignment.Center
-        text.Font = normalTextFont
+        text.FontFace = normalTextFont
         text.TextColor3 = Color3.fromRGB(200, 230, 255)
         text.TextSize = 12
         text.ZIndex = 18
@@ -4341,6 +4329,7 @@ local function createDropdownRow(
     }
 end
 
+-- Square box button (no UICorner, exactly like sidebar rebirth buttons)
 local function createButtonRow(name, labelText, buttonText, confirmText)
     local row, main = buildFixedRow(name, labelText)
     local currentButtonText = tostring(buttonText or "")
@@ -4371,10 +4360,7 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     base.ZIndex = 1
     base.Parent = button
 
-    local baseCorner = Instance.new("UICorner")
-    baseCorner.CornerRadius = UDim.new(0, 6)
-    baseCorner.Parent = base
-
+    -- Sharp square edges (No UICorner per user instruction: "button tuh kotak ga ada yg rounded")
     local baseStroke = Instance.new("UIStroke")
     baseStroke.Name = "ButtonStroke"
     baseStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -4395,10 +4381,6 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     colorFrame.Parent = base
     addRedGradient(colorFrame, "RedGradient", rebirthOuterGradient)
 
-    local colorCorner = Instance.new("UICorner")
-    colorCorner.CornerRadius = UDim.new(0, 5)
-    colorCorner.Parent = colorFrame
-
     local highlight = Instance.new("Frame")
     highlight.Name = "Transparent"
     highlight.Active = false
@@ -4410,10 +4392,6 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     highlight.ZIndex = 2
     highlight.Parent = colorFrame
     addRedGradient(highlight, "RedGradient", rebirthInnerGradient)
-
-    local hiCorner = Instance.new("UICorner")
-    hiCorner.CornerRadius = UDim.new(0, 4)
-    hiCorner.Parent = highlight
 
     -- Framewisp Button Texture (Asset 109248302930363)
     local btnPattern = Instance.new("ImageLabel")
@@ -4570,7 +4548,7 @@ local function createInputRow(name, labelText, placeholder)
     input.PlaceholderColor3 = Color3.fromRGB(120, 195, 245)
     input.TextXAlignment = Enum.TextXAlignment.Center
     input.TextYAlignment = Enum.TextYAlignment.Center
-    input.Font = normalTextFont
+    input.FontFace = normalTextFont
     input.TextColor3 = Color3.fromRGB(245, 252, 255)
     input.TextSize = 13
     input.ZIndex = 6
@@ -6093,37 +6071,34 @@ end
 
 local function createLibraryToggleRow(config)
     local row, main, label = buildFixedRow(config.Name, config.Name)
-    -- Generous label width so long titles never truncate awkwardly
     label.Position = UDim2.new(0, 10, 0.5, 0)
     label.Size = UDim2.new(1, -66, 0.72, 0)
     label.AnchorPoint = Vector2.new(0, 0.5)
 
-    -- Track: Dark groove with rounded corners & dark stroke, directly matching the Slider's track!
+    -- Compact toggle switch (Fixed offset 38x20px, consistent on ALL rows)
     local switch = Instance.new("Frame")
     switch.Name = "Switch"
     switch.Active = false
     switch.AnchorPoint = Vector2.new(1, 0.5)
-    switch.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    switch.BackgroundTransparency = 0.6
+    switch.BackgroundColor3 = Color3.fromRGB(12, 34, 60)
+    switch.BackgroundTransparency = 0.35
     switch.BorderSizePixel = 0
     switch.ClipsDescendants = true
     switch.Position = UDim2.new(1, -10, 0.5, 0)
-    switch.Size = UDim2.fromOffset(46, 22)
+    switch.Size = UDim2.fromOffset(38, 20)
     switch.ZIndex = 3
     switch.Parent = main
 
     local switchCorner = Instance.new("UICorner")
-    switchCorner.CornerRadius = UDim.new(0, 5)
+    switchCorner.CornerRadius = UDim.new(0, 4)
     switchCorner.Parent = switch
 
     local switchStroke = Instance.new("UIStroke")
     switchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    switchStroke.Color = Color3.fromRGB(8, 16, 26)
+    switchStroke.Color = Color3.fromRGB(0, 180, 240)
     switchStroke.Thickness = 1.2
-    switchStroke.LineJoinMode = Enum.LineJoinMode.Round
     switchStroke.Parent = switch
 
-    -- Fill Bar: Vibrant cyan-to-azure gradient, identical to the Slider's Bar!
     local bar = Instance.new("Frame")
     bar.Name = "Bar"
     bar.Active = false
@@ -6136,7 +6111,24 @@ local function createLibraryToggleRow(config)
     bar.Parent = switch
     addAccentGradient(bar)
 
-    -- Thumb / Knob: Rounded rectangular metallic/white hold, directly matching the Slider's Hold!
+    local checkIcon = Instance.new("TextLabel")
+    checkIcon.Name = "CheckIcon"
+    checkIcon.Active = false
+    checkIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    checkIcon.BackgroundTransparency = 1
+    checkIcon.BorderSizePixel = 0
+    checkIcon.Position = UDim2.new(0, 10, 0.5, 0)
+    checkIcon.Size = UDim2.new(0, 14, 0, 14)
+    checkIcon.Font = Enum.Font.FredokaOne
+    checkIcon.Text = "\226\156\147"
+    checkIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+    checkIcon.TextSize = 11
+    checkIcon.TextXAlignment = Enum.TextXAlignment.Center
+    checkIcon.TextYAlignment = Enum.TextYAlignment.Center
+    checkIcon.Visible = false
+    checkIcon.ZIndex = 5
+    checkIcon.Parent = switch
+
     local hold = Instance.new("Frame")
     hold.Name = "Hold"
     hold.Active = false
@@ -6144,19 +6136,18 @@ local function createLibraryToggleRow(config)
     hold.BackgroundColor3 = Color3.fromRGB(245, 250, 255)
     hold.BorderSizePixel = 0
     hold.Position = UDim2.new(0, 2, 0.5, 0)
-    hold.Size = UDim2.fromOffset(16, 18)
-    hold.ZIndex = 5
+    hold.Size = UDim2.fromOffset(16, 16)
+    hold.ZIndex = 6
     hold.Parent = switch
 
     local holdCorner = Instance.new("UICorner")
-    holdCorner.CornerRadius = UDim.new(0, 4)
+    holdCorner.CornerRadius = UDim.new(0, 3)
     holdCorner.Parent = hold
 
     local holdStroke = Instance.new("UIStroke")
     holdStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     holdStroke.Color = Color3.fromRGB(35, 38, 48)
-    holdStroke.Thickness = 1.2
-    holdStroke.LineJoinMode = Enum.LineJoinMode.Round
+    holdStroke.Thickness = 1
     holdStroke.Parent = hold
 
     local button = Instance.new("TextButton")
@@ -6179,18 +6170,28 @@ local function createLibraryToggleRow(config)
 
         local targetHoldPos = enabled and UDim2.new(1, -18, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
         local targetBarSize = enabled and UDim2.fromScale(1, 1) or UDim2.fromScale(0, 1)
+        local targetStrokeColor = enabled and Color3.fromRGB(0, 235, 255) or Color3.fromRGB(0, 180, 240)
+        local targetStrokeTrans = enabled and 0 or 0.5
 
         if animated == false then
             hold.Position = targetHoldPos
             bar.Size = targetBarSize
-            hold.BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 225, 235)
+            checkIcon.Visible = enabled
+            hold.BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 215, 230)
+            switchStroke.Color = targetStrokeColor
+            switchStroke.Transparency = targetStrokeTrans
         else
-            local tweenInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tweenInfo = TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             TweenService:Create(hold, tweenInfo, { Position = targetHoldPos }):Play()
             TweenService:Create(bar, tweenInfo, { Size = targetBarSize }):Play()
-            TweenService:Create(hold, tweenInfo, {
-                BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 225, 235)
+            TweenService:Create(switchStroke, tweenInfo, {
+                Color = targetStrokeColor,
+                Transparency = targetStrokeTrans,
             }):Play()
+            TweenService:Create(hold, tweenInfo, {
+                BackgroundColor3 = enabled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 215, 230)
+            }):Play()
+            checkIcon.Visible = enabled
         end
         if fireCallback ~= false then
             safeCallback(config.Callback, enabled)
@@ -6214,168 +6215,23 @@ local function createLibraryToggleRow(config)
 end
 
 local function createLibraryTextRow(config)
-    local displayText = tostring(config.Text or config.Value or config.Name)
-    local row, main, label = buildFixedRow(config.Name, displayText)
-    label.Size = UDim2.fromScale(0.94, 0.64)
-    label.TextXAlignment = config.Alignment or Enum.TextXAlignment.Left
+    local row, main, label = buildFixedRow(config.Name, config.Name)
+    label.Position = UDim2.new(0, 10, 0.5, 0)
+    label.Size = UDim2.new(1, -20, 0.72, 0)
+    label.AnchorPoint = Vector2.new(0, 0.5)
 
-    local note = Instance.new("TextLabel")
-    note.Name = "Note"
-    note.Active = false
-    note.AnchorPoint = Vector2.new(0, 0.5)
-    note.BackgroundTransparency = 1
-    note.BorderSizePixel = 0
-    note.Position = UDim2.fromScale(0.025, 0.755)
-    note.Size = UDim2.fromScale(0.94, 0.3)
-    note.Text = ""
-    note.TextWrapped = false
-    note.TextXAlignment = Enum.TextXAlignment.Left
-    note.TextYAlignment = Enum.TextYAlignment.Center
-    note.Visible = false
-    note.ZIndex = 5
-    note.Parent = main
-    applyPlainTextStyle(note)
-    note.TextTransparency = 0.32
-
-    local noteStroke = note:FindFirstChildOfClass("UIStroke")
-    if noteStroke then
-        noteStroke.Thickness = 0.06
-        noteStroke.Transparency = 0.2
+    local currentText = tostring(config.Text or config.Value or "")
+    local function setText(text)
+        currentText = tostring(text or "")
+        label.Text = currentText
     end
-
-    local currentNote = ""
-    local vScale = ROW_ASPECT_WITH_NOTE / ROW_ASPECT
-    local function setNote(value)
-        currentNote = tostring(value or "")
-        local hasNote = currentNote ~= ""
-        note.Text = currentNote
-        note.Visible = hasNote
-        row:SetAttribute(
-            "ChilliResponsiveAspect",
-            hasNote and ROW_ASPECT_WITH_NOTE or ROW_ASPECT
-        )
-        if hasNote then
-            label.Position = UDim2.fromScale(0.025, 0.34)
-            label.Size = UDim2.fromScale(
-                0.94,
-                0.64 * vScale * NOTE_TITLE_SCALE
-            )
-        else
-            label.Position = UDim2.fromScale(0.025, 0.5)
-            label.Size = UDim2.fromScale(0.94, 0.64)
-        end
-    end
-
-    setNote(config.Note or config.Description or "")
+    setText(currentText)
 
     return row, {
-        GetValue = function()
-            return label.Text
+        GetText = function()
+            return currentText
         end,
-        SetValue = function(value)
-            label.Text = tostring(value)
-        end,
-        GetNote = function()
-            return currentNote
-        end,
-        SetNote = setNote,
-    }
-end
-
-
-
-
-
-
-
-
-
-
-local NOTE_LEFT = 0.025
-local NOTE_GAP = 0.02
-local NOTE_MAX_WIDTH = 0.94
-local NOTE_MIN_WIDTH = 0.3
-
-local function noteWidthFor(control)
-    if not control then
-        return NOTE_MAX_WIDTH
-    end
-
-    local controlLeft = control.Position.X.Scale
-        - control.Size.X.Scale * control.AnchorPoint.X
-
-    return math.clamp(
-        controlLeft - NOTE_LEFT - NOTE_GAP,
-        NOTE_MIN_WIDTH,
-        NOTE_MAX_WIDTH
-    )
-end
-
-local function addNoteToButtonRow(row, config, button)
-    local vScale = ROW_ASPECT_WITH_NOTE / ROW_ASPECT
-    local aspect = row:FindFirstChildOfClass(
-        "UIAspectRatioConstraint"
-    )
-    local main = findDescendant(row, "Main")
-    local title = main:FindFirstChild("Label")
-    assert(title and title:IsA("TextLabel"), "Button row thieu Label")
-
-    if aspect then
-        aspect.AspectRatio = ROW_ASPECT_WITH_NOTE
-    end
-    row:SetAttribute(
-        "ChilliResponsiveAspect",
-        ROW_ASPECT_WITH_NOTE
-    )
-
-    title.Position = UDim2.fromScale(0.025, 0.34)
-    title.Size = UDim2.fromScale(
-        0.62,
-        0.64 * vScale * NOTE_TITLE_SCALE
-    )
-
-    local note = Instance.new("TextLabel")
-    note.Name = "Note"
-    note.Active = false
-    note.AnchorPoint = Vector2.new(0, 0.5)
-    note.BackgroundTransparency = 1
-    note.BorderSizePixel = 0
-    note.Position = UDim2.fromScale(NOTE_LEFT, 0.755)
-    note.Size = UDim2.fromScale(noteWidthFor(button), 0.3)
-    note.Text = ""
-    note.TextWrapped = false
-    note.TextXAlignment = Enum.TextXAlignment.Left
-    note.TextYAlignment = Enum.TextYAlignment.Center
-    note.ZIndex = 5
-    note.Parent = main
-    applyPlainTextStyle(note)
-    note.TextTransparency = 0.32
-
-    local noteStroke = note:FindFirstChildOfClass("UIStroke")
-    if noteStroke then
-        noteStroke.Thickness = 0.06
-        noteStroke.Transparency = 0.2
-    end
-
-    button.Size = UDim2.new(
-        button.Size.X.Scale,
-        button.Size.X.Offset,
-        button.Size.Y.Scale * vScale,
-        button.Size.Y.Offset
-    )
-
-    local currentNote = ""
-    local function setNote(value)
-        currentNote = tostring(value or "")
-        note.Text = currentNote
-    end
-    setNote(config.Note or config.Description or "")
-
-    return {
-        GetNote = function()
-            return currentNote
-        end,
-        SetNote = setNote,
+        SetText = setText,
     }
 end
 
@@ -6397,7 +6253,6 @@ local function createLibraryButtonRow(config)
 
     return row, {
         Press = function()
-            
             if playPress then
                 playPress()
             end
@@ -6497,8 +6352,6 @@ local function createLibraryInputRow(config)
 end
 
 local function createLibraryNoteToggleRow(config)
-    
-    
     local row, controller = createLibraryToggleRow(config)
     local vScale = ROW_ASPECT_WITH_NOTE / ROW_ASPECT
     local aspect = row:FindFirstChildOfClass("UIAspectRatioConstraint")
@@ -6539,11 +6392,10 @@ local function createLibraryNoteToggleRow(config)
         noteStroke.Transparency = 0.2
     end
 
-    switch.Size = UDim2.fromScale(0.142, 0.75 * vScale)
+    -- Keep switch compact and consistent at 38x20px, vertically centered!
+    switch.Size = UDim2.fromOffset(38, 20)
+    switch.Position = UDim2.new(1, -10, 0.5, 0)
 
-    
-    
-    
     local currentNote = note.Text
     controller.GetNote = function()
         return currentNote
@@ -6554,10 +6406,6 @@ local function createLibraryNoteToggleRow(config)
     end
     return row, controller
 end
-
-
-
-
 
 local function createLibraryDropdownRow(config, forceMulti, actionMode)
     local rawOptions = config.Options or config.Values or config.List
