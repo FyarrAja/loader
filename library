@@ -183,7 +183,7 @@ pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(22, 25
 pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0.18)
 pcall(chilliSetProperty, objects.obj2, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj2, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", true)
+pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", false)
 pcall(chilliSetProperty, objects.obj2, "Position", UDim2.new(0.5,0,0.4749999940395355,0))
 pcall(chilliSetProperty, objects.obj2, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj2, "Selectable", false)
@@ -446,56 +446,171 @@ do
     obj4_footerSheen.Parent = objects.obj4
 end
 
--- Cat Mascot / BHV Logo (Direct Image, transparent background, never white box)
+-- Cat Mascot / BHV Logo (Exact Figma Sleeping Cat Mascot with Offline Base64 + CustomAsset + Fallback)
 do
+    local CAT_MASCOT_B64 = [====[
+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
+]====]
+
+    local function decodeB64(data)
+        local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        local lut = {}
+        for i = 1, 64 do
+            lut[b64chars:byte(i)] = i - 1
+        end
+        local res = {}
+        local buf, bits = 0, 0
+        for i = 1, #data do
+            local c = data:byte(i)
+            local val = lut[c]
+            if val then
+                buf = buf * 64 + val
+                bits = bits + 6
+                if bits >= 8 then
+                    bits = bits - 8
+                    local byte = math.floor(buf / (2 ^ bits)) % 256
+                    table.insert(res, string.char(byte))
+                end
+            end
+        end
+        return table.concat(res)
+    end
+
+    local function resolveCatAsset(id)
+        local fileName = "bh_cat_mascot.png"
+        local getasset = (type(getcustomasset) == "function" and getcustomasset)
+                      or (type(getsynasset) == "function" and getsynasset)
+        local wf = (type(writefile) == "function" and writefile)
+        local ef = (type(isfile) == "function" and isfile)
+
+        if getasset and wf then
+            local ready = false
+            if ef then
+                local ok, ex = pcall(ef, fileName)
+                if ok and ex then ready = true end
+            end
+            if not ready then
+                local okDec, decoded = pcall(decodeB64, CAT_MASCOT_B64)
+                if okDec and decoded and #decoded > 1000 then
+                    local okW = pcall(wf, fileName, decoded)
+                    if okW then ready = true end
+                end
+            end
+            if not ready and game.HttpGet then
+                pcall(function()
+                    local raw = game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/bh_cat_mascot.png")
+                    if raw and #raw > 1000 then
+                        pcall(wf, fileName, raw)
+                        ready = true
+                    end
+                end)
+            end
+            if ready then
+                local okA, cUrl = pcall(getasset, fileName)
+                if okA and cUrl and cUrl ~= "" then
+                    return cUrl
+                end
+            end
+        end
+
+        local target = (id and id ~= "" and not tostring(id):find("120217172563852") and not tostring(id):find("125229870206242")) and id or "96054470467014"
+        local num = tostring(target):match("%d+") or "96054470467014"
+
+        -- Try executor Decal extraction
+        local okObj, objs = pcall(function() return game:GetObjects("rbxassetid://" .. num) end)
+        if okObj and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
+            return objs[1].Texture
+        end
+
+        return "rbxassetid://" .. num
+    end
+
     objects.obj12 = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj12, "Name", "CatMascotAndLogo")
     pcall(chilliSetProperty, objects.obj12, "Archivable", true)
     pcall(chilliSetProperty, objects.obj12, "Visible", true)
     pcall(chilliSetProperty, objects.obj12, "Active", false)
-    pcall(chilliSetProperty, objects.obj12, "AnchorPoint", Vector2.new(0, 1))
+    pcall(chilliSetProperty, objects.obj12, "AnchorPoint", Vector2.new(0, 0.5))
     pcall(chilliSetProperty, objects.obj12, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 6, 1, 0))
-    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(92, 69))
-    pcall(chilliSetProperty, objects.obj12, "ZIndex", 50)
+    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 8, 0.45, 0))
+    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(64, 48))
+    pcall(chilliSetProperty, objects.obj12, "ZIndex", 60)
     pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
-    
-    local function resolveCatAsset(id)
-        local target = (id and id ~= "" and not tostring(id):find("120217172563852") and not tostring(id):find("125229870206242")) and id or "96054470467014"
-        local str = tostring(target)
-        local num = str:match("%d+") or "96054470467014"
-        
-        -- 1. Try game:GetObjects in executor context (retrieves the Decal instance with actual Texture property)
-        local okObj, objs = pcall(function() return game:GetObjects("rbxassetid://" .. num) end)
-        if okObj and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
-            return objs[1].Texture
-        end
-        
-        -- 2. Try parsing exact texture from decal XML via executor HttpGet
-        local okHttp, xml = pcall(function()
-            return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
-        end)
-        if okHttp and type(xml) == "string" and #xml > 0 then
-            local trueId = xml:match("<url>[^%d]*(%d+)[^<]*</url>") or xml:match("id=(%d+)")
-            if trueId and trueId ~= num then
-                return "rbxassetid://" .. trueId
-            end
-        end
 
-        return "rbxassetid://" .. num
-    end
-    
+    -- Stylized Vector Fallback Container (displays while loading or if offline)
+    local catFallback = Instance.new("Frame")
+    catFallback.Name = "CatVectorFallback"
+    catFallback.BackgroundTransparency = 1
+    catFallback.Size = UDim2.new(1, 0, 1, 0)
+    catFallback.Position = UDim2.new(0, 0, 0, 0)
+    catFallback.ZIndex = 58
+    catFallback.Parent = objects.obj12
+
+    local catFace = Instance.new("TextLabel")
+    catFace.Name = "CatFace"
+    catFace.BackgroundTransparency = 1
+    catFace.Position = UDim2.new(0, 0, 0, -2)
+    catFace.Size = UDim2.new(1, 0, 0.55, 0)
+    catFace.Font = Enum.Font.FredokaOne
+    catFace.Text = "( - . - )"
+    catFace.TextSize = 15
+    catFace.TextColor3 = Color3.fromRGB(255, 255, 255)
+    catFace.ZIndex = 59
+    catFace.Parent = catFallback
+
+    local catZzz = Instance.new("TextLabel")
+    catZzz.Name = "CatZzz"
+    catZzz.BackgroundTransparency = 1
+    catZzz.Position = UDim2.new(0.65, 0, -0.3, 0)
+    catZzz.Size = UDim2.new(0.4, 0, 0.45, 0)
+    catZzz.Font = Enum.Font.FredokaOne
+    catZzz.Text = "Zzz"
+    catZzz.TextSize = 12
+    catZzz.TextColor3 = Color3.fromRGB(0, 220, 255)
+    catZzz.ZIndex = 60
+    catZzz.Parent = catFallback
+
+    local bhvLabel = Instance.new("TextLabel")
+    bhvLabel.Name = "BhvText"
+    bhvLabel.BackgroundTransparency = 1
+    bhvLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    bhvLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    bhvLabel.Font = Enum.Font.FredokaOne
+    bhvLabel.Text = "Bhv"
+    bhvLabel.TextSize = 16
+    bhvLabel.TextColor3 = Color3.fromRGB(0, 215, 255)
+    bhvLabel.ZIndex = 59
+    bhvLabel.Parent = catFallback
+
+    local bhvStroke = Instance.new("UIStroke")
+    bhvStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    bhvStroke.Color = Color3.fromRGB(0, 0, 0)
+    bhvStroke.Thickness = 1.5
+    bhvStroke.Parent = bhvLabel
+
     local resolvedImage = resolveCatAsset(_G.BH_CatMascotId)
     pcall(chilliSetProperty, objects.obj12, "Image", resolvedImage)
     objects.obj12.Parent = objects.obj4
+
+    -- Hide fallback once image renders successfully
+    pcall(function()
+        if objects.obj12.IsLoaded then
+            catFallback.Visible = false
+        else
+            objects.obj12:GetPropertyChangedSignal("IsLoaded"):Connect(function()
+                if objects.obj12.IsLoaded then
+                    catFallback.Visible = false
+                end
+            end)
+        end
+    end)
 end
 
--- Title Label (Exact Figma "BLUE HAVEN HUB": Huge, Bold, Cartoon White with Crisp Black Outline)
 objects.obj9 = Instance.new("TextLabel")
 pcall(chilliSetProperty, objects.obj9, "Name", "Label")
 pcall(chilliSetProperty, objects.obj9, "Archivable", true)
@@ -2921,11 +3036,11 @@ do
         local barH = topBar.AbsoluteSize.Y
         if barH <= 0 then barH = 48 end
         
-        -- Cat Mascot: Perched on top of the header bar on the left (matches Figma Image 3!)
-        local catH = math.round(barH * 1.55)
+        -- Cat Mascot: Perched on top-left of the header bar (matches Figma!)
+        local catH = math.clamp(math.round(barH * 1.15), 42, 56)
         local catW = math.round(catH * (100 / 75))
-        objects.obj12.AnchorPoint = Vector2.new(0, 1)
-        objects.obj12.Position = UDim2.new(0, 6, 1, 0)
+        objects.obj12.AnchorPoint = Vector2.new(0, 0.5)
+        objects.obj12.Position = UDim2.new(0, 8, 0.45, 0)
         objects.obj12.Size = UDim2.fromOffset(catW, catH)
         
         -- Close button: Figma-exact flush right block matching full header height
@@ -2962,6 +3077,9 @@ do
         topBar.Size = UDim2.new(1, 0, 0.135, 0)
         syncHeaderElements()
     end)
+
+    syncHeaderElements()
+    task.defer(syncHeaderElements)
 end
 
 local normalTextFont = Font.new(
@@ -7116,6 +7234,82 @@ do
     ContentScale.OnChanged(function(scaleX, scaleY)
         syncAllWindowLayout()
     end)
+end
+
+do
+    local function purgeBottomSearchBar()
+        pcall(function()
+            local containers = {rootGui, mainFrame}
+            if parent and parent ~= rootGui then
+                table.insert(containers, parent)
+            end
+            for _, root in ipairs(containers) do
+                if root then
+                    for _, desc in ipairs(root:GetDescendants()) do
+                        if desc and desc.Parent then
+                            local isBottomSearch = false
+                            if desc:IsA("TextBox") then
+                                if not (windowSearchBar and desc:IsDescendantOf(windowSearchBar)) then
+                                    local pText = tostring(desc.PlaceholderText or ""):lower()
+                                    if pText:find("filter") or (pText:find("feature") and not pText:find("cari")) then
+                                        isBottomSearch = true
+                                    end
+                                end
+                            elseif (desc:IsA("TextLabel") or desc:IsA("TextButton")) and desc.Text == "Search" then
+                                if not (windowSearchBar and desc:IsDescendantOf(windowSearchBar)) then
+                                    local p = desc.Parent
+                                    if p and p:FindFirstChildWhichIsA("TextBox") then
+                                        isBottomSearch = true
+                                    end
+                                end
+                            end
+
+                            if isBottomSearch then
+                                local target = desc
+                                local cur = desc
+                                while cur and cur.Parent and cur.Parent ~= rootGui and cur.Parent ~= mainFrame and cur.Parent ~= parent do
+                                    cur = cur.Parent
+                                end
+                                if cur and cur.Parent and cur ~= objects.obj4 and cur ~= objects.obj25 and cur ~= objects.obj70 and cur ~= windowSearchBar and cur ~= launcherGui then
+                                    target = cur
+                                end
+                                pcall(function()
+                                    target.Visible = false
+                                    target:Destroy()
+                                end)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+
+    local function onDescendantAdded(desc)
+        if not desc then return end
+        if desc:IsA("TextBox") or desc:IsA("TextLabel") or desc:IsA("TextButton") then
+            local pText = (desc:IsA("TextBox") and tostring(desc.PlaceholderText or ""):lower()) or ""
+            local tText = (not desc:IsA("TextBox") and tostring(desc.Text or "")) or ""
+            if pText:find("filter") or pText:find("feature") or tText == "Search" then
+                task.defer(purgeBottomSearchBar)
+            end
+        end
+    end
+
+    rootGui.DescendantAdded:Connect(onDescendantAdded)
+    mainFrame.DescendantAdded:Connect(onDescendantAdded)
+    if parent and parent ~= rootGui then
+        pcall(function() parent.DescendantAdded:Connect(onDescendantAdded) end)
+    end
+
+    task.spawn(function()
+        for _ = 1, 20 do
+            purgeBottomSearchBar()
+            task.wait(0.25)
+        end
+    end)
+
+    ChilliLibrary._purgeBottomSearch = purgeBottomSearchBar
 end
 
 -- ============================================================
@@ -13623,6 +13817,10 @@ ApiImpl[106] = function(self, config)
             showCloseConfirmationModal(window)
         end)
     end)
+
+    if ChilliLibrary._purgeBottomSearch then
+        pcall(ChilliLibrary._purgeBottomSearch)
+    end
     
     return window
 end
@@ -13634,6 +13832,9 @@ function ChilliLibrary:Finalize(config)
     local tab = config.MainTab or win.DefaultTab or (win.Tabs and win.Tabs[1])
     if tab and type(win.Select) == "function" then
         pcall(function() win:Select(tab) end)
+    end
+    if ChilliLibrary._purgeBottomSearch then
+        pcall(ChilliLibrary._purgeBottomSearch)
     end
 end
 ChilliLibrary.finalize = ChilliLibrary.Finalize
@@ -13676,5 +13877,16 @@ local function runChilliEngine()
     end
 end
 runChilliEngine()
+if ChilliLibrary._purgeBottomSearch then
+    pcall(ChilliLibrary._purgeBottomSearch)
+end
+task.spawn(function()
+    for _ = 1, 10 do
+        if ChilliLibrary._purgeBottomSearch then
+            pcall(ChilliLibrary._purgeBottomSearch)
+        end
+        task.wait(0.2)
+    end
+end)
 return ChilliLibrary
 end
