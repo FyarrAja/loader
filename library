@@ -859,7 +859,7 @@ pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
 pcall(chilliSetProperty, objects.obj25, "ScrollingDirection", Enum.ScrollingDirection.Y)
 pcall(chilliSetProperty, objects.obj25, "ScrollingEnabled", true)
 pcall(chilliSetProperty, objects.obj25, "VerticalScrollBarInset", Enum.ScrollBarInset.None)
-pcall(chilliSetProperty, objects.obj25, "HorizontalScrollBarInset", Enum.ScrollBarInset.None)
+pcall(chilliSetProperty, objects.obj25, "HorizontalScrollBarInset", Enum.ScrollBarInset.None)\npcall(chilliSetProperty, objects.obj25, "ElasticBehavior", Enum.ElasticBehavior.Always)
 objects.obj25.Parent = objects.obj2
 
 
@@ -1946,7 +1946,7 @@ local function makeDraggable(handle, target, canStart, moved)
         if not dragging then
             return
         end
-        local inputMoved = (dragInput and input == dragInput)
+        local inputMoved = (dragInput and (input == dragInput or input.UserInputType == Enum.UserInputType.Touch))
             or (not dragInput
                 and input.UserInputType == Enum.UserInputType.MouseMovement)
         if not inputMoved then
@@ -1995,6 +1995,7 @@ local function makeDraggable(handle, target, canStart, moved)
             return
         end
         if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch
             or input == dragInput
         then
             cancelDrag()
@@ -2063,6 +2064,14 @@ end))
 
 local function connectSafeActivation(button, callback)
     button.Active = true
+    local lastTrigger = 0
+    local function trigger()
+        local now = tick()
+        if now - lastTrigger < 0.08 then return end
+        lastTrigger = now
+        callback()
+    end
+
     button.InputBegan:Connect(function(input)
         if input.UserInputType ~= Enum.UserInputType.Touch
             or input.UserInputState ~= Enum.UserInputState.Begin
@@ -2082,19 +2091,29 @@ local function connectSafeActivation(button, callback)
         }
     end)
 
-    return button.Activated:Connect(function(input)
+    local conn1 = button.Activated:Connect(function(input)
         if input and input.UserInputType == Enum.UserInputType.Touch then
             local press = safeTouchPresses[input]
-            if not press
-                or press.Button ~= button
-                or press.Cancelled
-                or not pointInsideGui(button, press.Position)
-            then
+            if press and press.Cancelled then
                 return
             end
         end
-        callback()
+        trigger()
     end)
+
+    local conn2 = button.MouseButton1Click:Connect(function()
+        trigger()
+    end)
+
+    local handlerObj = { Connected = true }
+    function handlerObj:Disconnect()
+        self.Connected = false
+        pcall(function()
+            if conn1 and conn1.Connected then conn1:Disconnect() end
+            if conn2 and conn2.Connected then conn2:Disconnect() end
+        end)
+    end
+    return handlerObj
 end
 
 local function makeButtonFeedback(button)
@@ -2285,17 +2304,17 @@ do
     
     
     
-    if UserInputService.TouchEnabled
-        and not UserInputService.KeyboardEnabled
-        and not UserInputService.MouseEnabled
-    then
-        local mobileMultiplier = math.min(
-            1.3,
-            (regionX * 0.98) / math.max(width, 1),
-            (regionY * 0.98) / math.max(height, 1)
-        )
-        width = width * mobileMultiplier
-        height = height * mobileMultiplier
+    local isMobileDevice = UserInputService.TouchEnabled or (regionX <= 880 and regionY <= 520)
+    if isMobileDevice then
+        -- Mobile responsive optimization:
+        -- Ensure window takes comfortable screen proportion (78% - 88% width, 75% - 85% height)
+        -- Prevents cramped sidebar and gives ample tap target space
+        local idealW = math.clamp(regionX * 0.84, 380, 580)
+        local idealH = math.clamp(regionY * 0.82, 260, 390)
+        if idealW > regionX * 0.95 then idealW = regionX * 0.95 end
+        if idealH > regionY * 0.92 then idealH = regionY * 0.92 end
+        width = idealW
+        height = idealH
     end
 
     Runtime.menuSize = UDim2.fromScale(width / regionX, height / regionY)
@@ -2677,6 +2696,131 @@ do
         restorePill.Visible = false
     end
 
+    -- ============================================================
+    --  FLOATING MOBILE MASCOT TOGGLE BUTTON
+    --  Always accessible on mobile touch devices (or when _G.BH_MobileToggle = true)
+    --  Draggable anywhere with finger, tap to open / close Blue Haven Hub
+    -- ============================================================
+    local isMobileTouch = UserInputService.TouchEnabled or (_G.BH_MobileToggle == true)
+    local mobileToggleBtn = Instance.new("ImageButton")
+    mobileToggleBtn.Name = "BlueHavenMobileToggle"
+    mobileToggleBtn.Active = true
+    mobileToggleBtn.AutoButtonColor = false
+    mobileToggleBtn.AnchorPoint = Vector2.new(0, 0.5)
+    mobileToggleBtn.Position = UDim2.new(0, 14, 0.35, 0)
+    mobileToggleBtn.Size = UDim2.fromOffset(50, 50)
+    mobileToggleBtn.BackgroundColor3 = Color3.fromRGB(6, 26, 62)
+    mobileToggleBtn.BackgroundTransparency = 0.18
+    mobileToggleBtn.BorderSizePixel = 0
+    mobileToggleBtn.Visible = isMobileTouch
+    mobileToggleBtn.ZIndex = 1000
+    mobileToggleBtn.Parent = rootGui
+
+    local mCorner = Instance.new("UICorner")
+    mCorner.CornerRadius = UDim.new(0, 14)
+    mCorner.Parent = mobileToggleBtn
+
+    local mStroke = Instance.new("UIStroke")
+    mStroke.Name = "MobileToggleStroke"
+    mStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    mStroke.Color = Color3.fromRGB(0, 225, 255)
+    mStroke.Thickness = 1.8
+    mStroke.Transparency = 0.1
+    mStroke.Parent = mobileToggleBtn
+
+    local mGrad = Instance.new("UIGradient")
+    mGrad.Rotation = 90
+    mGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 85, 175)),
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(8, 42, 95)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 18, 48)),
+    })
+    mGrad.Parent = mobileToggleBtn
+
+    local mMascot = Instance.new("ImageLabel")
+    mMascot.Name = "MascotIcon"
+    mMascot.Active = false
+    mMascot.BackgroundTransparency = 1
+    mMascot.BorderSizePixel = 0
+    mMascot.AnchorPoint = Vector2.new(0.5, 0.5)
+    mMascot.Position = UDim2.fromScale(0.5, 0.5)
+    mMascot.Size = UDim2.fromOffset(38, 30)
+    mMascot.ScaleType = Enum.ScaleType.Fit
+    mMascot.Image = (objects.obj12 and objects.obj12.Image and objects.obj12.Image ~= "") and objects.obj12.Image or "rbxassetid://96054470467014"
+    mMascot.ZIndex = 1001
+    mMascot.Parent = mobileToggleBtn
+
+    makeDraggable(mobileToggleBtn, mobileToggleBtn)
+
+    -- Distinguish tap vs drag: only toggle if touch moved <= 8 pixels
+    local touchStartPos = Vector2.new(0, 0)
+    local hasMovedSignificant = false
+
+    mobileToggleBtn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            touchStartPos = Vector2.new(input.Position.X, input.Position.Y)
+            hasMovedSignificant = false
+        end
+    end)
+
+    mobileToggleBtn.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+            local currentPos = Vector2.new(input.Position.X, input.Position.Y)
+            if (currentPos - touchStartPos).Magnitude > 8 then
+                hasMovedSignificant = true
+            end
+        end
+    end)
+
+    local toggleDebounce = 0
+    local function toggleHub()
+        if hasMovedSignificant then return end
+        local now = tick()
+        if now - toggleDebounce < 0.25 then return end
+        toggleDebounce = now
+
+        -- Micro bounce animation feedback
+        TweenService:Create(mobileToggleBtn, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.fromOffset(43, 43)
+        }):Play()
+        task.delay(0.08, function()
+            TweenService:Create(mobileToggleBtn, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.fromOffset(50, 50)
+            }):Play()
+        end)
+
+        if Runtime.chilliIsOpen then
+            playCloseAnimation()
+        else
+            playOpenAnimation()
+        end
+    end
+
+    mobileToggleBtn.Activated:Connect(toggleHub)
+    mobileToggleBtn.MouseButton1Click:Connect(toggleHub)
+
+    -- Idle pulse when GUI is closed on mobile so player knows where to tap to reopen
+    task.spawn(function()
+        while mobileToggleBtn and mobileToggleBtn.Parent do
+            if not Runtime.chilliIsOpen and mobileToggleBtn.Visible then
+                TweenService:Create(mStroke, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                    Color = Color3.fromRGB(80, 245, 255),
+                    Thickness = 2.4,
+                }):Play()
+                task.wait(0.8)
+                TweenService:Create(mStroke, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                    Color = Color3.fromRGB(0, 180, 240),
+                    Thickness = 1.6,
+                }):Play()
+                task.wait(0.8)
+            else
+                mStroke.Color = Color3.fromRGB(0, 225, 255)
+                mStroke.Thickness = 1.8
+                task.wait(1)
+            end
+        end
+    end)
+
     UserInputService.InputBegan:Connect(function(input, gpe)
         if not gpe and (input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.Insert) then
             if Runtime.chilliIsOpen then
@@ -2889,7 +3033,7 @@ trackRootConnection(UserInputService.InputChanged:Connect(function(input)
         return
     end
     if resizeActiveTouch then
-        if input == resizeActiveTouch then
+        if input == resizeActiveTouch or input.UserInputType == Enum.UserInputType.Touch then
             resizeFromInputPosition(input.Position, false)
         end
     elseif input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -2899,6 +3043,7 @@ end))
 
 trackRootConnection(UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch
         or input == resizeActiveTouch
     then
         if resizeDragging then
@@ -3262,6 +3407,7 @@ navScroll.ScrollBarThickness = 3
 navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
 navScroll.ScrollBarImageTransparency = 0.3
 navScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+navScroll.ElasticBehavior = Enum.ElasticBehavior.Always
 navScroll.ZIndex = 9
 navScroll.Parent = navSidebar
 
@@ -6083,7 +6229,7 @@ local function createLibrarySliderRow(config)
             return
         end
         if activeTouch then
-            if input == activeTouch then
+            if input == activeTouch or input.UserInputType == Enum.UserInputType.Touch then
                 setFromScreenX(input.Position.X)
             end
         elseif input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -6093,6 +6239,7 @@ local function createLibrarySliderRow(config)
 
     table.insert(globalConnections, trackRootConnection(UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch
             or input == activeTouch
         then
             dragging = false
@@ -13473,6 +13620,7 @@ ApiImpl[95] = function(self, config)
         page.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
         page.AutomaticCanvasSize = Enum.AutomaticSize.Y
         page.ScrollingDirection = Enum.ScrollingDirection.Y
+page.ElasticBehavior = Enum.ElasticBehavior.Always
         page.ClipsDescendants = true
         page.ZIndex = 20
         page.Parent = mainFrame
