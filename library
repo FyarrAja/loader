@@ -271,19 +271,28 @@ do
     windowLimit.Parent = objects.obj2
 end
 
--- Canvas Background Texture (ZIndex 0, Boxy sharp corners, subtle cyber grid)
+-- Canvas Background Texture (Asset 140268358133592: Figma Triangle Matrix Texture)
 do
     local function resolveAsset(id, defaultId)
-        local val = id or defaultId
-        if not val or val == "" then return "" end
+        local val = (id and id ~= "") and id or defaultId
+        if not val or val == "" then return "rbxassetid://140268358133592" end
         local str = tostring(val)
         local num = str:match("%d+")
         if not num then return str end
-        -- Attempt to resolve direct image asset from Decal
+        -- Try executor Decal extraction
         local direct = "rbxassetid://" .. num
         local ok, objs = pcall(function() return game:GetObjects(direct) end)
         if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
             return objs[1].Texture
+        end
+        local okHttp, xml = pcall(function()
+            return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
+        end)
+        if okHttp and type(xml) == "string" and #xml > 0 then
+            local trueId = xml:match("<url>[^%d]*(%d+)[^<]*</url>") or xml:match("id=(%d+)")
+            if trueId and trueId ~= num then
+                return "rbxassetid://" .. trueId
+            end
         end
         return direct
     end
@@ -293,12 +302,12 @@ do
     pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", false)
-    pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0.12, 0))
-    pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 0.88, 0))
-    pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 0)
+    pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0, 0))
+    pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 1, 0))
+    pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
     pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveAsset(_G.BH_CanvasAssetId, "140268358133592"))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(50, 150, 230))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.82)
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0)
     pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
     pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
     objects.obj2_studs.Parent = objects.obj2
@@ -627,28 +636,54 @@ end
 do
     local function resolveAsset(id, defaultId)
         local val = (id and id ~= "") and id or defaultId
-        if not val or val == "" then return "" end
+        if not val or val == "" then return "rbxassetid://121248223515226" end
         local str = tostring(val)
         local num = str:match("%d+")
         if not num then return str end
-        -- Avoid broken placeholder decal IDs
-        if num == "71848990570837" or num == "121248223515226" then
-            return ""
-        end
         local direct = "rbxassetid://" .. num
         local ok, objs = pcall(function() return game:GetObjects(direct) end)
         if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
             return objs[1].Texture
         end
+        local okHttp, xml = pcall(function()
+            return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
+        end)
+        if okHttp and type(xml) == "string" and #xml > 0 then
+            local trueId = xml:match("<url>[^%d]*(%d+)[^<]*</url>") or xml:match("id=(%d+)")
+            if trueId and trueId ~= num then
+                return "rbxassetid://" .. trueId
+            end
+        end
         return direct
     end
 
-    local resolvedImg = resolveAsset(_G.BH_CloseButtonId, "")
+    -- Background texture for close button (Asset 101344938838576)
+    local closeBgImg = Instance.new("ImageLabel")
+    pcall(chilliSetProperty, closeBgImg, "Name", "CloseBgTexture")
+    pcall(chilliSetProperty, closeBgImg, "BackgroundTransparency", 1)
+    pcall(chilliSetProperty, closeBgImg, "BorderSizePixel", 0)
+    pcall(chilliSetProperty, closeBgImg, "AnchorPoint", Vector2.new(0.5, 0.5))
+    pcall(chilliSetProperty, closeBgImg, "Position", UDim2.new(0.5, 0, 0.5, 0))
+    pcall(chilliSetProperty, closeBgImg, "Size", UDim2.new(1, 0, 1, 0))
+    pcall(chilliSetProperty, closeBgImg, "ZIndex", 42)
+    pcall(chilliSetProperty, closeBgImg, "Image", resolveAsset(_G.BH_CloseBgAssetId, "101344938838576"))
+    pcall(chilliSetProperty, closeBgImg, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, closeBgImg, "ImageTransparency", 0)
+    pcall(chilliSetProperty, closeBgImg, "ScaleType", Enum.ScaleType.Stretch)
+    pcall(chilliSetProperty, closeBgImg, "ResampleMode", Enum.ResamplerMode.Default)
+    closeBgImg.Parent = objects.obj16
+
+    -- Close Decal Icon (Asset 121248223515226: Large, Bold, Synchronized with Red Box)
+    local closeDecalVal = (_G.BH_CloseButtonId and _G.BH_CloseButtonId ~= "") and _G.BH_CloseButtonId or "rbxassetid://121248223515226"
+    local resolvedImg = resolveAsset(closeDecalVal, "121248223515226")
+    if not resolvedImg or resolvedImg == "" then
+        resolvedImg = "rbxassetid://121248223515226"
+    end
 
     objects.obj20 = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
     pcall(chilliSetProperty, objects.obj20, "Archivable", true)
-    pcall(chilliSetProperty, objects.obj20, "Visible", resolvedImg ~= "")
+    pcall(chilliSetProperty, objects.obj20, "Visible", true)
     pcall(chilliSetProperty, objects.obj20, "Active", false)
     pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5, 0.5))
     pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
@@ -661,7 +696,7 @@ do
     pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
     pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
-    pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.72, 0, 0.72, 0))
+    pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.86, 0, 0.86, 0))
     objects.obj20.Parent = objects.obj16
 
     -- Exact Figma Cartoon 'X': Thick bold pure black outline with vibrant coral pink fill!
@@ -671,12 +706,12 @@ do
     closeFallback.BackgroundTransparency = 1
     closeFallback.BorderSizePixel = 0
     closeFallback.Position = UDim2.new(0.5, 0, 0.5, 0)
-    closeFallback.Size = UDim2.new(1, 0, 1, 0)
+    closeFallback.Size = UDim2.new(0.86, 0, 0.86, 0)
     closeFallback.Font = Enum.Font.FredokaOne
     closeFallback.Text = "X"
     closeFallback.TextColor3 = Color3.fromRGB(253, 112, 142)
-    closeFallback.TextSize = 25
-    closeFallback.Visible = (resolvedImg == "")
+    closeFallback.TextSize = 36
+    closeFallback.Visible = true
     closeFallback.ZIndex = 43
     closeFallback.Parent = objects.obj16
 
@@ -684,7 +719,7 @@ do
     closeXStroke.Name = "CloseXStroke"
     closeXStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
     closeXStroke.Color = Color3.fromRGB(0, 0, 0)
-    closeXStroke.Thickness = 3.2
+    closeXStroke.Thickness = 3.6
     closeXStroke.LineJoinMode = Enum.LineJoinMode.Round
     closeXStroke.Transparency = 0
     closeXStroke.Parent = closeFallback
@@ -706,7 +741,6 @@ pcall(function()
     local closeGrad = objects.obj16:FindFirstChild("CloseGradient")
     local closeLabel = objects.obj16:FindFirstChild("CloseFallbackX")
     local closeIcon = objects.obj16:FindFirstChild("CloseIcon")
-    local targetGlyph = closeLabel or closeIcon
 
     objects.obj14.MouseEnter:Connect(function()
         if closeGrad then
@@ -715,9 +749,14 @@ pcall(function()
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(182, 38, 50))
             })
         end
-        if targetGlyph then
-            TweenService:Create(targetGlyph, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Size = UDim2.new(1.12, 0, 1.12, 0)
+        if closeIcon then
+            TweenService:Create(closeIcon, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.94, 0, 0.94, 0)
+            }):Play()
+        end
+        if closeLabel then
+            TweenService:Create(closeLabel, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.94, 0, 0.94, 0)
             }):Play()
         end
     end)
@@ -728,23 +767,38 @@ pcall(function()
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 26, 36))
             })
         end
-        if targetGlyph then
-            TweenService:Create(targetGlyph, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Size = UDim2.new(1, 0, 1, 0)
+        if closeIcon then
+            TweenService:Create(closeIcon, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.86, 0, 0.86, 0)
+            }):Play()
+        end
+        if closeLabel then
+            TweenService:Create(closeLabel, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.86, 0, 0.86, 0)
             }):Play()
         end
     end)
     objects.obj14.MouseButton1Down:Connect(function()
-        if targetGlyph then
-            TweenService:Create(targetGlyph, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0.92, 0, 0.92, 0)
+        if closeIcon then
+            TweenService:Create(closeIcon, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.78, 0, 0.78, 0)
+            }):Play()
+        end
+        if closeLabel then
+            TweenService:Create(closeLabel, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.78, 0, 0.78, 0)
             }):Play()
         end
     end)
     objects.obj14.MouseButton1Up:Connect(function()
-        if targetGlyph then
-            TweenService:Create(targetGlyph, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Size = UDim2.new(1.12, 0, 1.12, 0)
+        if closeIcon then
+            TweenService:Create(closeIcon, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.94, 0, 0.94, 0)
+            }):Play()
+        end
+        if closeLabel then
+            TweenService:Create(closeLabel, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.94, 0, 0.94, 0)
             }):Play()
         end
     end)
@@ -2860,7 +2914,12 @@ do
 
         local closeFallback = objects.obj16:FindFirstChild("CloseFallbackX")
         if closeFallback then
-            closeFallback.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
+            closeFallback.TextSize = math.clamp(math.round(barH * 0.85), 36, 46)
+            closeFallback.Size = UDim2.new(0.86, 0, 0.86, 0)
+        end
+        local closeIcon = objects.obj16:FindFirstChild("CloseIcon")
+        if closeIcon then
+            closeIcon.Size = UDim2.new(0.86, 0, 0.86, 0)
         end
         
         -- Title: centered, bold cartoon style
