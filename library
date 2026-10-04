@@ -551,17 +551,17 @@ pcall(chilliSetProperty, objects.obj14, "Name", "Close")
 pcall(chilliSetProperty, objects.obj14, "Archivable", true)
 pcall(chilliSetProperty, objects.obj14, "Visible", true)
 pcall(chilliSetProperty, objects.obj14, "Active", true)
-pcall(chilliSetProperty, objects.obj14, "AnchorPoint", Vector2.new(1, 0.5))
+pcall(chilliSetProperty, objects.obj14, "AnchorPoint", Vector2.new(1, 0))
 pcall(chilliSetProperty, objects.obj14, "BackgroundColor3", Color3.fromRGB(255,255,255))
 pcall(chilliSetProperty, objects.obj14, "BackgroundTransparency", 1)
-pcall(chilliSetProperty, objects.obj14, "BorderColor3", Color3.fromRGB(27,42,53))
+pcall(chilliSetProperty, objects.obj14, "BorderColor3", Color3.fromRGB(0,0,0))
 pcall(chilliSetProperty, objects.obj14, "BorderSizePixel", 0)
-pcall(chilliSetProperty, objects.obj14, "ClipsDescendants", false)
-pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(1, -8, 0.5, 0))
+pcall(chilliSetProperty, objects.obj14, "ClipsDescendants", true)
+pcall(chilliSetProperty, objects.obj14, "Position", UDim2.new(1, 0, 0, 0))
 pcall(chilliSetProperty, objects.obj14, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj14, "Selectable", true)
 pcall(chilliSetProperty, objects.obj14, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj14, "Size", UDim2.new(0.76, 0, 0.76, 0))
+pcall(chilliSetProperty, objects.obj14, "Size", UDim2.new(1, 0, 1, 0))
 pcall(chilliSetProperty, objects.obj14, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
 pcall(chilliSetProperty, objects.obj14, "ZIndex", 99)
 pcall(chilliSetProperty, objects.obj14, "AutomaticSize", Enum.AutomaticSize.None)
@@ -573,7 +573,7 @@ objects.obj14.Parent = objects.obj4
 objects.obj15 = Instance.new("UIAspectRatioConstraint")
 pcall(chilliSetProperty, objects.obj15, "Name", "UIAspectRatioConstraint")
 pcall(chilliSetProperty, objects.obj15, "Archivable", true)
-pcall(chilliSetProperty, objects.obj15, "AspectRatio", 1)
+pcall(chilliSetProperty, objects.obj15, "AspectRatio", 0.96)
 pcall(chilliSetProperty, objects.obj15, "AspectType", Enum.AspectType.FitWithinMaxSize)
 pcall(chilliSetProperty, objects.obj15, "DominantAxis", Enum.DominantAxis.Height)
 objects.obj15.Parent = objects.obj14
@@ -583,56 +583,57 @@ pcall(chilliSetProperty, objects.obj16, "Name", "Main")
 pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
-pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0.5,0.5))
+pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0, 0))
 pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
 pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj16, "ClipsDescendants", true)
-pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0.5,0,0.5,0))
-pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1,0,1,0))
-pcall(chilliSetProperty, objects.obj16, "ZIndex", 1)
+pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0, 0, 0, 0))
+pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1, 0, 1, 0))
+pcall(chilliSetProperty, objects.obj16, "ZIndex", 41)
 
 do
     local closeCorner = Instance.new("UICorner")
     closeCorner.Name = "CloseCorner"
-    closeCorner.CornerRadius = UDim.new(0, 6)
+    closeCorner.CornerRadius = UDim.new(0, 0)
     closeCorner.Parent = objects.obj16
 end
 
--- Sleek Rounded Squircle Close Button Stroke
+-- Crisp boxy dark border separating the close block from header
 objects.obj23 = Instance.new("UIStroke")
 pcall(chilliSetProperty, objects.obj23, "Name", "CloseStroke")
 pcall(chilliSetProperty, objects.obj23, "Archivable", true)
 pcall(chilliSetProperty, objects.obj23, "ApplyStrokeMode", Enum.ApplyStrokeMode.Border)
-pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(80, 14, 24))
+pcall(chilliSetProperty, objects.obj23, "Color", Color3.fromRGB(24, 6, 10))
 pcall(chilliSetProperty, objects.obj23, "Enabled", true)
-pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Round)
-pcall(chilliSetProperty, objects.obj23, "Thickness", 1.2)
+pcall(chilliSetProperty, objects.obj23, "LineJoinMode", Enum.LineJoinMode.Miter)
+pcall(chilliSetProperty, objects.obj23, "Thickness", 1.5)
 pcall(chilliSetProperty, objects.obj23, "Transparency", 0)
 objects.obj23.Parent = objects.obj16
 
--- Close button vibrant crimson ruby gradient
+-- Crimson / Ruby gradient on the button
 do
     local closeGrad = Instance.new("UIGradient")
     pcall(chilliSetProperty, closeGrad, "Name", "CloseGradient")
     pcall(chilliSetProperty, closeGrad, "Color", ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 65, 85)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(165, 18, 38))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(236, 68, 76)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 26, 36))
     }))
     pcall(chilliSetProperty, closeGrad, "Rotation", 90)
     closeGrad.Parent = objects.obj16
 end
 
--- Close Button (Direct Decal / Image resolution)
+-- Cartoon 'X' & Decal Image resolution
 do
     local function resolveAsset(id, defaultId)
         local val = (id and id ~= "") and id or defaultId
-        if not val or val == "" then return "rbxassetid://121248223515226" end
+        if not val or val == "" then return "" end
         local str = tostring(val)
         local num = str:match("%d+")
         if not num then return str end
+        -- Avoid broken placeholder decal IDs
         if num == "71848990570837" or num == "121248223515226" then
-            return "rbxassetid://121248223515226"
+            return ""
         end
         local direct = "rbxassetid://" .. num
         local ok, objs = pcall(function() return game:GetObjects(direct) end)
@@ -642,66 +643,109 @@ do
         return direct
     end
 
+    local resolvedImg = resolveAsset(_G.BH_CloseButtonId, "")
+
     objects.obj20 = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
     pcall(chilliSetProperty, objects.obj20, "Archivable", true)
-    pcall(chilliSetProperty, objects.obj20, "Visible", true)
+    pcall(chilliSetProperty, objects.obj20, "Visible", resolvedImg ~= "")
     pcall(chilliSetProperty, objects.obj20, "Active", false)
     pcall(chilliSetProperty, objects.obj20, "AnchorPoint", Vector2.new(0.5, 0.5))
     pcall(chilliSetProperty, objects.obj20, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj20, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj20, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj20, "Position", UDim2.new(0.5, 0, 0.5, 0))
-    pcall(chilliSetProperty, objects.obj20, "ZIndex", 16)
-    pcall(chilliSetProperty, objects.obj20, "Image", resolveAsset(_G.BH_CloseButtonId, "121248223515226"))
+    pcall(chilliSetProperty, objects.obj20, "ZIndex", 44)
+    pcall(chilliSetProperty, objects.obj20, "Image", resolvedImg)
     pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
     pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
-    pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.68, 0, 0.68, 0))
+    pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(0.72, 0, 0.72, 0))
     objects.obj20.Parent = objects.obj16
 
-    -- Fallback '✕' text label: always crisp and visible even if asset loading fails
+    -- Exact Figma Cartoon 'X': Thick bold pure black outline with vibrant coral pink fill!
     local closeFallback = Instance.new("TextLabel")
     closeFallback.Name = "CloseFallbackX"
     closeFallback.AnchorPoint = Vector2.new(0.5, 0.5)
     closeFallback.BackgroundTransparency = 1
     closeFallback.BorderSizePixel = 0
-    closeFallback.Position = UDim2.fromScale(0.5, 0.5)
-    closeFallback.Size = UDim2.fromScale(1, 1)
+    closeFallback.Position = UDim2.new(0.5, 0, 0.5, 0)
+    closeFallback.Size = UDim2.new(1, 0, 1, 0)
     closeFallback.Font = Enum.Font.FredokaOne
     closeFallback.Text = "X"
-    closeFallback.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeFallback.TextSize = 16
-    closeFallback.ZIndex = 15
+    closeFallback.TextColor3 = Color3.fromRGB(253, 112, 142)
+    closeFallback.TextSize = 25
+    closeFallback.Visible = (resolvedImg == "")
+    closeFallback.ZIndex = 43
     closeFallback.Parent = objects.obj16
+
+    local closeXStroke = Instance.new("UIStroke")
+    closeXStroke.Name = "CloseXStroke"
+    closeXStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    closeXStroke.Color = Color3.fromRGB(0, 0, 0)
+    closeXStroke.Thickness = 3.2
+    closeXStroke.LineJoinMode = Enum.LineJoinMode.Round
+    closeXStroke.Transparency = 0
+    closeXStroke.Parent = closeFallback
+
+    local closeXGrad = Instance.new("UIGradient")
+    closeXGrad.Name = "CloseXGradient"
+    closeXGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 138, 162)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(240, 92, 122))
+    })
+    closeXGrad.Rotation = 90
+    closeXGrad.Parent = closeFallback
 end
 
 objects.obj16.Parent = objects.obj14
 
--- Smooth Micro-Animation: Sleek close button hover scale and glow
+-- Smooth Micro-Animation: Sleek close button hover scale and press feedback
 pcall(function()
     local closeGrad = objects.obj16:FindFirstChild("CloseGradient")
+    local closeLabel = objects.obj16:FindFirstChild("CloseFallbackX")
+    local closeIcon = objects.obj16:FindFirstChild("CloseIcon")
+    local targetGlyph = closeLabel or closeIcon
+
     objects.obj14.MouseEnter:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(1.08, 0, 1.08, 0),
-        }):Play()
         if closeGrad then
             closeGrad.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 95, 115)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(205, 30, 52))
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 88, 98)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(182, 38, 50))
             })
+        end
+        if targetGlyph then
+            TweenService:Create(targetGlyph, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1.12, 0, 1.12, 0)
+            }):Play()
         end
     end)
     objects.obj14.MouseLeave:Connect(function()
-        TweenService:Create(objects.obj16, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(1, 0, 1, 0),
-        }):Play()
         if closeGrad then
             closeGrad.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 65, 85)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(165, 18, 38))
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(236, 68, 76)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 26, 36))
             })
+        end
+        if targetGlyph then
+            TweenService:Create(targetGlyph, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1, 0, 1, 0)
+            }):Play()
+        end
+    end)
+    objects.obj14.MouseButton1Down:Connect(function()
+        if targetGlyph then
+            TweenService:Create(targetGlyph, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0.92, 0, 0.92, 0)
+            }):Play()
+        end
+    end)
+    objects.obj14.MouseButton1Up:Connect(function()
+        if targetGlyph then
+            TweenService:Create(targetGlyph, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1.12, 0, 1.12, 0)
+            }):Play()
         end
     end)
 end)
@@ -2808,15 +2852,21 @@ do
         objects.obj12.Position = UDim2.new(0, 10, 0.5, 0)
         objects.obj12.AnchorPoint = Vector2.new(0, 0.5)
         
-        -- Close button: compact, sleek modern gaming close button
-        local closeDim = math.clamp(math.round(barH * 0.58), 24, 28)
-        objects.obj14.Position = UDim2.new(1, -12, 0.5, 0)
-        objects.obj14.Size = UDim2.fromOffset(closeDim, closeDim)
+        -- Close button: Figma-exact flush right block matching full header height
+        local closeW = math.round(barH * 0.96)
+        objects.obj14.AnchorPoint = Vector2.new(1, 0)
+        objects.obj14.Position = UDim2.new(1, 0, 0, 0)
+        objects.obj14.Size = UDim2.new(0, closeW, 1, 0)
+
+        local closeFallback = objects.obj16:FindFirstChild("CloseFallbackX")
+        if closeFallback then
+            closeFallback.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
+        end
         
         -- Title: centered, bold cartoon style
         objects.obj9.Position = UDim2.new(0.5, 0, 0.5, 0)
         objects.obj9.AnchorPoint = Vector2.new(0.5, 0.5)
-        objects.obj9.Size = UDim2.new(1, -(catDim * 2 + closeDim * 2 + 16), 1, 0)
+        objects.obj9.Size = UDim2.new(1, -(catDim * 2 + closeW * 2 + 16), 1, 0)
         objects.obj9.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
     end
 
@@ -7095,10 +7145,17 @@ do
     modalCloseBtn.BorderSizePixel = 0
     modalCloseBtn.Font = Enum.Font.FredokaOne
     modalCloseBtn.Text = "X"
-    modalCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    modalCloseBtn.TextSize = 11
+    modalCloseBtn.TextColor3 = Color3.fromRGB(253, 112, 142)
+    modalCloseBtn.TextSize = 12
     modalCloseBtn.ZIndex = 209
     modalCloseBtn.AutoButtonColor = false
+    do
+        local mStroke = Instance.new("UIStroke")
+        mStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        mStroke.Color = Color3.fromRGB(0, 0, 0)
+        mStroke.Thickness = 2
+        mStroke.Parent = modalCloseBtn
+    end
     modalCloseBtn.Parent = modalHeader
 
     -- Modal Question (Clear, Professional, High Quality)
