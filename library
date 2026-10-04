@@ -198,8 +198,8 @@ objects.obj2.Parent = objects.obj1
 -- Sharp Boxy Frame (CornerRadius = 0)
 -- No UICorner on obj2 for clean boxy look
 
--- Authentic Figma Cyber Window Frame: Solid Deep Dark Ocean Navy Canvas (#081424)
-pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(8, 20, 36))
+-- Authentic Figma Cyber Window Frame: Solid Electric Ocean Blue Canvas
+pcall(chilliSetProperty, objects.obj2, "BackgroundColor3", Color3.fromRGB(24, 120, 215))
 pcall(chilliSetProperty, objects.obj2, "BackgroundTransparency", 0)
 pcall(chilliSetProperty, objects.obj2, "ClipsDescendants", false)
 
@@ -207,10 +207,10 @@ objects.obj2_gradient = Instance.new("UIGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Name", "OceanDeepGradient")
 pcall(chilliSetProperty, objects.obj2_gradient, "Archivable", true)
 pcall(chilliSetProperty, objects.obj2_gradient, "Color", ColorSequence.new({
-    ColorSequenceKeypoint.new(0,    Color3.fromRGB(14, 34, 62)),
-    ColorSequenceKeypoint.new(0.40, Color3.fromRGB(10, 24, 46)),
-    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(8, 18, 36)),
-    ColorSequenceKeypoint.new(1,    Color3.fromRGB(5, 12, 24))
+    ColorSequenceKeypoint.new(0,    Color3.fromRGB(54, 168, 255)),
+    ColorSequenceKeypoint.new(0.40, Color3.fromRGB(41, 153, 255)),
+    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(18, 111, 202)),
+    ColorSequenceKeypoint.new(1,    Color3.fromRGB(0, 71, 152))
 }))
 pcall(chilliSetProperty, objects.obj2_gradient, "Transparency", NumberSequence.new(0))
 
@@ -341,21 +341,10 @@ do
     pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
     pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveCanvasAsset())
     pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.30)
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0)
     pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
     pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
     objects.obj2_studs.Parent = objects.obj2
-
-    -- Contrast Scrim: Tones down bright background graphics so foreground text and cards are crisp
-    local canvasScrim = Instance.new("Frame")
-    pcall(chilliSetProperty, canvasScrim, "Name", "CanvasContentScrim")
-    pcall(chilliSetProperty, canvasScrim, "BackgroundColor3", Color3.fromRGB(6, 14, 28))
-    pcall(chilliSetProperty, canvasScrim, "BackgroundTransparency", 0.38)
-    pcall(chilliSetProperty, canvasScrim, "BorderSizePixel", 0)
-    pcall(chilliSetProperty, canvasScrim, "Position", UDim2.new(0, 0, 0, 0))
-    pcall(chilliSetProperty, canvasScrim, "Size", UDim2.new(1, 0, 1, 0))
-    pcall(chilliSetProperty, canvasScrim, "ZIndex", 2)
-    canvasScrim.Parent = objects.obj2
 end
 
 objects.obj4 = Instance.new("Frame")
