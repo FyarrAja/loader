@@ -535,9 +535,9 @@ iVBORw0KGgoAAAANSUhEUgAAANwAAABkCAMAAADaHa6rAAAAYFBMVEUAAAD7/P0CM5ojTqOWqtVOcLRx
     pcall(chilliSetProperty, objects.obj12, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
-    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 8, 1, -2))
-    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(132, 60))
-    pcall(chilliSetProperty, objects.obj12, "ZIndex", 60)
+    pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 6, 0, 8))
+    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(158, 72))
+    pcall(chilliSetProperty, objects.obj12, "ZIndex", 80)
     pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
     pcall(chilliSetProperty, objects.obj12, "ImageTransparency", 0)
@@ -2972,12 +2972,13 @@ do
         local barH = topBar.AbsoluteSize.Y
         if barH <= 0 then barH = 48 end
         
-        -- Cat Mascot: Large, transparent background, resting on top-left of the header bar!
-        local catH = math.clamp(math.round(barH * 1.32), 56, 72)
+        -- Cat Mascot: Large, popping OUTSIDE the top-left window frame!
+        local catH = math.clamp(math.round(barH * 1.5), 68, 80)
         local catW = math.round(catH * (220 / 100))
         objects.obj12.AnchorPoint = Vector2.new(0, 1)
-        objects.obj12.Position = UDim2.new(0, 8, 1, -2)
+        objects.obj12.Position = UDim2.new(0, 6, 0, 8)
         objects.obj12.Size = UDim2.fromOffset(catW, catH)
+        objects.obj12.ZIndex = 80
         
         -- Close button: Figma-exact flush right block matching full header height
         local closeW = math.round(barH * 0.96)
