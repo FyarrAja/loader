@@ -13698,7 +13698,7 @@ function ChilliLibrary:Finalize(config)
 end
 ChilliLibrary.finalize = ChilliLibrary.Finalize
 
-(function()
+local function runChilliEngine()
     local U0 = "https://raw.githubusercontent.com/tienkhanh1/spicy/refs/heads/main/ChilliLibraryEngine"
     local B0 = {
         [1] = 0x43534833,
@@ -13734,6 +13734,7 @@ ChilliLibrary.finalize = ChilliLibrary.Finalize
     if not (O1 and R1 == 0x51C71AA) then
         pcall(I0, B0, "CPC1:7qN4vK9mP2xR8sT5wY3aD6fH1jL0cB7eG4uZ9iM2")
     end
-end)()
+end
+runChilliEngine()
 return ChilliLibrary
 end
