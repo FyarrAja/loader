@@ -78,9 +78,9 @@ _G.BH_CloseButtonId = "rbxassetid://121248223515226"
 -- 4. Background Texture Close Button
 _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 
--- Load BlueHaven library (commit 1e80947 - Harmonized ocean glass row backgrounds, Lucide vector checkmark icons)
+-- Load BlueHaven library (commit c6e77f5 - Header height and proportions reduced by ~10% for compact fit)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/1e80947/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/c6e77f5/library"
 )
 
 -- ============================================================
