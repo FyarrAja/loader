@@ -78,9 +78,9 @@ _G.BH_CloseButtonId = "rbxassetid://121248223515226"
 -- 4. Background Texture Close Button
 _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 
--- Load BlueHaven library (commit 3b71f4f - 100% original vibrant Figma canvas colors, no dark scrim, binary safe)
+-- Load BlueHaven library (commit 1e80947 - Harmonized ocean glass row backgrounds, Lucide vector checkmark icons)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/3b71f4f/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/1e80947/library"
 )
 
 -- ============================================================
