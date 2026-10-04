@@ -268,44 +268,50 @@ do
     windowLimit.Parent = objects.obj2
 end
 
--- Canvas Background Texture (Subtle Cyber Studs / Pattern)
+-- Canvas Background Texture (Authentic Figma Cyber Triangle Matrix Artboard)
 do
-    local function resolveAsset(id, defaultId)
-        local val = (id and id ~= "") and id or defaultId
-        if not val or val == "" then return "rbxassetid://140268358133592" end
-        local str = tostring(val)
-        local num = str:match("%d+")
-        if not num then return str end
-        local direct = "rbxassetid://" .. num
-        local ok, objs = pcall(function() return game:GetObjects(direct) end)
-        if ok and objs and #objs > 0 and objs[1]:IsA("Decal") and objs[1].Texture and objs[1].Texture ~= "" then
-            return objs[1].Texture
-        end
-        local okHttp, xml = pcall(function()
-            return game:HttpGet("https://assetdelivery.roblox.com/v1/asset?id=" .. num)
-        end)
-        if okHttp and type(xml) == "string" and #xml > 0 then
-            local trueId = xml:match("<url>[^%d]*(%d+)[^<]*</url>") or xml:match("id=(%d+)")
-            if trueId and trueId ~= num then
-                return "rbxassetid://" .. trueId
+    local function resolveCanvasAsset()
+        local fileName = "bh_triangle_canvas_v5.png"
+        local getasset = (type(getcustomasset) == "function" and getcustomasset)
+                      or (type(getsynasset) == "function" and getsynasset)
+        local wf = (type(writefile) == "function" and writefile)
+        local isf = (type(isfile) == "function" and isfile)
+
+        if getasset and wf then
+            if not (isf and isf(fileName)) then
+                if game.HttpGet then
+                    pcall(function()
+                        local raw = game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/bh_triangle_canvas.png")
+                        if raw and #raw > 1000 then
+                            pcall(wf, fileName, raw)
+                        end
+                    end)
+                end
+            end
+            local okA, cUrl = pcall(getasset, fileName)
+            if okA and cUrl and cUrl ~= "" then
+                return cUrl
             end
         end
-        return direct
+
+        if _G.BH_CanvasAssetId and _G.BH_CanvasAssetId ~= "" then
+            return _G.BH_CanvasAssetId
+        end
+        return "rbxassetid://140268358133592"
     end
 
     objects.obj2_studs = Instance.new("ImageLabel")
     pcall(chilliSetProperty, objects.obj2_studs, "Name", "CanvasBackgroundTexture")
     pcall(chilliSetProperty, objects.obj2_studs, "BackgroundTransparency", 1)
     pcall(chilliSetProperty, objects.obj2_studs, "BorderSizePixel", 0)
-    pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", false)
+    pcall(chilliSetProperty, objects.obj2_studs, "ClipsDescendants", true)
     pcall(chilliSetProperty, objects.obj2_studs, "Position", UDim2.new(0, 0, 0, 0))
     pcall(chilliSetProperty, objects.obj2_studs, "Size", UDim2.new(1, 0, 1, 0))
     pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
-    pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveAsset(_G.BH_CanvasAssetId, "140268358133592"))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(180, 220, 255))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.90)
-    pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Tile)
-    pcall(chilliSetProperty, objects.obj2_studs, "TileSize", UDim2.fromOffset(48, 48))
+    pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveCanvasAsset())
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0)
+    pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
     pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
     objects.obj2_studs.Parent = objects.obj2
 end
@@ -629,35 +635,49 @@ pcall(chilliSetProperty, objects.obj14, "Text", "")
 pcall(chilliSetProperty, objects.obj14, "AutoButtonColor", false)
 objects.obj14.Parent = objects.obj4
 
-objects.obj15 = Instance.new("UIAspectRatioConstraint")
-pcall(chilliSetProperty, objects.obj15, "Name", "UIAspectRatioConstraint")
-pcall(chilliSetProperty, objects.obj15, "Archivable", true)
-pcall(chilliSetProperty, objects.obj15, "AspectRatio", 0.96)
-pcall(chilliSetProperty, objects.obj15, "AspectType", Enum.AspectType.FitWithinMaxSize)
-pcall(chilliSetProperty, objects.obj15, "DominantAxis", Enum.DominantAxis.Height)
-objects.obj15.Parent = objects.obj14
-
 objects.obj16 = Instance.new("Frame")
 pcall(chilliSetProperty, objects.obj16, "Name", "Main")
 pcall(chilliSetProperty, objects.obj16, "Archivable", true)
 pcall(chilliSetProperty, objects.obj16, "Visible", true)
 pcall(chilliSetProperty, objects.obj16, "Active", false)
 pcall(chilliSetProperty, objects.obj16, "AnchorPoint", Vector2.new(0, 0))
+pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(236, 68, 76))
+pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0) -- FULL solid red, zero blue gap!
 pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj16, "ClipsDescendants", true)
 pcall(chilliSetProperty, objects.obj16, "Position", UDim2.new(0, 0, 0, 0))
 pcall(chilliSetProperty, objects.obj16, "Size", UDim2.new(1, 0, 1, 0))
 pcall(chilliSetProperty, objects.obj16, "ZIndex", 41)
 
--- Close Button (Single-layer: if PNG asset is resolved, use ONLY PNG; otherwise clean cartoon X)
+do
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.Name = "CloseCorner"
+    closeCorner.CornerRadius = UDim.new(0, 0)
+    closeCorner.Parent = objects.obj16
+
+    local closeStroke = Instance.new("UIStroke")
+    closeStroke.Name = "CloseStroke"
+    closeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    closeStroke.Color = Color3.fromRGB(24, 6, 10)
+    closeStroke.Thickness = 1.5
+    closeStroke.LineJoinMode = Enum.LineJoinMode.Miter
+    closeStroke.Parent = objects.obj16
+
+    local closeGrad = Instance.new("UIGradient")
+    closeGrad.Name = "CloseGradient"
+    closeGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 72, 80)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 26, 36))
+    })
+    closeGrad.Rotation = 90
+    closeGrad.Parent = objects.obj16
+end
+
+-- Close Button Content (if PNG asset is resolved, use ONLY PNG; otherwise clean cartoon X)
 do
     local resolvedClose = (_G.BH_ResolveCloseAsset and _G.BH_ResolveCloseAsset()) or ""
 
     if resolvedClose ~= "" then
-        pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(255, 255, 255))
-        pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 1)
-        pcall(chilliSetProperty, objects.obj16, "BorderSizePixel", 0)
-
         objects.obj20 = Instance.new("ImageLabel")
         pcall(chilliSetProperty, objects.obj20, "Name", "CloseIcon")
         pcall(chilliSetProperty, objects.obj20, "Archivable", true)
@@ -672,36 +692,11 @@ do
         pcall(chilliSetProperty, objects.obj20, "Image", resolvedClose)
         pcall(chilliSetProperty, objects.obj20, "ImageColor3", Color3.fromRGB(255, 255, 255))
         pcall(chilliSetProperty, objects.obj20, "ImageTransparency", 0)
-        pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Fit)
+        pcall(chilliSetProperty, objects.obj20, "ScaleType", Enum.ScaleType.Stretch)
         pcall(chilliSetProperty, objects.obj20, "ResampleMode", Enum.ResamplerMode.Default)
         pcall(chilliSetProperty, objects.obj20, "Size", UDim2.new(1, 0, 1, 0))
         objects.obj20.Parent = objects.obj16
     else
-        pcall(chilliSetProperty, objects.obj16, "BackgroundColor3", Color3.fromRGB(236, 68, 76))
-        pcall(chilliSetProperty, objects.obj16, "BackgroundTransparency", 0)
-
-        local closeCorner = Instance.new("UICorner")
-        closeCorner.Name = "CloseCorner"
-        closeCorner.CornerRadius = UDim.new(0, 0)
-        closeCorner.Parent = objects.obj16
-
-        local closeStroke = Instance.new("UIStroke")
-        closeStroke.Name = "CloseStroke"
-        closeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        closeStroke.Color = Color3.fromRGB(24, 6, 10)
-        closeStroke.Thickness = 1.5
-        closeStroke.LineJoinMode = Enum.LineJoinMode.Miter
-        closeStroke.Parent = objects.obj16
-
-        local closeGrad = Instance.new("UIGradient")
-        closeGrad.Name = "CloseGradient"
-        closeGrad.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(236, 68, 76)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 26, 36))
-        })
-        closeGrad.Rotation = 90
-        closeGrad.Parent = objects.obj16
-
         local closeFallback = Instance.new("TextLabel")
         closeFallback.Name = "CloseFallbackX"
         closeFallback.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2907,8 +2902,8 @@ do
         objects.obj12.Size = UDim2.fromOffset(emblemW, emblemH)
         objects.obj12.ZIndex = 80
         
-        -- Close button: Figma-exact flush right block matching full header height
-        local closeW = math.round(barH * 0.94)
+        -- Close button: Figma-exact flush right block matching full header height (100% full height!)
+        local closeW = math.round(barH * 1.0)
         objects.obj14.AnchorPoint = Vector2.new(1, 0)
         objects.obj14.Position = UDim2.new(1, 0, 0, 0)
         objects.obj14.Size = UDim2.new(0, closeW, 1, 0)
