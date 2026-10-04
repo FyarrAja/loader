@@ -3067,7 +3067,7 @@ local function createRebirthStyleButton(parent, text, layoutOrder)
     return button
 end
 
--- Dedicated Navigation Sidebars INSIDE mainFrame (Left & Right Columns)
+-- Dedicated Navigation Sidebar INSIDE mainFrame (Single Left Column)
 local function applySidebarGlassDecor(frame)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 6)
@@ -3103,76 +3103,55 @@ navSidebar.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
 navSidebar.BackgroundTransparency = 0.60
 navSidebar.BorderSizePixel = 0
 navSidebar.Position = UDim2.new(0, 8, 0, 56)
-navSidebar.Size = UDim2.new(0, 138, 1, -64)
+navSidebar.Size = UDim2.new(0, 144, 1, -64)
 navSidebar.ZIndex = 8
 navSidebar.Parent = mainFrame
 applySidebarGlassDecor(navSidebar)
 
-local navSidebarRight = Instance.new("Frame")
-navSidebarRight.Name = "NavSidebarRight"
-navSidebarRight.Active = false
-navSidebarRight.AnchorPoint = Vector2.new(1, 0)
-navSidebarRight.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
-navSidebarRight.BackgroundTransparency = 0.60
-navSidebarRight.BorderSizePixel = 0
-navSidebarRight.Position = UDim2.new(1, -8, 0, 56)
-navSidebarRight.Size = UDim2.new(0, 138, 1, -64)
-navSidebarRight.ZIndex = 8
-navSidebarRight.Visible = false
-navSidebarRight.Parent = mainFrame
-applySidebarGlassDecor(navSidebarRight)
+local navScroll = Instance.new("ScrollingFrame")
+navScroll.Name = "NavScroll"
+navScroll.Active = true
+navScroll.BackgroundTransparency = 1
+navScroll.BorderSizePixel = 0
+navScroll.Position = UDim2.new(0, 3, 0, 6)
+navScroll.Size = UDim2.new(1, -6, 1, -12)
+navScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+navScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+navScroll.ScrollBarThickness = 3
+navScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
+navScroll.ScrollBarImageTransparency = 0.3
+navScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+navScroll.ZIndex = 9
+navScroll.Parent = navSidebar
 
-local function buildNavScrollStructure(sidebar, buttonsName)
-    local scroll = Instance.new("ScrollingFrame")
-    scroll.Name = "NavScroll"
-    scroll.Active = true
-    scroll.BackgroundTransparency = 1
-    scroll.BorderSizePixel = 0
-    scroll.Position = UDim2.new(0, 3, 0, 6)
-    scroll.Size = UDim2.new(1, -6, 1, -12)
-    scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-    scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    scroll.ScrollBarThickness = 3
-    scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
-    scroll.ScrollBarImageTransparency = 0.3
-    scroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    scroll.ZIndex = 9
-    scroll.Parent = sidebar
+local navScrollLayout = Instance.new("UIListLayout")
+navScrollLayout.Name = "NavScrollLayout"
+navScrollLayout.FillDirection = Enum.FillDirection.Vertical
+navScrollLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+navScrollLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+navScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
+navScrollLayout.Padding = UDim.new(0, 8)
+navScrollLayout.Parent = navScroll
 
-    local layout = Instance.new("UIListLayout")
-    layout.Name = "NavScrollLayout"
-    layout.FillDirection = Enum.FillDirection.Vertical
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    layout.VerticalAlignment = Enum.VerticalAlignment.Top
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Padding = UDim.new(0, 8)
-    layout.Parent = scroll
+local navScrollPadding = Instance.new("UIPadding")
+navScrollPadding.PaddingLeft = UDim.new(0, 4)
+navScrollPadding.PaddingRight = UDim.new(0, 4)
+navScrollPadding.PaddingTop = UDim.new(0, 6)
+navScrollPadding.PaddingBottom = UDim.new(0, 8)
+navScrollPadding.Parent = navScroll
 
-    local padding = Instance.new("UIPadding")
-    padding.PaddingLeft = UDim.new(0, 4)
-    padding.PaddingRight = UDim.new(0, 4)
-    padding.PaddingTop = UDim.new(0, 6)
-    padding.PaddingBottom = UDim.new(0, 8)
-    padding.Parent = scroll
-
-    local buttons = Instance.new("Frame")
-    buttons.Name = buttonsName
-    buttons.Active = false
-    buttons.AnchorPoint = Vector2.new(0.5, 0)
-    buttons.BackgroundTransparency = 1
-    buttons.BorderSizePixel = 0
-    buttons.Position = UDim2.new(0.5, 0, 0, 0)
-    buttons.Size = UDim2.new(1, 0, 0, 0)
-    buttons.AutomaticSize = Enum.AutomaticSize.Y
-    buttons.LayoutOrder = 1
-    buttons.ZIndex = 10
-    buttons.Parent = scroll
-
-    return scroll, layout, padding, buttons
-end
-
-local navScroll, navScrollLayout, navScrollPadding, sideButtons = buildNavScrollStructure(navSidebar, "SideButtons")
-local navScrollRight, navScrollRightLayout, navScrollRightPadding, sideButtonsRight = buildNavScrollStructure(navSidebarRight, "SideButtonsRight")
+local sideButtons = Instance.new("Frame")
+sideButtons.Name = "SideButtons"
+sideButtons.Active = false
+sideButtons.AnchorPoint = Vector2.new(0.5, 0)
+sideButtons.BackgroundTransparency = 1
+sideButtons.BorderSizePixel = 0
+sideButtons.Position = UDim2.new(0.5, 0, 0, 0)
+sideButtons.Size = UDim2.new(1, 0, 0, 0)
+sideButtons.AutomaticSize = Enum.AutomaticSize.Y
+sideButtons.LayoutOrder = 1
+sideButtons.ZIndex = 10
+sideButtons.Parent = navScroll
 
 
 
@@ -6858,17 +6837,7 @@ do
         Width = 1,
         GapRatio = TAB_LAYOUT.GapRatio,
     }
-    TabColumns.Right = {
-        Frame = sideButtonsRight,
-        Layout = navScrollRightLayout,
-        Padding = navScrollRightPadding,
-        AnchorX = 0.5,
-        EdgeX = 0,
-        CenterY = 0.5,
-        TopPadding = 0,
-        Width = 1,
-        GapRatio = TAB_LAYOUT.GapRatio,
-    }
+    TabColumns.Right = TabColumns.Left
 end
 
 -- Layout Synchronizer: Coordinates NavSidebar, Top Search Bar, and Content ScrollingFrame
@@ -6920,61 +6889,23 @@ do
     function syncAllWindowLayout()
         if isSyncingLayout then return end
         isSyncingLayout = true
-        
-        local hasRightTabs = false
-        if sideButtonsRight then
-            for _, child in ipairs(sideButtonsRight:GetChildren()) do
-                if child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
-                    hasRightTabs = true
-                    break
-                end
-            end
-        end
-        if not hasRightTabs and navScrollRight then
-            for _, child in ipairs(navScrollRight:GetChildren()) do
-                if child ~= sideButtonsRight and child:IsA("GuiObject") and child.Name ~= "UIListLayout" and child.Name ~= "UIPadding" then
-                    hasRightTabs = true
-                    break
-                end
-            end
-        end
-        if not hasRightTabs then
-            local win = (ChilliLibrary and ChilliLibrary.Window) or (ChilliLibrary and ChilliLibrary._activeWindow)
-            if win and win.Tabs then
-                for _, tab in ipairs(win.Tabs) do
-                    if tab.Column == TabColumns.Right or tab.Side == "Right" then
-                        hasRightTabs = true
-                        break
-                    end
-                end
-            end
-        end
 
         local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
-        local sidebarW = 138
+        local sidebarW = 144
         local margin = 8
         
-        -- 1. NavSidebar on the left
+        -- 1. Single NavSidebar on the left inside mainFrame
         if navSidebar then
             navSidebar.Position = UDim2.new(0, margin, 0, topH + margin)
             navSidebar.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
             navSidebar.ZIndex = 30
         end
 
-        -- 2. NavSidebarRight on the right (for Config / Settings)
-        if navSidebarRight then
-            navSidebarRight.Visible = hasRightTabs
-            navSidebarRight.Position = UDim2.new(1, -margin, 0, topH + margin)
-            navSidebarRight.Size = UDim2.new(0, sidebarW, 1, -(topH + margin * 2))
-            navSidebarRight.ZIndex = 30
-        end
-
-        local contentX = margin + sidebarW + 8
-        local rightReserved = hasRightTabs and (sidebarW + 8) or 0
-        local contentW = -(contentX + rightReserved + margin)
+        local contentX = margin + sidebarW + 10 -- 162px offset
+        local contentW = -(contentX + margin)   -- -170px width offset
         local searchH = 30
         
-        -- 3. Dedicated Native Ocean Search Bar at the TOP
+        -- 2. Dedicated Native Ocean Search Bar at the TOP
         if windowSearchBar then
             windowSearchBar.Position = UDim2.new(0, contentX, 0, topH + margin)
             windowSearchBar.Size = UDim2.new(1, contentW, 0, searchH)
@@ -13293,24 +13224,7 @@ ApiImpl[95] = function(self, config)
     page.Size = objects.obj25.Size
     page.ClipsDescendants = true
 
-    local side = tabConfig.Side
-    if not side then
-        local lowerName = tabConfig.Name:lower():gsub("%s+", " ")
-        if lowerName == "settings"
-            or lowerName == "config"
-            or lowerName == "configuration"
-            or lowerName:find("^config")
-            or lowerName == "quick & keys"
-            or (lowerName:find("quick") and lowerName:find("key"))
-            or (lowerName:find("settings$") and not lowerName:find("misc"))
-        then
-            side = "Right"
-        else
-            side = "Left"
-        end
-    end
-    side = (tostring(side):lower() == "right") and "Right" or "Left"
-    local column = TabColumns[side] or TabColumns.Left
+    local column = TabColumns.Left
     local tabDisplayName = tostring(tabConfig.DisplayName or tabConfig.Name)
     local button = createRebirthStyleButton(
         column.Frame,
@@ -13330,7 +13244,7 @@ ApiImpl[95] = function(self, config)
         Name = tabConfig.Name,
         Page = page,
         SectionsExpanded = tabConfig.SectionsExpanded ~= false,
-        Side = (column == TabColumns.Right) and "Right" or "Left",
+        Side = "Left",
         Sections = {},
         Window = self,
     }, TabMethods)
