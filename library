@@ -310,10 +310,21 @@ do
     pcall(chilliSetProperty, objects.obj2_studs, "ZIndex", 1)
     pcall(chilliSetProperty, objects.obj2_studs, "Image", resolveCanvasAsset())
     pcall(chilliSetProperty, objects.obj2_studs, "ImageColor3", Color3.fromRGB(255, 255, 255))
-    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0)
+    pcall(chilliSetProperty, objects.obj2_studs, "ImageTransparency", 0.30)
     pcall(chilliSetProperty, objects.obj2_studs, "ScaleType", Enum.ScaleType.Stretch)
     pcall(chilliSetProperty, objects.obj2_studs, "ResampleMode", Enum.ResamplerMode.Default)
     objects.obj2_studs.Parent = objects.obj2
+
+    -- Contrast Scrim: Tones down bright background graphics so foreground text and cards are crisp
+    local canvasScrim = Instance.new("Frame")
+    pcall(chilliSetProperty, canvasScrim, "Name", "CanvasContentScrim")
+    pcall(chilliSetProperty, canvasScrim, "BackgroundColor3", Color3.fromRGB(6, 14, 28))
+    pcall(chilliSetProperty, canvasScrim, "BackgroundTransparency", 0.38)
+    pcall(chilliSetProperty, canvasScrim, "BorderSizePixel", 0)
+    pcall(chilliSetProperty, canvasScrim, "Position", UDim2.new(0, 0, 0, 0))
+    pcall(chilliSetProperty, canvasScrim, "Size", UDim2.new(1, 0, 1, 0))
+    pcall(chilliSetProperty, canvasScrim, "ZIndex", 2)
+    canvasScrim.Parent = objects.obj2
 end
 
 objects.obj4 = Instance.new("Frame")
@@ -3384,9 +3395,9 @@ local function buildRowPlate(parent, labelText)
     main.Name = "Main"
     main.Active = false
     main.AnchorPoint = Vector2.new(0.5, 0.5)
-    -- Luminous Frosted Liquid Glass Tile (Crystal Sheen & Glassmorphism)
-    main.BackgroundColor3 = Color3.fromRGB(20, 68, 125)
-    main.BackgroundTransparency = 0.64
+    -- High-Contrast Dark Ocean Glass Plate (Clear & Crisp Foreground)
+    main.BackgroundColor3 = Color3.fromRGB(10, 24, 48)
+    main.BackgroundTransparency = 0.10
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
     main.Size = UDim2.fromScale(1, 0.85)
@@ -3401,21 +3412,21 @@ local function buildRowPlate(parent, labelText)
     plateGrad.Name = "GlassSheenGrad"
     plateGrad.Rotation = 90
     plateGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 165, 255)),
-        ColorSequenceKeypoint.new(0.30, Color3.fromRGB(30, 95, 175)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 52, 105)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 60, 110)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(14, 38, 75)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 22, 48)),
     })
     plateGrad.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.35),
-        NumberSequenceKeypoint.new(1, 0.62),
+        ColorSequenceKeypoint.new(0, 0.04),
+        ColorSequenceKeypoint.new(1, 0.10),
     })
     plateGrad.Parent = main
 
     local plateStroke = Instance.new("UIStroke")
     plateStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    plateStroke.Color = Color3.fromRGB(105, 228, 255)
-    plateStroke.Transparency = 0.32
-    plateStroke.Thickness = 1.2
+    plateStroke.Color = Color3.fromRGB(0, 220, 255)
+    plateStroke.Transparency = 0.12
+    plateStroke.Thickness = 1.3
     plateStroke.LineJoinMode = Enum.LineJoinMode.Round
     plateStroke.Parent = main
 
@@ -7691,12 +7702,10 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     header.Name = title
     header.Active = false
     header.AnchorPoint = Vector2.new(0.5, 0.5)
-    header.BackgroundTransparency = 1
+    header.BackgroundColor3 = Color3.fromRGB(8, 20, 42)
+    header.BackgroundTransparency = 0.15
     header.BorderSizePixel = 0
     header.LayoutOrder = layoutOrder
-    
-    
-    
     header.Size = UDim2.new(0.97, 0, 0, 36)
     header.Text = title
     header.TextWrapped = true
@@ -7704,10 +7713,19 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     header.TextYAlignment = Enum.TextYAlignment.Center
     header.ZIndex = 4
 
+    local headerCorner = Instance.new("UICorner")
+    headerCorner.CornerRadius = UDim.new(0, 6)
+    headerCorner.Parent = header
+
+    local headerStroke = Instance.new("UIStroke")
+    headerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    headerStroke.Color = Color3.fromRGB(0, 210, 255)
+    headerStroke.Transparency = 0.25
+    headerStroke.Thickness = 1.2
+    headerStroke.Parent = header
+
     applyShinyTextStyle(header, normalTextFont)
 
-    
-    
     local arrowClip = Instance.new("Frame")
     arrowClip.Name = "ArrowClip"
     arrowClip.Active = false
