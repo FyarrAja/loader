@@ -78,9 +78,9 @@ _G.BH_CloseButtonId = "rbxassetid://121248223515226"
 -- 4. Background Texture Close Button
 _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 
--- Load BlueHaven library (commit cec587f - Clean 2_triangle_canvas v6, bugfix ColorSequenceKeypoint, anti-cache & binary safe loader)
+-- Load BlueHaven library (commit d1557cb - Clean 2_triangle_canvas v6, bugfix ColorSequenceKeypoint, anti-cache & binary safe loader)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/cec587f/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/d1557cb/library"
 )
 
 -- ============================================================
