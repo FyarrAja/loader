@@ -78,9 +78,9 @@ _G.BH_CloseButtonId = "rbxassetid://121248223515226"
 -- 4. Background Texture Close Button
 _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 
--- Load BlueHaven library (commit d1557cb - Clean 2_triangle_canvas v6, bugfix ColorSequenceKeypoint, anti-cache & binary safe loader)
+-- Load BlueHaven library (commit 3b71f4f - 100% original vibrant Figma canvas colors, no dark scrim, binary safe)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/d1557cb/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/3b71f4f/library"
 )
 
 -- ============================================================
