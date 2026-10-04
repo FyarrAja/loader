@@ -362,7 +362,7 @@ pcall(chilliSetProperty, objects.obj4, "Position", UDim2.new(0.5,0,0,0))
 pcall(chilliSetProperty, objects.obj4, "Rotation", 0)
 pcall(chilliSetProperty, objects.obj4, "Selectable", false)
 pcall(chilliSetProperty, objects.obj4, "SelectionOrder", 0)
-pcall(chilliSetProperty, objects.obj4, "Size", UDim2.new(1,0,0.138,0))
+pcall(chilliSetProperty, objects.obj4, "Size", UDim2.new(1,0,0.124,0))
 pcall(chilliSetProperty, objects.obj4, "ZIndex", 40)
 pcall(chilliSetProperty, objects.obj4, "AutomaticSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj4, "LayoutOrder", 0)
@@ -593,7 +593,7 @@ iVBORw0KGgoAAAANSUhEUgAAAC0AAAAuCAYAAAC8jpA0AAARK0lEQVR4nH1Ze5BddX3/nPe5r717793H
     pcall(chilliSetProperty, objects.obj12, "BorderSizePixel", 0)
     pcall(chilliSetProperty, objects.obj12, "ClipsDescendants", false)
     pcall(chilliSetProperty, objects.obj12, "Position", UDim2.new(0, 4, 1, -2))
-    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(95, 76))
+    pcall(chilliSetProperty, objects.obj12, "Size", UDim2.fromOffset(85, 68))
     pcall(chilliSetProperty, objects.obj12, "ZIndex", 80)
     pcall(chilliSetProperty, objects.obj12, "ScaleType", Enum.ScaleType.Fit)
     pcall(chilliSetProperty, objects.obj12, "ImageColor3", Color3.fromRGB(255, 255, 255))
@@ -620,7 +620,7 @@ pcall(chilliSetProperty, objects.obj9, "ZIndex", 24)
 pcall(chilliSetProperty, objects.obj9, "Text", "BLUE HAVEN HUB")
 pcall(chilliSetProperty, objects.obj9, "TextColor3", Color3.fromRGB(255, 255, 255))
 pcall(chilliSetProperty, objects.obj9, "TextTransparency", 0) -- hidden in favor of obj9_img
-pcall(chilliSetProperty, objects.obj9, "TextSize", 30)
+pcall(chilliSetProperty, objects.obj9, "TextSize", 26)
 pcall(chilliSetProperty, objects.obj9, "TextScaled", false)
 pcall(chilliSetProperty, objects.obj9, "TextWrapped", false)
 pcall(chilliSetProperty, objects.obj9, "TextTruncate", Enum.TextTruncate.None)
@@ -2921,12 +2921,12 @@ end)
 do
     local function syncHeaderElements()
         local barH = topBar.AbsoluteSize.Y
-        if barH <= 0 then barH = 49 end
+        if barH <= 0 then barH = 44 end
         
         -- Cat Mascot + Bhv Emblem: Sits in top-left header corner matching Figma
         -- User high-res clean no-bg mascot aspect ratio: 1231 / 987 = ~1.2472
-        -- Total height = 1.55 * barH (~76px for 49px bar, cat & ZZZ poke out ~37% above header)
-        local emblemH = math.clamp(math.round(barH * 1.55), 72, 88)
+        -- Total height = 1.55 * barH (~68px for 44px bar, cat & ZZZ poke out ~37% above header)
+        local emblemH = math.clamp(math.round(barH * 1.55), 64, 80)
         local emblemW = math.round(emblemH * (1231 / 987))
         objects.obj12.AnchorPoint = Vector2.new(0, 1)
         objects.obj12.Position = UDim2.new(0, 4, 1, -2)
@@ -2941,7 +2941,7 @@ do
 
         local closeFallback = objects.obj16:FindFirstChild("CloseFallbackX")
         if closeFallback then
-            closeFallback.TextSize = math.clamp(math.round(barH * 0.92), 40, 52)
+            closeFallback.TextSize = math.clamp(math.round(barH * 0.92), 36, 46)
             closeFallback.Size = UDim2.new(0.92, 0, 0.92, 0)
         end
         local closeIcon = objects.obj16:FindFirstChild("CloseIcon")
@@ -2953,7 +2953,7 @@ do
         objects.obj9.Position = UDim2.new(0.52, 0, 0.5, 0)
         objects.obj9.AnchorPoint = Vector2.new(0.5, 0.5)
         objects.obj9.Size = UDim2.new(1, -(emblemW + closeW + 28), 1, 0)
-        objects.obj9.TextSize = math.clamp(math.round(barH * 0.58), 22, 28)
+        objects.obj9.TextSize = math.clamp(math.round(barH * 0.58), 19, 25)
         objects.obj9.TextColor3 = Color3.fromRGB(255, 255, 255)
         objects.obj9.TextTransparency = 0
     end
@@ -2961,7 +2961,7 @@ do
     topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncHeaderElements)
 
     ContentScale.OnChanged(function(scaleX, scaleY)
-        topBar.Size = UDim2.new(1, 0, 0.135, 0)
+        topBar.Size = UDim2.new(1, 0, 0.124, 0)
         syncHeaderElements()
     end)
 
@@ -6903,7 +6903,7 @@ do
         if isSyncingLayout then return end
         isSyncingLayout = true
 
-        local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 48
+        local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 44
         local sidebarW = 144
         local margin = 8
         
@@ -7719,7 +7719,7 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     header.BackgroundTransparency = 0.30
     header.BorderSizePixel = 0
     header.LayoutOrder = layoutOrder
-    header.Size = UDim2.new(0.97, 0, 0, 36)
+    header.Size = UDim2.new(0.97, 0, 0, 33)
     header.Text = title
     header.TextWrapped = true
     header.TextXAlignment = Enum.TextXAlignment.Center
