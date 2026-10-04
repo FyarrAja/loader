@@ -3385,9 +3385,6 @@ local function createDropdownRow(
     row.AnchorPoint = Vector2.new(0.5, 0.5)
     row.BackgroundTransparency = 1
     row.BorderSizePixel = 0
-    
-    
-    
     row.ClipsDescendants = false
     row.Position = UDim2.fromScale(0.5, 0.5)
     row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, 0)
@@ -3406,13 +3403,14 @@ local function createDropdownRow(
 
     local main, titleLabel = buildRowPlate(head, labelText)
 
+    -- Trigger box (closed state button) styled in liquid ocean glass
     local box = Instance.new("TextButton")
     box.Name = "Dropdown"
     box.Active = true
     box.AutoButtonColor = false
     box.AnchorPoint = Vector2.new(0.5, 0.5)
-    box.BackgroundColor3 = Color3.fromRGB(12, 34, 62)
-    box.BackgroundTransparency = 0.18
+    box.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
+    box.BackgroundTransparency = 0.35
     box.BorderSizePixel = 0
     box.Position = UDim2.fromScale(CONTROL_LAYOUT.WideCenterX, 0.5)
     box.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62)
@@ -3434,11 +3432,27 @@ local function createDropdownRow(
 
     local boxGrad = Instance.new("UIGradient")
     boxGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(18, 52, 94)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 24, 48)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 60, 112)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 32, 64)),
     })
     boxGrad.Rotation = 90
     boxGrad.Parent = box
+
+    local boxPattern = Instance.new("ImageLabel")
+    boxPattern.Name = "ButtonPattern"
+    boxPattern.BackgroundTransparency = 1
+    boxPattern.BorderSizePixel = 0
+    boxPattern.AnchorPoint = Vector2.new(0.5, 0.5)
+    boxPattern.Position = UDim2.fromScale(0.5, 0.5)
+    boxPattern.Size = UDim2.fromScale(1, 1)
+    boxPattern.Image = "rbxassetid://109248302930363"
+    boxPattern.ImageColor3 = Color3.fromRGB(140, 210, 255)
+    boxPattern.ImageTransparency = 0.85
+    boxPattern.ScaleType = Enum.ScaleType.Stretch
+    boxPattern.ZIndex = 7
+    boxPattern.Parent = box
+
+    local isOpen = false
 
     box.MouseEnter:Connect(function()
         TweenService:Create(boxStroke, TweenInfo.new(0.12), {
@@ -3446,7 +3460,7 @@ local function createDropdownRow(
             Transparency = 0,
         }):Play()
         TweenService:Create(box, TweenInfo.new(0.12), {
-            BackgroundTransparency = 0.08,
+            BackgroundTransparency = 0.20,
         }):Play()
     end)
     box.MouseLeave:Connect(function()
@@ -3456,7 +3470,7 @@ local function createDropdownRow(
                 Transparency = 0.35,
             }):Play()
             TweenService:Create(box, TweenInfo.new(0.12), {
-                BackgroundTransparency = 0.18,
+                BackgroundTransparency = 0.35,
             }):Play()
         end
     end)
@@ -3511,18 +3525,19 @@ local function createDropdownRow(
     value.AnchorPoint = Vector2.new(0, 0.5)
     value.BackgroundTransparency = 1
     value.BorderSizePixel = 0
-    value.Position = UDim2.new(0, 12, 0.5, 0)
-    value.Size = UDim2.new(1, -38, 0.8, 0)
-    value.Text = options[defaultIndex] or options[1]
+    value.Position = UDim2.new(0, 10, 0.5, 0)
+    value.Size = UDim2.new(1, -34, 0.8, 0)
+    value.Text = options[defaultIndex] or options[1] or ""
     value.TextWrapped = false
     value.TextTruncate = Enum.TextTruncate.AtEnd
     value.TextXAlignment = Enum.TextXAlignment.Left
     value.TextYAlignment = Enum.TextYAlignment.Center
-    value.Font = Enum.Font.FredokaOne
-    value.TextColor3 = Color3.fromRGB(240, 252, 255)
-    value.TextSize = 12
-    value.ZIndex = 7
+    value.Font = normalTextFont
+    value.TextColor3 = Color3.fromRGB(245, 252, 255)
+    value.TextSize = 13
+    value.ZIndex = 8
     value.Parent = box
+    applyShinyTextStyle(value, normalTextFont)
 
     local caret = Instance.new("Frame")
     caret.Name = "Caret"
@@ -3530,9 +3545,9 @@ local function createDropdownRow(
     caret.AnchorPoint = Vector2.new(1, 0.5)
     caret.BackgroundTransparency = 1
     caret.BorderSizePixel = 0
-    caret.Position = UDim2.new(1, -8, 0.5, 0)
-    caret.Size = UDim2.new(0, 20, 0, 20)
-    caret.ZIndex = 7
+    caret.Position = UDim2.new(1, -6, 0.5, 0)
+    caret.Size = UDim2.new(0, 18, 0, 18)
+    caret.ZIndex = 8
     caret.Parent = box
 
     local caretLabel = Instance.new("TextLabel")
@@ -3543,34 +3558,28 @@ local function createDropdownRow(
     caretLabel.BorderSizePixel = 0
     caretLabel.Position = UDim2.fromScale(0.5, 0.5)
     caretLabel.Size = UDim2.fromScale(1, 1)
-    caretLabel.Font = Enum.Font.FredokaOne
+    caretLabel.Font = normalTextFont
     caretLabel.Text = "▾"
-    caretLabel.TextColor3 = Color3.fromRGB(0, 215, 255)
+    caretLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
     caretLabel.TextSize = 14
     caretLabel.TextXAlignment = Enum.TextXAlignment.Center
     caretLabel.TextYAlignment = Enum.TextYAlignment.Center
-    caretLabel.ZIndex = 8
+    caretLabel.ZIndex = 9
     caretLabel.Parent = caret
 
-    
-    
-    
-    
-    
-    
-    
-    
+    -- Dropdown dropdown menu container (Classic vertical card)
     local menuClip = Instance.new("Frame")
     menuClip.Name = "Menu"
     menuClip.Active = false
     menuClip.AnchorPoint = Vector2.new(0.5, 0)
-    menuClip.BackgroundColor3 = Color3.fromRGB(6, 20, 38)
-    menuClip.BackgroundTransparency = 0.12
+    menuClip.BackgroundColor3 = Color3.fromRGB(8, 24, 48)
+    menuClip.BackgroundTransparency = 0.15
     menuClip.BorderSizePixel = 0
     menuClip.ClipsDescendants = true
     menuClip.Position = UDim2.new(0.5, 0, 0, 0)
     menuClip.Size = UDim2.new(1, 0, 0, 0)
-    menuClip.ZIndex = 6
+    menuClip.Visible = false
+    menuClip.ZIndex = 15
     menuClip.Parent = row
 
     local menuCorner = Instance.new("UICorner")
@@ -3578,26 +3587,37 @@ local function createDropdownRow(
     menuCorner.Parent = menuClip
 
     local menuStroke = Instance.new("UIStroke")
+    menuStroke.Name = "MenuStroke"
     menuStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    menuStroke.Color = Color3.fromRGB(0, 195, 255)
+    menuStroke.Color = Color3.fromRGB(0, 200, 255)
     menuStroke.Thickness = 1.2
     menuStroke.Transparency = 0.3
     menuStroke.Parent = menuClip
 
-    
+    -- Search field (if >= 5 options)
     local searchField, searchBox
     if #options >= SEARCH_MIN_OPTIONS then
         searchField = Instance.new("Frame")
         searchField.Name = "Search"
         searchField.Active = false
-        searchField.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        searchField.BackgroundTransparency = 0.6
+        searchField.AnchorPoint = Vector2.new(0.5, 0)
+        searchField.BackgroundColor3 = Color3.fromRGB(14, 42, 80)
+        searchField.BackgroundTransparency = 0.45
         searchField.BorderSizePixel = 0
-        searchField.Position = UDim2.new(0, 0, 0, 0)
-        searchField.Size = UDim2.new(0, 0, 0, 0)
-        searchField.ZIndex = 7
+        searchField.Position = UDim2.new(0.5, 0, 0, 6)
+        searchField.Size = UDim2.new(1, -16, 0, 26)
+        searchField.ZIndex = 16
         searchField.Parent = menuClip
-        addScaledStroke(searchField, Enum.ApplyStrokeMode.Border, 0.07)
+
+        local sCorner = Instance.new("UICorner")
+        sCorner.CornerRadius = UDim.new(0, 4)
+        sCorner.Parent = searchField
+
+        local sStroke = Instance.new("UIStroke")
+        sStroke.Color = Color3.fromRGB(0, 180, 240)
+        sStroke.Thickness = 1
+        sStroke.Transparency = 0.5
+        sStroke.Parent = searchField
 
         searchBox = Instance.new("TextBox")
         searchBox.Name = "Input"
@@ -3608,31 +3628,182 @@ local function createDropdownRow(
         searchBox.ClearTextOnFocus = false
         searchBox.MultiLine = false
         searchBox.Position = UDim2.fromScale(0.5, 0.5)
-        searchBox.Size = UDim2.fromScale(0.94, 0.56)
+        searchBox.Size = UDim2.new(1, -12, 0.85, 0)
         searchBox.Text = ""
-        searchBox.PlaceholderText = "Search..."
-        searchBox.PlaceholderColor3 = Color3.fromRGB(198, 198, 198)
-        searchBox.TextXAlignment = Enum.TextXAlignment.Center
+        searchBox.PlaceholderText = "Cari opsi (Search)..."
+        searchBox.PlaceholderColor3 = Color3.fromRGB(120, 190, 240)
+        searchBox.TextXAlignment = Enum.TextXAlignment.Left
         searchBox.TextYAlignment = Enum.TextYAlignment.Center
-        searchBox.ZIndex = 9
+        searchBox.Font = normalTextFont
+        searchBox.TextColor3 = Color3.fromRGB(240, 252, 255)
+        searchBox.TextSize = 12
+        searchBox.ZIndex = 17
         searchBox.Parent = searchField
-        applyPlainTextStyle(searchBox)
     end
+
+    -- Hint Label & Action Apply button
+    local hintLabel = nil
+    local applyButton = nil
+    local applyCaption = nil
+    local applyBaseText = ""
+    local applyReady = true
+
+    if action then
+        applyBaseText = tostring(action.ButtonText or "Apply")
+        if action.Hint and tostring(action.Hint) ~= "" then
+            hintLabel = Instance.new("TextLabel")
+            hintLabel.Name = "Hint"
+            hintLabel.Active = false
+            hintLabel.AnchorPoint = Vector2.new(0.5, 0)
+            hintLabel.BackgroundTransparency = 1
+            hintLabel.BorderSizePixel = 0
+            hintLabel.Position = UDim2.new(0.5, 0, 0, 6)
+            hintLabel.Size = UDim2.new(1, -16, 0, 16)
+            hintLabel.Text = tostring(action.Hint)
+            hintLabel.TextWrapped = true
+            hintLabel.TextXAlignment = Enum.TextXAlignment.Center
+            hintLabel.TextYAlignment = Enum.TextYAlignment.Center
+            hintLabel.Font = normalTextFont
+            hintLabel.TextColor3 = Color3.fromRGB(140, 210, 255)
+            hintLabel.TextSize = 11
+            hintLabel.ZIndex = 16
+            hintLabel.Parent = menuClip
+        end
+
+        applyButton = Instance.new("TextButton")
+        applyButton.Name = "Apply"
+        applyButton.Active = true
+        applyButton.AutoButtonColor = false
+        applyButton.AnchorPoint = Vector2.new(0.5, 1)
+        applyButton.BackgroundTransparency = 1
+        applyButton.BorderSizePixel = 0
+        applyButton.Position = UDim2.new(0.5, 0, 1, -6)
+        applyButton.Size = UDim2.new(1, -16, 0, 28)
+        applyButton.Text = ""
+        applyButton.ZIndex = 18
+        applyButton.Parent = menuClip
+        attachScaleFeedback(applyButton, 1.025, 0.97)
+
+        local applyBase = Instance.new("Frame")
+        applyBase.Name = "Main"
+        applyBase.Active = false
+        applyBase.AnchorPoint = Vector2.new(0.5, 0.5)
+        applyBase.BackgroundColor3 = Color3.fromRGB(0, 70, 180)
+        applyBase.BorderSizePixel = 0
+        applyBase.Position = UDim2.fromScale(0.5, 0.5)
+        applyBase.Size = UDim2.fromScale(1, 1)
+        applyBase.ZIndex = 19
+        applyBase.Parent = applyButton
+
+        local apCorner = Instance.new("UICorner")
+        apCorner.CornerRadius = UDim.new(0, 5)
+        apCorner.Parent = applyBase
+
+        local apStroke = Instance.new("UIStroke")
+        apStroke.Color = Color3.fromRGB(0, 220, 255)
+        apStroke.Thickness = 1.2
+        apStroke.Parent = applyBase
+
+        local applyColor = Instance.new("Frame")
+        applyColor.Name = "ColorFrame"
+        applyColor.Active = false
+        applyColor.AnchorPoint = Vector2.new(0.5, 0)
+        applyColor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        applyColor.BorderSizePixel = 0
+        applyColor.Position = UDim2.fromScale(0.5, 0)
+        applyColor.Size = UDim2.fromScale(1, 0.92)
+        applyColor.ZIndex = 20
+        applyColor.Parent = applyBase
+        addRedGradient(applyColor, "RedGradient", rebirthOuterGradient)
+
+        local apColorCorner = Instance.new("UICorner")
+        apColorCorner.CornerRadius = UDim.new(0, 4)
+        apColorCorner.Parent = applyColor
+
+        local applyHighlight = Instance.new("Frame")
+        applyHighlight.Name = "Transparent"
+        applyHighlight.Active = false
+        applyHighlight.AnchorPoint = Vector2.new(0.5, 0.5)
+        applyHighlight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        applyHighlight.BorderSizePixel = 0
+        applyHighlight.Position = UDim2.fromScale(0.5, 0.5)
+        applyHighlight.Size = UDim2.fromScale(0.965, 0.88)
+        applyHighlight.ZIndex = 21
+        applyHighlight.Parent = applyColor
+        addRedGradient(applyHighlight, "RedGradient", rebirthInnerGradient)
+
+        local apHiCorner = Instance.new("UICorner")
+        apHiCorner.CornerRadius = UDim.new(0, 3)
+        apHiCorner.Parent = applyHighlight
+
+        local apPattern = Instance.new("ImageLabel")
+        apPattern.Name = "ButtonPattern"
+        apPattern.BackgroundTransparency = 1
+        apPattern.BorderSizePixel = 0
+        apPattern.AnchorPoint = Vector2.new(0.5, 0.5)
+        apPattern.Position = UDim2.fromScale(0.5, 0.5)
+        apPattern.Size = UDim2.fromScale(1, 1)
+        apPattern.Image = "rbxassetid://109248302930363"
+        apPattern.ImageColor3 = Color3.fromRGB(180, 230, 255)
+        apPattern.ImageTransparency = 0.35
+        apPattern.ScaleType = Enum.ScaleType.Stretch
+        apPattern.ZIndex = 22
+        apPattern.Parent = applyHighlight
+
+        applyCaption = Instance.new("TextLabel")
+        applyCaption.Name = "Label"
+        applyCaption.Active = false
+        applyCaption.AnchorPoint = Vector2.new(0.5, 0.5)
+        applyCaption.BackgroundTransparency = 1
+        applyCaption.BorderSizePixel = 0
+        applyCaption.Position = UDim2.fromScale(0.5, 0.5)
+        applyCaption.Size = UDim2.fromScale(0.92, 0.72)
+        applyCaption.Text = applyBaseText
+        applyCaption.Font = normalTextFont
+        applyCaption.TextSize = 12
+        applyCaption.ZIndex = 23
+        applyCaption.Parent = applyColor
+        applyShinyTextStyle(applyCaption, normalTextFont)
+    end
+
+    -- Vertical Scrolling Frame for Options
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Name = "OptionsScroll"
+    scrollFrame.Active = true
+    scrollFrame.BackgroundTransparency = 1
+    scrollFrame.BorderSizePixel = 0
+    scrollFrame.ScrollBarThickness = 3
+    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
+    scrollFrame.ScrollBarImageTransparency = 0.2
+    scrollFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scrollFrame.ZIndex = 16
+    scrollFrame.Parent = menuClip
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Name = "OptionList"
+    listLayout.FillDirection = Enum.FillDirection.Vertical
+    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    listLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0, 4)
+    listLayout.Parent = scrollFrame
 
     local emptyLabel = Instance.new("TextLabel")
     emptyLabel.Name = "Empty"
     emptyLabel.Active = false
     emptyLabel.BackgroundTransparency = 1
     emptyLabel.BorderSizePixel = 0
-    emptyLabel.Position = UDim2.new(0, 0, 0, 0)
-    emptyLabel.Size = UDim2.new(0, 0, 0, 0)
-    emptyLabel.Text = "No match"
+    emptyLabel.Size = UDim2.new(1, -12, 0, 28)
+    emptyLabel.Text = "Tidak ada opsi cocok (No match)"
+    emptyLabel.Font = normalTextFont
+    emptyLabel.TextColor3 = Color3.fromRGB(140, 185, 225)
+    emptyLabel.TextSize = 12
     emptyLabel.Visible = false
-    emptyLabel.ZIndex = 9
-    emptyLabel.Parent = menuClip
-    applyPlainTextStyle(emptyLabel)
-    emptyLabel.TextTransparency = 0.4
+    emptyLabel.ZIndex = 17
+    emptyLabel.Parent = scrollFrame
 
+    -- State management
     local currentIndex = type(defaultIndex) == "number" and defaultIndex or 1
     local selected = {}
     if multiSelect and type(defaultIndex) == "table" then
@@ -3641,9 +3812,9 @@ local function createDropdownRow(
             if type(choice) == "number" then
                 choiceIndex = math.clamp(math.floor(choice), 1, #options)
             else
-                for index, option in ipairs(options) do
-                    if option == tostring(choice) then
-                        choiceIndex = index
+                for idx, opt in ipairs(options) do
+                    if opt == tostring(choice) then
+                        choiceIndex = idx
                         break
                     end
                 end
@@ -3662,139 +3833,13 @@ local function createDropdownRow(
         end
         local values = {}
         local indices = {}
-        for index = 1, #options do
-            if selected[index] then
-                table.insert(values, options[index])
-                table.insert(indices, index)
+        for idx = 1, #options do
+            if selected[idx] then
+                table.insert(values, options[idx])
+                table.insert(indices, idx)
             end
         end
         return values, indices
-    end
-
-    local items = {}
-    local visibleItems = {}
-    local searchQuery = ""
-    local isOpen = false
-    local setOpen
-    local refreshSelection
-    local accentWidth = 0
-
-    
-    
-    local hintLabel = nil
-    local applyButton = nil
-    local applyCaption = nil
-    local applyCaptionStroke = nil
-    local applyLayers = nil
-    local applyBaseText = ""
-    local applyReady = true
-    if action then
-        applyBaseText = tostring(action.ButtonText or "Apply")
-
-        
-        
-        hintLabel = Instance.new("TextLabel")
-        hintLabel.Name = "Hint"
-        hintLabel.Active = false
-        hintLabel.BackgroundTransparency = 1
-        hintLabel.BorderSizePixel = 0
-        hintLabel.Position = UDim2.new(0, 0, 0, 0)
-        hintLabel.Size = UDim2.new(0, 0, 0, 0)
-        hintLabel.Text = tostring(action.Hint or "")
-        hintLabel.TextWrapped = true
-        hintLabel.TextXAlignment = Enum.TextXAlignment.Center
-        hintLabel.TextYAlignment = Enum.TextYAlignment.Center
-        hintLabel.ZIndex = 9
-        hintLabel.Parent = menuClip
-        applyPlainTextStyle(hintLabel)
-        hintLabel.TextTransparency = 0.28
-
-        
-        
-        
-        applyButton = Instance.new("TextButton")
-        applyButton.Name = "Apply"
-        applyButton.Active = true
-        applyButton.AutoButtonColor = false
-        
-        
-        applyButton.AnchorPoint = Vector2.new(0.5, 0.5)
-        applyButton.BackgroundTransparency = 1
-        applyButton.BorderSizePixel = 0
-        applyButton.Position = UDim2.new(0, 0, 0, 0)
-        applyButton.Size = UDim2.new(0, 0, 0, 0)
-        applyButton.Text = ""
-        applyButton.ZIndex = 9
-        applyButton.Parent = menuClip
-        attachScaleFeedback(applyButton, 1.03, 0.96)
-
-        local applyBase = Instance.new("Frame")
-        applyBase.Name = "Main"
-        applyBase.Active = false
-        applyBase.AnchorPoint = Vector2.new(0.5, 0.5)
-        applybase.BackgroundColor3 = Color3.fromRGB(0,70,180)
-        applyBase.BorderSizePixel = 0
-        applyBase.Position = UDim2.fromScale(0.5, 0.5)
-        applyBase.Size = UDim2.fromScale(1, 1)
-        applyBase.ZIndex = 10
-        applyBase.Parent = applyButton
-        addScaledStroke(applyBase, Enum.ApplyStrokeMode.Border, 0.07)
-
-        local applyColor = Instance.new("Frame")
-        applyColor.Name = "ColorFrame"
-        applyColor.Active = false
-        applyColor.AnchorPoint = Vector2.new(0.5, 0)
-        applyColor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        applyColor.BorderSizePixel = 0
-        applyColor.Position = UDim2.fromScale(0.5, 0)
-        applyColor.Size = UDim2.fromScale(1, 0.9)
-        applyColor.ZIndex = 11
-        applyColor.Parent = applyBase
-        addRedGradient(applyColor, "RedGradient", rebirthOuterGradient)
-
-        local applyHighlight = Instance.new("Frame")
-        applyHighlight.Name = "Transparent"
-        applyHighlight.Active = false
-        applyHighlight.AnchorPoint = Vector2.new(0.5, 0.5)
-        applyHighlight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        applyHighlight.BorderSizePixel = 0
-        applyHighlight.Position = UDim2.fromScale(0.5, 0.5)
-        applyHighlight.Size = UDim2.fromScale(0.965, 0.88)
-        applyHighlight.ZIndex = 12
-        applyHighlight.Parent = applyColor
-        addRedGradient(applyHighlight, "RedGradient", rebirthInnerGradient)
-
-        applyCaption = Instance.new("TextLabel")
-        applyCaption.Name = "Label"
-        applyCaption.Active = false
-        applyCaption.AnchorPoint = Vector2.new(0.5, 0.5)
-        applyCaption.BackgroundTransparency = 1
-        applyCaption.BorderSizePixel = 0
-        applyCaption.Position = UDim2.fromScale(0.5, 0.5)
-        applyCaption.Size = UDim2.fromScale(0.88, 0.56)
-        applyCaption.Text = applyBaseText
-        applyCaption.TextWrapped = true
-        applyCaption.ZIndex = 13
-        applyCaption.Parent = applyColor
-        applyShinyTextStyle(applyCaption, normalTextFont)
-        
-        
-        applyCaptionStroke = applyCaption:FindFirstChildOfClass("UIStroke")
-
-        applyLayers = { applyColor, applyHighlight }
-
-        connectSafeActivation(applyButton, function()
-            
-            
-            if multiSelect and not applyReady then
-                return
-            end
-            local values, indices = getControllerValue()
-            setOpen(false)
-            if type(action.OnApply) == "function" then
-                action.OnApply(values, indices)
-            end
-        end)
     end
 
     local function describeSelection()
@@ -3802,34 +3847,40 @@ local function createDropdownRow(
             return options[currentIndex] or ""
         end
         local picked = {}
-        for index = 1, #options do
-            if selected[index] then
-                table.insert(picked, options[index])
+        for idx = 1, #options do
+            if selected[idx] then
+                table.insert(picked, options[idx])
             end
         end
         if #picked == 0 then
-            return "None"
+            return "Pilih... (None)"
         elseif #picked == 1 then
             return picked[1]
         end
         return #picked .. " selected"
     end
 
+    local items = {}
+    local visibleItems = {}
+    local searchQuery = ""
+    local setOpen
+    local refreshSelection
+    local refreshGeometry
+
     for index, optionText in ipairs(options) do
         local item = Instance.new("TextButton")
         item.Name = "Option" .. index
         item.Active = true
         item.AutoButtonColor = false
-        item.AnchorPoint = Vector2.new(0, 0)
-        item.BackgroundColor3 = Color3.fromRGB(12, 34, 60)
-        item.BackgroundTransparency = 0.45
+        item.AnchorPoint = Vector2.new(0.5, 0)
+        item.BackgroundColor3 = Color3.fromRGB(14, 42, 80)
+        item.BackgroundTransparency = 0.60
         item.BorderSizePixel = 0
         item.LayoutOrder = index
-        item.Position = UDim2.new(0, 0, 0, 0)
-        item.Size = UDim2.new(0, 0, 0, 0)
+        item.Size = UDim2.new(1, -6, 0, 28)
         item.Text = ""
-        item.ZIndex = 7
-        item.Parent = menuClip
+        item.ZIndex = 17
+        item.Parent = scrollFrame
 
         local itemCorner = Instance.new("UICorner")
         itemCorner.CornerRadius = UDim.new(0, 4)
@@ -3837,81 +3888,98 @@ local function createDropdownRow(
 
         local itemStroke = Instance.new("UIStroke")
         itemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        itemStroke.Color = Color3.fromRGB(0, 195, 255)
+        itemStroke.Color = Color3.fromRGB(0, 190, 245)
         itemStroke.Thickness = 1
-        itemStroke.Transparency = 0.65
+        itemStroke.Transparency = 0.70
         itemStroke.Parent = item
 
-        
-        local accent
-        if not multiSelect then
-            accent = Instance.new("Frame")
-            accent.Name = "Accent"
-            accent.Active = false
-            accent.AnchorPoint = Vector2.new(0, 0.5)
-            accent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            accent.BorderSizePixel = 0
-            accent.Position = UDim2.fromScale(0, 0.5)
-            accent.Size = UDim2.fromScale(0, 1)
-            accent.ZIndex = 8
-            accent.Parent = item
-            addAccentGradient(accent)
-        end
+        local tickBox, tickCheck, singleCheck, accentBar
 
-        
-        local tickFill
         if multiSelect then
-            local tickBox = Instance.new("Frame")
-            tickBox.Name = "Tick"
+            tickBox = Instance.new("Frame")
+            tickBox.Name = "TickBox"
             tickBox.Active = false
             tickBox.AnchorPoint = Vector2.new(0, 0.5)
-            tickBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            tickBox.BackgroundColor3 = Color3.fromRGB(8, 26, 52)
             tickBox.BackgroundTransparency = 0.3
             tickBox.BorderSizePixel = 0
-            tickBox.Position = UDim2.fromScale(0.055, 0.5)
-            tickBox.Size = UDim2.fromScale(0.16, 0.44)
-            tickBox.ZIndex = 8
+            tickBox.Position = UDim2.new(0, 8, 0.5, 0)
+            tickBox.Size = UDim2.new(0, 16, 0, 16)
+            tickBox.ZIndex = 18
             tickBox.Parent = item
-            addScaledStroke(tickBox, Enum.ApplyStrokeMode.Border, 0.12)
 
-            local tickAspect = Instance.new("UIAspectRatioConstraint")
-            tickAspect.AspectRatio = 1
-            tickAspect.AspectType = Enum.AspectType.FitWithinMaxSize
-            tickAspect.DominantAxis = Enum.DominantAxis.Height
-            tickAspect.Parent = tickBox
+            local tbCorner = Instance.new("UICorner")
+            tbCorner.CornerRadius = UDim.new(0, 3)
+            tbCorner.Parent = tickBox
 
-            tickFill = Instance.new("Frame")
-            tickFill.Name = "Fill"
-            tickFill.Active = false
-            tickFill.AnchorPoint = Vector2.new(0.5, 0.5)
-            tickFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            tickFill.BorderSizePixel = 0
-            tickFill.Position = UDim2.fromScale(0.5, 0.5)
-            tickFill.Size = UDim2.fromScale(0, 0)
-            tickFill.ZIndex = 9
-            tickFill.Parent = tickBox
-            addAccentGradient(tickFill)
+            local tbStroke = Instance.new("UIStroke")
+            tbStroke.Color = Color3.fromRGB(0, 200, 255)
+            tbStroke.Thickness = 1
+            tbStroke.Transparency = 0.35
+            tbStroke.Parent = tickBox
+
+            tickCheck = Instance.new("TextLabel")
+            tickCheck.Name = "CheckMark"
+            tickCheck.Active = false
+            tickCheck.AnchorPoint = Vector2.new(0.5, 0.5)
+            tickCheck.BackgroundTransparency = 1
+            tickCheck.BorderSizePixel = 0
+            tickCheck.Position = UDim2.fromScale(0.5, 0.5)
+            tickCheck.Size = UDim2.fromScale(1, 1)
+            tickCheck.Font = normalTextFont
+            tickCheck.Text = "✓"
+            tickCheck.TextColor3 = Color3.fromRGB(255, 255, 255)
+            tickCheck.TextSize = 12
+            tickCheck.Visible = false
+            tickCheck.ZIndex = 19
+            tickCheck.Parent = tickBox
+        else
+            accentBar = Instance.new("Frame")
+            accentBar.Name = "Accent"
+            accentBar.Active = false
+            accentBar.AnchorPoint = Vector2.new(0, 0.5)
+            accentBar.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+            accentBar.BorderSizePixel = 0
+            accentBar.Position = UDim2.new(0, 0, 0.5, 0)
+            accentBar.Size = UDim2.new(0, 0, 1, 0)
+            accentBar.Visible = false
+            accentBar.ZIndex = 18
+            accentBar.Parent = item
+
+            singleCheck = Instance.new("TextLabel")
+            singleCheck.Name = "CheckMark"
+            singleCheck.Active = false
+            singleCheck.AnchorPoint = Vector2.new(1, 0.5)
+            singleCheck.BackgroundTransparency = 1
+            singleCheck.BorderSizePixel = 0
+            singleCheck.Position = UDim2.new(1, -10, 0.5, 0)
+            singleCheck.Size = UDim2.new(0, 18, 0, 18)
+            singleCheck.Font = normalTextFont
+            singleCheck.Text = "✓"
+            singleCheck.TextColor3 = Color3.fromRGB(0, 240, 255)
+            singleCheck.TextSize = 14
+            singleCheck.Visible = false
+            singleCheck.ZIndex = 18
+            singleCheck.Parent = item
         end
 
-        
-        
         local text = Instance.new("TextLabel")
         text.Name = "Label"
         text.Active = false
-        
-        
-        text.AnchorPoint = Vector2.new(0.5, 0.5)
+        text.AnchorPoint = Vector2.new(0, 0.5)
         text.BackgroundTransparency = 1
         text.BorderSizePixel = 0
-        text.Position = UDim2.fromScale(multiSelect and 0.56 or 0.5, 0.5)
-        text.Size = UDim2.fromScale(multiSelect and 0.62 or 0.78, 0.56)
+        text.Position = UDim2.new(0, multiSelect and 32 or 12, 0.5, 0)
+        text.Size = UDim2.new(1, multiSelect and -38 or -42, 0.8, 0)
         text.Text = optionText
-        text.TextWrapped = true
-        text.TextXAlignment = Enum.TextXAlignment.Center
+        text.TextTruncate = Enum.TextTruncate.AtEnd
+        text.TextXAlignment = Enum.TextXAlignment.Left
         text.TextYAlignment = Enum.TextYAlignment.Center
-        text.ZIndex = 9
+        text.Font = normalTextFont
+        text.TextColor3 = Color3.fromRGB(200, 230, 255)
+        text.TextSize = 12
+        text.ZIndex = 18
         text.Parent = item
-        applyPlainTextStyle(text)
 
         local hovered = false
 
@@ -3924,36 +3992,39 @@ local function createDropdownRow(
 
         local function paint(animated)
             local chosen = isChosen()
-            if not animated then
-                if accent then
-                    accent.Size = UDim2.new(0, chosen and accentWidth or 0, 1, 0)
-                end
-                item.BackgroundTransparency = chosen and 0.2 or (hovered and 0.3 or 0.45)
-                if tickFill then
-                    tickFill.Size = UDim2.fromScale(chosen and 0.85 or 0, chosen and 0.85 or 0)
-                end
-                text.TextTransparency = chosen and 0 or 0.15
-                return
+            local bgAlpha = chosen and 0.20 or (hovered and 0.35 or 0.60)
+            local bgColor = chosen and Color3.fromRGB(0, 100, 210) or (hovered and Color3.fromRGB(20, 58, 108) or Color3.fromRGB(14, 42, 80))
+            local strokeAlpha = chosen and 0.2 or (hovered and 0.4 or 0.70)
+            local strokeColor = chosen and Color3.fromRGB(0, 230, 255) or Color3.fromRGB(0, 190, 245)
+
+            if multiSelect then
+                tickBox.BackgroundColor3 = chosen and Color3.fromRGB(0, 160, 255) or Color3.fromRGB(8, 26, 52)
+                tickBox.BackgroundTransparency = chosen and 0 or 0.3
+                tickCheck.Visible = chosen
+            else
+                accentBar.Visible = chosen
+                accentBar.Size = UDim2.new(0, chosen and 3 or 0, 1, 0)
+                singleCheck.Visible = chosen
             end
-            local info = TweenInfo.new(
-                animated and 0.12 or 0,
-                Enum.EasingStyle.Quad,
-                Enum.EasingDirection.Out
-            )
-            if accent then
-                TweenService:Create(accent, info, {
-                    Size = UDim2.new(0, chosen and accentWidth or 0, 1, 0),
+
+            text.TextColor3 = chosen and Color3.fromRGB(255, 255, 255) or (hovered and Color3.fromRGB(230, 245, 255) or Color3.fromRGB(200, 230, 255))
+
+            if animated then
+                local info = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                TweenService:Create(item, info, {
+                    BackgroundColor3 = bgColor,
+                    BackgroundTransparency = bgAlpha,
                 }):Play()
-            end
-            TweenService:Create(item, info, {
-                BackgroundTransparency = chosen and 0.2 or (hovered and 0.3 or 0.45),
-            }):Play()
-            if tickFill then
-                TweenService:Create(tickFill, info, {
-                    Size = UDim2.fromScale(chosen and 0.85 or 0, chosen and 0.85 or 0),
+                TweenService:Create(itemStroke, info, {
+                    Color = strokeColor,
+                    Transparency = strokeAlpha,
                 }):Play()
+            else
+                item.BackgroundColor3 = bgColor
+                item.BackgroundTransparency = bgAlpha
+                itemStroke.Color = strokeColor
+                itemStroke.Transparency = strokeAlpha
             end
-            text.TextTransparency = chosen and 0 or 0.15
         end
 
         item.MouseEnter:Connect(function()
@@ -3976,8 +4047,6 @@ local function createDropdownRow(
             else
                 currentIndex = index
                 refreshSelection(true)
-                
-                
                 if not action then
                     setOpen(false)
                 end
@@ -3995,35 +4064,37 @@ local function createDropdownRow(
         if applyButton then
             local picked = 0
             if multiSelect then
-                for index = 1, #options do
-                    if selected[index] then
+                for idx = 1, #options do
+                    if selected[idx] then
                         picked = picked + 1
                     end
                 end
             elseif options[currentIndex] then
                 picked = 1
             end
-            
-            
+
             applyCaption.Text = (multiSelect and picked > 0)
                     and (applyBaseText .. " (" .. picked .. ")")
                 or applyBaseText
             applyReady = picked > 0
-            
-            
-            local dim = applyReady and 0 or 0.45
-            applyCaption.TextTransparency = dim
-            if applyCaptionStroke then
-                applyCaptionStroke.Transparency = dim
-            end
-            for _, layer in ipairs(applyLayers) do
-                layer.BackgroundTransparency = dim
-            end
+            applyCaption.TextTransparency = applyReady and 0 or 0.45
+            applyButton.AutoButtonColor = applyReady
         end
     end
 
-    
-    
+    if action and applyButton then
+        connectSafeActivation(applyButton, function()
+            if multiSelect and not applyReady then
+                return
+            end
+            local values, indices = getControllerValue()
+            setOpen(false)
+            if type(action.OnApply) == "function" then
+                action.OnApply(values, indices)
+            end
+        end)
+    end
+
     local function applyFilter()
         local query = searchQuery:lower()
         visibleItems = {}
@@ -4038,12 +4109,11 @@ local function createDropdownRow(
         emptyLabel.Visible = #visibleItems == 0
     end
 
-    local heightTween
-    local menuTween
-    local headHeight, menuHeight, gapSize, clipMargin = 0, 0, 0, 0
+    local heightTween, menuTween
+    local headHeight = 0
+    local menuHeight = 0
+    local gapSize = 4
 
-    
-    
     local function applyOpenState(animated)
         if heightTween then
             heightTween:Cancel()
@@ -4054,26 +4124,18 @@ local function createDropdownRow(
             menuTween = nil
         end
 
-        local rowSize = UDim2.new(
-            row.Size.X.Scale,
-            row.Size.X.Offset,
-            0,
-            headHeight + (isOpen and (gapSize + menuHeight) or 0)
-        )
-        local clipSize = UDim2.new(
-            1,
-            clipMargin * 2,
-            0,
-            isOpen and (menuHeight + clipMargin * 2) or 0
-        )
+        local totalRowH = headHeight + (isOpen and (gapSize + menuHeight) or 0)
+        local rowTarget = UDim2.new(row.Size.X.Scale, row.Size.X.Offset, 0, totalRowH)
+        local menuTarget = UDim2.new(1, 0, 0, isOpen and menuHeight or 0)
 
         if isOpen then
             menuClip.Visible = true
         end
+
         if animated then
-            local info = TweenInfo.new(0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-            heightTween = TweenService:Create(row, info, { Size = rowSize })
-            menuTween = TweenService:Create(menuClip, info, { Size = clipSize })
+            local info = TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+            heightTween = TweenService:Create(row, info, { Size = rowTarget })
+            menuTween = TweenService:Create(menuClip, info, { Size = menuTarget })
             if not isOpen then
                 menuTween.Completed:Connect(function(state)
                     if state == Enum.PlaybackState.Completed and not isOpen then
@@ -4084,142 +4146,67 @@ local function createDropdownRow(
             heightTween:Play()
             menuTween:Play()
         else
-            row.Size = rowSize
-            menuClip.Size = clipSize
+            row.Size = rowTarget
+            menuClip.Size = menuTarget
             menuClip.Visible = isOpen
         end
     end
 
-    local function refreshGeometry(animated)
+    refreshGeometry = function(animated)
         local width = row.AbsoluteSize.X
         if width <= 0 then
             return
         end
 
-        
-        
         local referenceWidth = width
         if not RESIZE_KEEPS_OPTION_WIDTH then
             referenceWidth = width / ContentScale.X
         end
         local band = referenceWidth / ROW_ASPECT
         headHeight = currentNote ~= "" and referenceWidth / ROW_ASPECT_WITH_NOTE or band
-        local chipHeight = band * 0.62
-        local count = #visibleItems
-        
-        clipMargin = chipHeight * 0.12
-
-        
-        
-        
-        
-        local plateInset = headHeight * 0.075
-        gapSize = band * 0.15
-        local gap = gapSize
-
-        accentWidth = chipHeight * ACCENT_WIDTH_RATIO
         head.Size = UDim2.new(1, 0, 0, headHeight)
-        
-        
-        
-        menuClip.Position = UDim2.new(
-            0.5,
-            0,
-            0,
-            headHeight - plateInset + gap - clipMargin
-        )
+        menuClip.Position = UDim2.new(0.5, 0, 0, headHeight + gapSize)
 
         if not isOpen and not animated then
             applyOpenState(false)
             return
         end
 
-        local hintBlock = 0
+        local topOffset = 6
         if hintLabel then
-            local hintHeight = chipHeight * 0.8
-            hintBlock = hintHeight + gap
-            hintLabel.Position = UDim2.new(0, clipMargin, 0, clipMargin)
-            hintLabel.Size = UDim2.new(0, width, 0, hintHeight)
+            hintLabel.Position = UDim2.new(0.5, 0, 0, topOffset)
+            topOffset = topOffset + 18
         end
-
-        
-        local searchBlock = 0
         if searchField then
-            searchBlock = chipHeight + gap
-            searchField.Position = UDim2.new(
-                0,
-                clipMargin,
-                0,
-                clipMargin + hintBlock
-            )
-            searchField.Size = UDim2.new(0, width, 0, chipHeight)
-        end
-        local chipsTop = clipMargin + hintBlock + searchBlock
-
-        if count == 0 then
-            
-            
-            emptyLabel.Position = UDim2.new(0, clipMargin, 0, chipsTop)
-            emptyLabel.Size = UDim2.new(0, width, 0, chipHeight)
-            menuHeight = hintBlock + searchBlock + chipHeight
-        else
-            
-            
-            local minChipWidth = chipHeight * 2.2
-            local fitPerLine = math.floor((width + gap) / (minChipWidth + gap))
-            local perLine = math.clamp(
-                math.min(MAX_CHIPS_PER_LINE, fitPerLine),
-                1,
-                count
-            )
-            local lines = math.ceil(count / perLine)
-            if BALANCE_CHIP_LINES then
-                perLine = math.ceil(count / lines)
-            end
-
-            local chipWidth = (width - (perLine - 1) * gap) / perLine
-            menuHeight = hintBlock
-                + searchBlock
-                + lines * chipHeight
-                + math.max(lines - 1, 0) * gap
-
-            for index, entry in ipairs(visibleItems) do
-                local line = math.floor((index - 1) / perLine)
-                local column = (index - 1) % perLine
-                
-                local inThisLine = math.min(perLine, count - line * perLine)
-                local lineWidth = inThisLine * chipWidth + (inThisLine - 1) * gap
-                entry.button.Position = UDim2.new(
-                    0,
-                    clipMargin + (width - lineWidth) / 2 + column * (chipWidth + gap),
-                    0,
-                    chipsTop + line * (chipHeight + gap)
-                )
-                entry.button.Size = UDim2.new(0, chipWidth, 0, chipHeight)
-            end
+            searchField.Position = UDim2.new(0.5, 0, 0, topOffset)
+            topOffset = topOffset + 30
         end
 
-        
-        
+        local visCount = #visibleItems
+        local maxVisibleItems = 5
+        local displayedCount = math.clamp(visCount, 1, maxVisibleItems)
+        local itemH = 28
+        local itemPad = 4
+        local listH = displayedCount * itemH + math.max(0, displayedCount - 1) * itemPad
+        if visCount == 0 then
+            listH = itemH
+        end
+
+        scrollFrame.Position = UDim2.new(0, 6, 0, topOffset)
+        scrollFrame.Size = UDim2.new(1, -12, 0, listH)
+        local totalCanvasH = visCount * itemH + math.max(0, visCount - 1) * itemPad
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalCanvasH)
+
+        topOffset = topOffset + listH + 6
+
         if applyButton then
-            local applyWidth = math.min(
-                width,
-                math.max(chipHeight * 3.6, width * 0.42)
-            )
-            
-            applyButton.Position = UDim2.new(
-                0,
-                clipMargin + width / 2,
-                0,
-                clipMargin + menuHeight + gap + chipHeight / 2
-            )
-            applyButton.Size = UDim2.new(0, applyWidth, 0, chipHeight)
-            menuHeight = menuHeight + gap + chipHeight
+            applyButton.Position = UDim2.new(0.5, 0, 0, topOffset)
+            topOffset = topOffset + 34
         end
 
-        
-        refreshSelection(false)
+        menuHeight = topOffset
 
+        refreshSelection(false)
         applyOpenState(animated)
     end
 
@@ -4228,9 +4215,7 @@ local function createDropdownRow(
             return
         end
         if open then
-            
             closeActiveDropdown()
-            
             if searchBox then
                 searchBox.Text = ""
             end
@@ -4250,11 +4235,11 @@ local function createDropdownRow(
             { Rotation = open and 180 or 0 }
         ):Play()
         TweenService:Create(box, TweenInfo.new(0.16), {
-            BackgroundTransparency = open and 0.08 or 0.18,
+            BackgroundTransparency = open and 0.20 or 0.35,
         }):Play()
-        local boxStroke = box:FindFirstChild("BoxStroke")
-        if boxStroke then
-            TweenService:Create(boxStroke, TweenInfo.new(0.16), {
+        local bStroke = box:FindFirstChild("BoxStroke")
+        if bStroke then
+            TweenService:Create(bStroke, TweenInfo.new(0.16), {
                 Transparency = open and 0 or 0.35,
                 Color = open and Color3.fromRGB(80, 235, 255) or Color3.fromRGB(0, 200, 255),
             }):Play()
@@ -4308,9 +4293,7 @@ local function createDropdownRow(
     local function setControllerValue(newValue)
         if multiSelect then
             selected = {}
-            local choices = type(newValue) == "table"
-                and newValue
-                or { newValue }
+            local choices = type(newValue) == "table" and newValue or { newValue }
             for _, choice in ipairs(choices) do
                 local index = resolveControllerIndex(choice)
                 if index then
@@ -4329,7 +4312,6 @@ local function createDropdownRow(
     return row, {
         GetValue = getControllerValue,
         SetValue = setControllerValue,
-        
         Apply = function()
             local values, indices = getControllerValue()
             setOpen(false)
@@ -4359,11 +4341,6 @@ local function createDropdownRow(
     }
 end
 
-
-
-
-
-
 local function createButtonRow(name, labelText, buttonText, confirmText)
     local row, main = buildFixedRow(name, labelText)
     local currentButtonText = tostring(buttonText or "")
@@ -4387,13 +4364,24 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     base.Name = "Main"
     base.Active = false
     base.AnchorPoint = Vector2.new(0.5, 0.5)
-    base.BackgroundColor3 = Color3.fromRGB(0,70,180)
+    base.BackgroundColor3 = Color3.fromRGB(0, 70, 180)
     base.BorderSizePixel = 0
     base.Position = UDim2.fromScale(0.5, 0.5)
     base.Size = UDim2.fromScale(1, 0.92)
     base.ZIndex = 1
     base.Parent = button
-    addScaledStroke(base, Enum.ApplyStrokeMode.Border, 0.06)
+
+    local baseCorner = Instance.new("UICorner")
+    baseCorner.CornerRadius = UDim.new(0, 6)
+    baseCorner.Parent = base
+
+    local baseStroke = Instance.new("UIStroke")
+    baseStroke.Name = "ButtonStroke"
+    baseStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    baseStroke.Color = Color3.fromRGB(0, 220, 255)
+    baseStroke.Thickness = 1.2
+    baseStroke.Transparency = 0
+    baseStroke.Parent = base
 
     local colorFrame = Instance.new("Frame")
     colorFrame.Name = "ColorFrame"
@@ -4402,10 +4390,14 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     colorFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     colorFrame.BorderSizePixel = 0
     colorFrame.Position = UDim2.fromScale(0.5, 0)
-    colorFrame.Size = UDim2.fromScale(1, 0.9)
+    colorFrame.Size = UDim2.fromScale(1, 0.92)
     colorFrame.ZIndex = 1
     colorFrame.Parent = base
     addRedGradient(colorFrame, "RedGradient", rebirthOuterGradient)
+
+    local colorCorner = Instance.new("UICorner")
+    colorCorner.CornerRadius = UDim.new(0, 5)
+    colorCorner.Parent = colorFrame
 
     local highlight = Instance.new("Frame")
     highlight.Name = "Transparent"
@@ -4418,6 +4410,10 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     highlight.ZIndex = 2
     highlight.Parent = colorFrame
     addRedGradient(highlight, "RedGradient", rebirthInnerGradient)
+
+    local hiCorner = Instance.new("UICorner")
+    hiCorner.CornerRadius = UDim.new(0, 4)
+    hiCorner.Parent = highlight
 
     -- Framewisp Button Texture (Asset 109248302930363)
     local btnPattern = Instance.new("ImageLabel")
@@ -4441,38 +4437,42 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     caption.BackgroundTransparency = 1
     caption.BorderSizePixel = 0
     caption.Position = UDim2.fromScale(0.5, 0.5)
-    caption.Size = UDim2.fromScale(0.9, 0.62)
+    caption.Size = UDim2.fromScale(0.9, 0.72)
     caption.Text = currentButtonText
     caption.TextWrapped = true
     caption.ZIndex = 6
     caption.Parent = colorFrame
     applyShinyTextStyle(caption, normalTextFont)
 
-    
+    button.MouseEnter:Connect(function()
+        TweenService:Create(base, TweenInfo.new(0.12), { BackgroundColor3 = Color3.fromRGB(0, 115, 245) }):Play()
+        TweenService:Create(baseStroke, TweenInfo.new(0.12), { Color = Color3.fromRGB(80, 245, 255) }):Play()
+    end)
+    button.MouseLeave:Connect(function()
+        TweenService:Create(base, TweenInfo.new(0.12), { BackgroundColor3 = Color3.fromRGB(0, 70, 180) }):Play()
+        TweenService:Create(baseStroke, TweenInfo.new(0.12), { Color = Color3.fromRGB(0, 220, 255) }):Play()
+    end)
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(colorFrame, TweenInfo.new(0.06), { BackgroundTransparency = 0.25 }):Play()
+    end)
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(colorFrame, TweenInfo.new(0.08), { BackgroundTransparency = 0 }):Play()
+    end)
+
     local busy = false
-    
-    
     local function playPress()
         local scale = button:FindFirstChildOfClass("UIScale")
         if scale then
             TweenService:Create(
                 scale,
-                TweenInfo.new(
-                    0.055,
-                    Enum.EasingStyle.Quad,
-                    Enum.EasingDirection.Out
-                ),
+                TweenInfo.new(0.055, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                 { Scale = 0.96 }
             ):Play()
             task.delay(0.07, function()
                 if scale.Parent then
                     TweenService:Create(
                         scale,
-                        TweenInfo.new(
-                            0.09,
-                            Enum.EasingStyle.Quad,
-                            Enum.EasingDirection.Out
-                        ),
+                        TweenInfo.new(0.09, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                         { Scale = 1 }
                     ):Play()
                 end
@@ -4494,11 +4494,6 @@ local function createButtonRow(name, labelText, buttonText, confirmText)
     return row, playPress
 end
 
-
-
-
-
-
 local function createInputRow(name, labelText, placeholder)
     local row, main = buildFixedRow(name, labelText)
 
@@ -4506,27 +4501,58 @@ local function createInputRow(name, labelText, placeholder)
     field.Name = "Field"
     field.Active = false
     field.AnchorPoint = Vector2.new(0.5, 0.5)
-    field.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    field.BackgroundTransparency = 0.6
+    field.BackgroundColor3 = Color3.fromRGB(16, 52, 98)
+    field.BackgroundTransparency = 0.45
     field.BorderSizePixel = 0
-    
-    
-    field.ClipsDescendants = false
+    field.ClipsDescendants = true
     field.Position = UDim2.fromScale(CONTROL_LAYOUT.WideCenterX, 0.5)
     field.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62)
     field.ZIndex = 4
     field.Parent = main
-    addScaledStroke(field, Enum.ApplyStrokeMode.Border, 0.1)
+
+    local fieldCorner = Instance.new("UICorner")
+    fieldCorner.CornerRadius = UDim.new(0, 6)
+    fieldCorner.Parent = field
+
+    local fieldStroke = Instance.new("UIStroke")
+    fieldStroke.Name = "FieldStroke"
+    fieldStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    fieldStroke.Color = Color3.fromRGB(0, 200, 255)
+    fieldStroke.Thickness = 1.2
+    fieldStroke.Transparency = 0.35
+    fieldStroke.Parent = field
+
+    local fieldGrad = Instance.new("UIGradient")
+    fieldGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 60, 112)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 32, 64)),
+    })
+    fieldGrad.Rotation = 90
+    fieldGrad.Parent = field
+
+    local fieldPattern = Instance.new("ImageLabel")
+    fieldPattern.Name = "ButtonPattern"
+    fieldPattern.BackgroundTransparency = 1
+    fieldPattern.BorderSizePixel = 0
+    fieldPattern.AnchorPoint = Vector2.new(0.5, 0.5)
+    fieldPattern.Position = UDim2.fromScale(0.5, 0.5)
+    fieldPattern.Size = UDim2.fromScale(1, 1)
+    fieldPattern.Image = "rbxassetid://109248302930363"
+    fieldPattern.ImageColor3 = Color3.fromRGB(140, 210, 255)
+    fieldPattern.ImageTransparency = 0.85
+    fieldPattern.ScaleType = Enum.ScaleType.Stretch
+    fieldPattern.ZIndex = 5
+    fieldPattern.Parent = field
 
     local underline = Instance.new("Frame")
     underline.Name = "Underline"
     underline.Active = false
     underline.AnchorPoint = Vector2.new(0.5, 1)
-    underline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    underline.BackgroundColor3 = Color3.fromRGB(0, 230, 255)
     underline.BorderSizePixel = 0
     underline.Position = UDim2.fromScale(0.5, 1)
     underline.Size = UDim2.fromScale(0, 0.11)
-    underline.ZIndex = 6
+    underline.ZIndex = 7
     underline.Parent = field
 
     local input = Instance.new("TextBox")
@@ -4538,15 +4564,18 @@ local function createInputRow(name, labelText, placeholder)
     input.ClearTextOnFocus = false
     input.MultiLine = false
     input.Position = UDim2.fromScale(0.5, 0.5)
-    input.Size = UDim2.fromScale(0.9, 0.56)
+    input.Size = UDim2.fromScale(0.9, 0.72)
     input.Text = ""
     input.PlaceholderText = placeholder
-    input.PlaceholderColor3 = Color3.fromRGB(198, 198, 198)
+    input.PlaceholderColor3 = Color3.fromRGB(120, 195, 245)
     input.TextXAlignment = Enum.TextXAlignment.Center
     input.TextYAlignment = Enum.TextYAlignment.Center
-    input.ZIndex = 5
+    input.Font = normalTextFont
+    input.TextColor3 = Color3.fromRGB(245, 252, 255)
+    input.TextSize = 13
+    input.ZIndex = 6
     input.Parent = field
-    applyPlainTextStyle(input)
+    applyShinyTextStyle(input, normalTextFont)
 
     local function normalizeText(value)
         local text = tostring(value or "")
@@ -4556,7 +4585,11 @@ local function createInputRow(name, labelText, placeholder)
 
     local function tweenFocus(focused)
         TweenService:Create(field, TweenInfo.new(0.16), {
-            BackgroundTransparency = focused and 0.42 or 0.6,
+            BackgroundTransparency = focused and 0.20 or 0.45,
+        }):Play()
+        TweenService:Create(fieldStroke, TweenInfo.new(0.16), {
+            Color = focused and Color3.fromRGB(80, 245, 255) or Color3.fromRGB(0, 200, 255),
+            Transparency = focused and 0 or 0.35,
         }):Play()
         TweenService:Create(
             underline,
@@ -4564,6 +4597,23 @@ local function createInputRow(name, labelText, placeholder)
             { Size = UDim2.fromScale(focused and 1.0 or 0, 0.11) }
         ):Play()
     end
+
+    field.MouseEnter:Connect(function()
+        if not input:IsFocused() then
+            TweenService:Create(fieldStroke, TweenInfo.new(0.12), {
+                Color = Color3.fromRGB(80, 235, 255),
+                Transparency = 0.15,
+            }):Play()
+        end
+    end)
+    field.MouseLeave:Connect(function()
+        if not input:IsFocused() then
+            TweenService:Create(fieldStroke, TweenInfo.new(0.12), {
+                Color = Color3.fromRGB(0, 200, 255),
+                Transparency = 0.35,
+            }):Play()
+        end
+    end)
 
     input.Focused:Connect(function()
         tweenFocus(true)
@@ -4576,47 +4626,6 @@ local function createInputRow(name, labelText, placeholder)
 
     return row, normalizeText
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 local function safeCallback(callback, ...)
     if type(callback) ~= "function" then
