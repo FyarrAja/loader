@@ -77,10 +77,12 @@ _G.BH_CanvasAssetId = nil
 _G.BH_CloseButtonId = "rbxassetid://121248223515226"
 -- 4. Background Texture Close Button
 _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
+-- 5. Floating Mobile Mascot Toggle (Touch-Draggable icon untuk buka/tutup GUI di HP)
+_G.BH_MobileToggle = true
 
--- Load BlueHaven library (commit c6e77f5 - Header height and proportions reduced by ~10% for compact fit)
+-- Load BlueHaven library (commit 5b870e7 - Full mobile touch support, responsive sizing & floating mascot toggle)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/c6e77f5/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/5b870e7/library"
 )
 
 -- ============================================================
