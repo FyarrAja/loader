@@ -3415,9 +3415,9 @@ local function buildRowPlate(parent, labelText)
     main.Name = "Main"
     main.Active = false
     main.AnchorPoint = Vector2.new(0.5, 0.5)
-    -- High-Contrast Dark Ocean Glass Plate (Clear & Crisp Foreground)
-    main.BackgroundColor3 = Color3.fromRGB(10, 24, 48)
-    main.BackgroundTransparency = 0.10
+    -- Harmonized Translucent Ocean Glass Plate (Seamlessly blends with Cyber Blue Canvas)
+    main.BackgroundColor3 = Color3.fromRGB(6, 38, 92)
+    main.BackgroundTransparency = 0.40
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
     main.Size = UDim2.fromScale(1, 0.85)
@@ -3432,21 +3432,21 @@ local function buildRowPlate(parent, labelText)
     plateGrad.Name = "GlassSheenGrad"
     plateGrad.Rotation = 90
     plateGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 60, 110)),
-        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(14, 38, 75)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 22, 48)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 95, 185)),
+        ColorSequenceKeypoint.new(0.40, Color3.fromRGB(12, 55, 125)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 30, 75)),
     })
     plateGrad.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.04),
-        NumberSequenceKeypoint.new(1, 0.10),
+        NumberSequenceKeypoint.new(0, 0.20),
+        NumberSequenceKeypoint.new(1, 0.45),
     })
     plateGrad.Parent = main
 
     local plateStroke = Instance.new("UIStroke")
     plateStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    plateStroke.Color = Color3.fromRGB(0, 220, 255)
-    plateStroke.Transparency = 0.12
-    plateStroke.Thickness = 1.3
+    plateStroke.Color = Color3.fromRGB(60, 215, 255)
+    plateStroke.Transparency = 0.25
+    plateStroke.Thickness = 1.15
     plateStroke.LineJoinMode = Enum.LineJoinMode.Round
     plateStroke.Parent = main
 
@@ -4062,20 +4062,17 @@ local function createDropdownRow(
             tbStroke.Transparency = 0.35
             tbStroke.Parent = tickBox
 
-            tickCheck = Instance.new("TextLabel")
+            tickCheck = Instance.new("ImageLabel")
             tickCheck.Name = "CheckMark"
             tickCheck.Active = false
             tickCheck.AnchorPoint = Vector2.new(0.5, 0.5)
             tickCheck.BackgroundTransparency = 1
             tickCheck.BorderSizePixel = 0
             tickCheck.Position = UDim2.fromScale(0.5, 0.5)
-            tickCheck.Size = UDim2.fromScale(1, 1)
-            tickCheck.Font = Enum.Font.FredokaOne
-            tickCheck.Text = "\226\156\147"
-            tickCheck.TextColor3 = Color3.fromRGB(255, 255, 255)
-            tickCheck.TextStrokeColor3 = Color3.fromRGB(0, 25, 70)
-            tickCheck.TextStrokeTransparency = 0.4
-            tickCheck.TextSize = 12
+            tickCheck.Size = UDim2.fromOffset(12, 12)
+            tickCheck.Image = "rbxassetid://10709790644"
+            tickCheck.ImageColor3 = Color3.fromRGB(255, 255, 255)
+            tickCheck.ScaleType = Enum.ScaleType.Fit
             tickCheck.Visible = false
             tickCheck.ZIndex = 19
             tickCheck.Parent = tickBox
@@ -4096,20 +4093,17 @@ local function createDropdownRow(
             abCorner.CornerRadius = UDim.new(0, 2)
             abCorner.Parent = accentBar
 
-            singleCheck = Instance.new("TextLabel")
+            singleCheck = Instance.new("ImageLabel")
             singleCheck.Name = "CheckMark"
             singleCheck.Active = false
             singleCheck.AnchorPoint = Vector2.new(1, 0.5)
             singleCheck.BackgroundTransparency = 1
             singleCheck.BorderSizePixel = 0
             singleCheck.Position = UDim2.new(1, -10, 0.5, 0)
-            singleCheck.Size = UDim2.new(0, 18, 0, 18)
-            singleCheck.Font = Enum.Font.FredokaOne
-            singleCheck.Text = "\226\156\147"
-            singleCheck.TextColor3 = Color3.fromRGB(0, 240, 255)
-            singleCheck.TextStrokeColor3 = Color3.fromRGB(0, 20, 60)
-            singleCheck.TextStrokeTransparency = 0.4
-            singleCheck.TextSize = 14
+            singleCheck.Size = UDim2.fromOffset(14, 14)
+            singleCheck.Image = "rbxassetid://10709790644"
+            singleCheck.ImageColor3 = Color3.fromRGB(0, 240, 255)
+            singleCheck.ScaleType = Enum.ScaleType.Fit
             singleCheck.Visible = false
             singleCheck.ZIndex = 18
             singleCheck.Parent = item
@@ -7022,17 +7016,16 @@ do
     })
     sGrad.Parent = windowSearchBar
 
-    local sIcon = Instance.new("TextLabel")
+    local sIcon = Instance.new("ImageLabel")
     sIcon.Name = "SearchIcon"
     sIcon.BackgroundTransparency = 1
     sIcon.BorderSizePixel = 0
     sIcon.AnchorPoint = Vector2.new(0, 0.5)
     sIcon.Position = UDim2.new(0, 8, 0.5, 0)
-    sIcon.Size = UDim2.fromOffset(20, 20)
-    sIcon.Font = Enum.Font.FredokaOne
-    sIcon.Text = "🔍"
-    sIcon.TextSize = 13
-    sIcon.TextColor3 = Color3.fromRGB(0, 210, 255)
+    sIcon.Size = UDim2.fromOffset(15, 15)
+    sIcon.Image = "rbxassetid://10734943674"
+    sIcon.ImageColor3 = Color3.fromRGB(0, 215, 255)
+    sIcon.ScaleType = Enum.ScaleType.Fit
     sIcon.ZIndex = 26
     sIcon.Parent = windowSearchBar
 
@@ -7722,8 +7715,8 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     header.Name = title
     header.Active = false
     header.AnchorPoint = Vector2.new(0.5, 0.5)
-    header.BackgroundColor3 = Color3.fromRGB(8, 20, 42)
-    header.BackgroundTransparency = 0.15
+    header.BackgroundColor3 = Color3.fromRGB(10, 52, 120)
+    header.BackgroundTransparency = 0.30
     header.BorderSizePixel = 0
     header.LayoutOrder = layoutOrder
     header.Size = UDim2.new(0.97, 0, 0, 36)
@@ -7737,10 +7730,24 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     headerCorner.CornerRadius = UDim.new(0, 6)
     headerCorner.Parent = header
 
+    local headerGrad = Instance.new("UIGradient")
+    headerGrad.Name = "HeaderGlassGrad"
+    headerGrad.Rotation = 90
+    headerGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 125, 230)),
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(15, 68, 155)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 38, 98)),
+    })
+    headerGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.18),
+        NumberSequenceKeypoint.new(1, 0.38),
+    })
+    headerGrad.Parent = header
+
     local headerStroke = Instance.new("UIStroke")
     headerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    headerStroke.Color = Color3.fromRGB(0, 210, 255)
-    headerStroke.Transparency = 0.25
+    headerStroke.Color = Color3.fromRGB(80, 225, 255)
+    headerStroke.Transparency = 0.20
     headerStroke.Thickness = 1.2
     headerStroke.Parent = header
 
