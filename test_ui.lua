@@ -80,9 +80,9 @@ _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 -- 5. Floating Mobile Mascot Toggle (Touch-Draggable icon untuk buka/tutup GUI di HP)
 _G.BH_MobileToggle = true
 
--- Load BlueHaven library (commit 5b870e7 - Full mobile touch support, responsive sizing & floating mascot toggle)
+-- Load BlueHaven library (commit a3a14c2 - Syntax fix line 862, full mobile touch support & floating mascot toggle)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/5b870e7/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/a3a14c2/library"
 )
 
 -- ============================================================
