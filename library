@@ -1106,7 +1106,7 @@ local hudRestorePosition = leftCenterFrame
 local hudTween = nil
 local hudTweenConnection = nil
 local hudAnimationSerial = 0
-Runtime.chilliIsOpen = false
+Runtime.chilliIsOpen = true
 
 local function cancelHudTween()
     if hudTweenConnection then
@@ -2590,7 +2590,7 @@ do
     floatingPill.Active = true
     floatingPill.AutoButtonColor = false
     floatingPill.AnchorPoint = Vector2.new(0.5, 0)
-    floatingPill.Position = UDim2.new(0.5, 0, 0, 12)
+    floatingPill.Position = UDim2.new(0.5, 0, 0, 10)
     floatingPill.Size = UDim2.new(0, 172, 0, 42)
     floatingPill.BackgroundColor3 = Color3.fromRGB(6, 26, 60)
     floatingPill.BackgroundTransparency = 0.18
@@ -2779,13 +2779,15 @@ do
     floatingPill.Activated:Connect(toggleHub)
     floatingPill.MouseButton1Click:Connect(toggleHub)
 
-    -- Sync pill status text & visibility
+    -- Sync pill status text & visibility (Top-Center for Android/Mobile)
     local function updatePillState()
         if Runtime.chilliIsOpen then
             subLabel.Text = "● Tutup / Hide"
             subLabel.TextColor3 = Color3.fromRGB(70, 255, 185)
             if not isMobileTouch then
                 floatingPill.Visible = false
+            else
+                floatingPill.Visible = true
             end
         else
             subLabel.Text = "▶ Buka / Restore"
@@ -2793,6 +2795,11 @@ do
             floatingPill.Visible = true
         end
     end
+
+    mainFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+        Runtime.chilliIsOpen = mainFrame.Visible
+        updatePillState()
+    end)
 
     Runtime.showRestorePill = function()
         floatingPill.Visible = true
