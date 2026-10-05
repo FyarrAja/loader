@@ -859,7 +859,8 @@ pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
 pcall(chilliSetProperty, objects.obj25, "ScrollingDirection", Enum.ScrollingDirection.Y)
 pcall(chilliSetProperty, objects.obj25, "ScrollingEnabled", true)
 pcall(chilliSetProperty, objects.obj25, "VerticalScrollBarInset", Enum.ScrollBarInset.None)
-pcall(chilliSetProperty, objects.obj25, "HorizontalScrollBarInset", Enum.ScrollBarInset.None)\npcall(chilliSetProperty, objects.obj25, "ElasticBehavior", Enum.ElasticBehavior.Always)
+pcall(chilliSetProperty, objects.obj25, "HorizontalScrollBarInset", Enum.ScrollBarInset.None)
+pcall(chilliSetProperty, objects.obj25, "ElasticBehavior", Enum.ElasticBehavior.Always)
 objects.obj25.Parent = objects.obj2
 
 
