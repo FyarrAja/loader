@@ -2576,195 +2576,151 @@ local function playCloseAnimation(completed)
     end)
 end
 
--- Floating Restore Pill Widget & Global Hotkey (RightControl / Insert)
+-- ============================================================
+--  FLOATING CYBER OCEAN PILL WIDGET (Mobile & PC Unified Toggle)
+--  Sleek 100% capsule/pill shape, sleeping cat mascot emblem,
+--  dynamic ocean glass gradient, glowing neon cyan rim,
+--  touch-draggable & interactive with bouncing tap feedback
+-- ============================================================
 do
-    local restorePill = Instance.new("TextButton")
-    restorePill.Name = "BlueHavenRestorePill"
-    restorePill.Active = true
-    restorePill.AutoButtonColor = false
-    restorePill.AnchorPoint = Vector2.new(0, 0.5)
-    restorePill.Position = UDim2.new(0, 16, 0.45, 0)
-    restorePill.Size = UDim2.new(0, 152, 0, 36)
-    restorePill.BackgroundColor3 = Color3.fromRGB(8, 24, 48)
-    restorePill.BackgroundTransparency = 0.15
-    restorePill.BorderSizePixel = 0
-    restorePill.Visible = false
-    restorePill.ZIndex = 999
-    restorePill.Text = ""
-    restorePill.Parent = rootGui
+    local isMobileTouch = UserInputService.TouchEnabled or (_G.BH_MobileToggle == true)
 
+    local floatingPill = Instance.new("TextButton")
+    floatingPill.Name = "BlueHavenFloatingPill"
+    floatingPill.Active = true
+    floatingPill.AutoButtonColor = false
+    floatingPill.AnchorPoint = Vector2.new(0, 0.5)
+    floatingPill.Position = UDim2.new(0, 14, 0.40, 0)
+    floatingPill.Size = UDim2.new(0, 172, 0, 42)
+    floatingPill.BackgroundColor3 = Color3.fromRGB(6, 26, 60)
+    floatingPill.BackgroundTransparency = 0.18
+    floatingPill.BorderSizePixel = 0
+    floatingPill.Visible = isMobileTouch
+    floatingPill.ZIndex = 1000
+    floatingPill.Text = ""
+    floatingPill.Parent = rootGui
+
+    -- 100% Stadium / Pill rounded corners
     local pillCorner = Instance.new("UICorner")
-    pillCorner.CornerRadius = UDim.new(0, 18)
-    pillCorner.Parent = restorePill
+    pillCorner.CornerRadius = UDim.new(1, 0)
+    pillCorner.Parent = floatingPill
 
+    -- Neon Cyan Cyber Rim
     local pillStroke = Instance.new("UIStroke")
     pillStroke.Name = "PillStroke"
     pillStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    pillStroke.Color = Color3.fromRGB(0, 215, 255)
-    pillStroke.Thickness = 1.4
-    pillStroke.Transparency = 0.2
-    pillStroke.Parent = restorePill
+    pillStroke.Color = Color3.fromRGB(0, 225, 255)
+    pillStroke.Thickness = 1.6
+    pillStroke.Transparency = 0.12
+    pillStroke.Parent = floatingPill
 
+    -- Deep Sapphire Sheen Gradient
     local pillGrad = Instance.new("UIGradient")
-    pillGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(14, 46, 86)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 20, 40)),
-    })
+    pillGrad.Name = "PillGradient"
     pillGrad.Rotation = 90
-    pillGrad.Parent = restorePill
-
-    local pillIcon = Instance.new("TextLabel")
-    pillIcon.Name = "Icon"
-    pillIcon.Active = false
-    pillIcon.BackgroundTransparency = 1
-    pillIcon.BorderSizePixel = 0
-    pillIcon.Position = UDim2.new(0, 8, 0.5, 0)
-    pillIcon.AnchorPoint = Vector2.new(0, 0.5)
-    pillIcon.Size = UDim2.new(0, 20, 0, 20)
-    pillIcon.Font = Enum.Font.FredokaOne
-    pillIcon.Text = "◈"
-    pillIcon.TextColor3 = Color3.fromRGB(0, 230, 255)
-    pillIcon.TextSize = 16
-    pillIcon.ZIndex = 1000
-    pillIcon.Parent = restorePill
-
-    local pillTitle = Instance.new("TextLabel")
-    pillTitle.Name = "Title"
-    pillTitle.Active = false
-    pillTitle.BackgroundTransparency = 1
-    pillTitle.BorderSizePixel = 0
-    pillTitle.Position = UDim2.new(0, 30, 0, 3)
-    pillTitle.Size = UDim2.new(1, -34, 0, 16)
-    pillTitle.Font = Enum.Font.FredokaOne
-    pillTitle.Text = "Blue Haven Hub"
-    pillTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    pillTitle.TextSize = 12
-    pillTitle.TextXAlignment = Enum.TextXAlignment.Left
-    pillTitle.ZIndex = 1000
-    pillTitle.Parent = restorePill
-
-    local pillSub = Instance.new("TextLabel")
-    pillSub.Name = "Sub"
-    pillSub.Active = false
-    pillSub.BackgroundTransparency = 1
-    pillSub.BorderSizePixel = 0
-    pillSub.Position = UDim2.new(0, 30, 0, 18)
-    pillSub.Size = UDim2.new(1, -34, 0, 14)
-    pillSub.Font = Enum.Font.FredokaOne
-    pillSub.Text = "▶ Buka / Restore"
-    pillSub.TextColor3 = Color3.fromRGB(0, 215, 255)
-    pillSub.TextSize = 10
-    pillSub.TextXAlignment = Enum.TextXAlignment.Left
-    pillSub.ZIndex = 1000
-    pillSub.Parent = restorePill
-
-    makeDraggable(restorePill, restorePill)
-
-    restorePill.MouseEnter:Connect(function()
-        TweenService:Create(pillStroke, TweenInfo.new(0.12), {
-            Color = Color3.fromRGB(80, 245, 255),
-            Transparency = 0,
-        }):Play()
-        TweenService:Create(restorePill, TweenInfo.new(0.12), {
-            BackgroundTransparency = 0.05,
-        }):Play()
-    end)
-    restorePill.MouseLeave:Connect(function()
-        TweenService:Create(pillStroke, TweenInfo.new(0.12), {
-            Color = Color3.fromRGB(0, 215, 255),
-            Transparency = 0.2,
-        }):Play()
-        TweenService:Create(restorePill, TweenInfo.new(0.12), {
-            BackgroundTransparency = 0.15,
-        }):Play()
-    end)
-
-    restorePill.MouseButton1Click:Connect(function()
-        if not Runtime.chilliIsOpen then
-            playOpenAnimation()
-        end
-    end)
-
-    Runtime.showRestorePill = function()
-        restorePill.Visible = true
-        restorePill.Size = UDim2.new(0, 120, 0, 28)
-        TweenService:Create(restorePill, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 152, 0, 36),
-        }):Play()
-    end
-
-    Runtime.hideRestorePill = function()
-        restorePill.Visible = false
-    end
-
-    -- ============================================================
-    --  FLOATING MOBILE MASCOT TOGGLE BUTTON
-    --  Always accessible on mobile touch devices (or when _G.BH_MobileToggle = true)
-    --  Draggable anywhere with finger, tap to open / close Blue Haven Hub
-    -- ============================================================
-    local isMobileTouch = UserInputService.TouchEnabled or (_G.BH_MobileToggle == true)
-    local mobileToggleBtn = Instance.new("ImageButton")
-    mobileToggleBtn.Name = "BlueHavenMobileToggle"
-    mobileToggleBtn.Active = true
-    mobileToggleBtn.AutoButtonColor = false
-    mobileToggleBtn.AnchorPoint = Vector2.new(0, 0.5)
-    mobileToggleBtn.Position = UDim2.new(0, 14, 0.35, 0)
-    mobileToggleBtn.Size = UDim2.fromOffset(50, 50)
-    mobileToggleBtn.BackgroundColor3 = Color3.fromRGB(6, 26, 62)
-    mobileToggleBtn.BackgroundTransparency = 0.18
-    mobileToggleBtn.BorderSizePixel = 0
-    mobileToggleBtn.Visible = isMobileTouch
-    mobileToggleBtn.ZIndex = 1000
-    mobileToggleBtn.Parent = rootGui
-
-    local mCorner = Instance.new("UICorner")
-    mCorner.CornerRadius = UDim.new(0, 14)
-    mCorner.Parent = mobileToggleBtn
-
-    local mStroke = Instance.new("UIStroke")
-    mStroke.Name = "MobileToggleStroke"
-    mStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    mStroke.Color = Color3.fromRGB(0, 225, 255)
-    mStroke.Thickness = 1.8
-    mStroke.Transparency = 0.1
-    mStroke.Parent = mobileToggleBtn
-
-    local mGrad = Instance.new("UIGradient")
-    mGrad.Rotation = 90
-    mGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 85, 175)),
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(8, 42, 95)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 18, 48)),
+    pillGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(24, 96, 195)),
+        ColorSequenceKeypoint.new(0.48, Color3.fromRGB(10, 44, 98)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(4, 18, 46)),
     })
-    mGrad.Parent = mobileToggleBtn
+    pillGrad.Parent = floatingPill
 
-    local mMascot = Instance.new("ImageLabel")
-    mMascot.Name = "MascotIcon"
-    mMascot.Active = false
-    mMascot.BackgroundTransparency = 1
-    mMascot.BorderSizePixel = 0
-    mMascot.AnchorPoint = Vector2.new(0.5, 0.5)
-    mMascot.Position = UDim2.fromScale(0.5, 0.5)
-    mMascot.Size = UDim2.fromOffset(38, 30)
-    mMascot.ScaleType = Enum.ScaleType.Fit
-    mMascot.Image = (objects.obj12 and objects.obj12.Image and objects.obj12.Image ~= "") and objects.obj12.Image or "rbxassetid://96054470467014"
-    mMascot.ZIndex = 1001
-    mMascot.Parent = mobileToggleBtn
+    -- Left Mascot Glass Badge (Circular avatar pocket)
+    local avatarBadge = Instance.new("Frame")
+    avatarBadge.Name = "AvatarBadge"
+    avatarBadge.Active = false
+    avatarBadge.AnchorPoint = Vector2.new(0, 0.5)
+    avatarBadge.Position = UDim2.new(0, 5, 0.5, 0)
+    avatarBadge.Size = UDim2.fromOffset(32, 32)
+    avatarBadge.BackgroundColor3 = Color3.fromRGB(3, 15, 36)
+    avatarBadge.BackgroundTransparency = 0.25
+    avatarBadge.BorderSizePixel = 0
+    avatarBadge.ZIndex = 1001
+    avatarBadge.Parent = floatingPill
 
-    makeDraggable(mobileToggleBtn, mobileToggleBtn)
+    local avatarCorner = Instance.new("UICorner")
+    avatarCorner.CornerRadius = UDim.new(1, 0)
+    avatarCorner.Parent = avatarBadge
 
-    -- Distinguish tap vs drag: only toggle if touch moved <= 8 pixels
+    local avatarStroke = Instance.new("UIStroke")
+    avatarStroke.Name = "AvatarStroke"
+    avatarStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    avatarStroke.Color = Color3.fromRGB(0, 210, 255)
+    avatarStroke.Thickness = 1.1
+    avatarStroke.Transparency = 0.35
+    avatarStroke.Parent = avatarBadge
+
+    -- Mascot Image inside avatar badge
+    local mascotImg = Instance.new("ImageLabel")
+    mascotImg.Name = "MascotImage"
+    mascotImg.Active = false
+    mascotImg.BackgroundTransparency = 1
+    mascotImg.BorderSizePixel = 0
+    mascotImg.AnchorPoint = Vector2.new(0.5, 0.5)
+    mascotImg.Position = UDim2.fromScale(0.5, 0.5)
+    mascotImg.Size = UDim2.fromOffset(28, 22)
+    mascotImg.ScaleType = Enum.ScaleType.Fit
+    mascotImg.Image = (objects.obj12 and objects.obj12.Image and objects.obj12.Image ~= "") and objects.obj12.Image or "rbxassetid://96054470467014"
+    mascotImg.ZIndex = 1002
+    mascotImg.Parent = avatarBadge
+
+    -- Title Label
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "PillTitle"
+    titleLabel.Active = false
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.BorderSizePixel = 0
+    titleLabel.AnchorPoint = Vector2.new(0, 0)
+    titleLabel.Position = UDim2.new(0, 44, 0, 5)
+    titleLabel.Size = UDim2.new(1, -50, 0, 16)
+    titleLabel.Font = Enum.Font.FredokaOne
+    titleLabel.Text = "Blue Haven Hub"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextSize = 13
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.ZIndex = 1001
+    titleLabel.Parent = floatingPill
+
+    local titleStroke = Instance.new("UIStroke")
+    titleStroke.Name = "TitleShadow"
+    titleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    titleStroke.Color = Color3.fromRGB(0, 0, 0)
+    titleStroke.Thickness = 1.5
+    titleStroke.Transparency = 0.2
+    titleStroke.Parent = titleLabel
+
+    -- Subtitle / Action Label
+    local subLabel = Instance.new("TextLabel")
+    subLabel.Name = "PillSub"
+    subLabel.Active = false
+    subLabel.BackgroundTransparency = 1
+    subLabel.BorderSizePixel = 0
+    subLabel.AnchorPoint = Vector2.new(0, 0)
+    subLabel.Position = UDim2.new(0, 44, 0, 21)
+    subLabel.Size = UDim2.new(1, -50, 0, 14)
+    subLabel.Font = Enum.Font.FredokaOne
+    subLabel.Text = "▶ Buka / Restore"
+    subLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
+    subLabel.TextSize = 10
+    subLabel.TextXAlignment = Enum.TextXAlignment.Left
+    subLabel.ZIndex = 1001
+    subLabel.Parent = floatingPill
+
+    -- Touch & Mouse Draggable
+    makeDraggable(floatingPill, floatingPill)
+
+    -- Distinguish tap vs drag: only toggle if movement <= 8 pixels
     local touchStartPos = Vector2.new(0, 0)
     local hasMovedSignificant = false
 
-    mobileToggleBtn.InputBegan:Connect(function(input)
+    floatingPill.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             touchStartPos = Vector2.new(input.Position.X, input.Position.Y)
             hasMovedSignificant = false
         end
     end)
 
-    mobileToggleBtn.InputChanged:Connect(function(input)
+    floatingPill.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
             local currentPos = Vector2.new(input.Position.X, input.Position.Y)
             if (currentPos - touchStartPos).Magnitude > 8 then
@@ -2773,6 +2729,29 @@ do
         end
     end)
 
+    -- Hover Effects
+    floatingPill.MouseEnter:Connect(function()
+        TweenService:Create(pillStroke, TweenInfo.new(0.12), {
+            Color = Color3.fromRGB(100, 245, 255),
+            Thickness = 2.0,
+            Transparency = 0,
+        }):Play()
+        TweenService:Create(floatingPill, TweenInfo.new(0.12), {
+            BackgroundTransparency = 0.08,
+        }):Play()
+    end)
+    floatingPill.MouseLeave:Connect(function()
+        TweenService:Create(pillStroke, TweenInfo.new(0.14), {
+            Color = Color3.fromRGB(0, 225, 255),
+            Thickness = 1.6,
+            Transparency = 0.12,
+        }):Play()
+        TweenService:Create(floatingPill, TweenInfo.new(0.14), {
+            BackgroundTransparency = 0.18,
+        }):Play()
+    end)
+
+    -- Interactive Toggle with Spring Micro-Animation
     local toggleDebounce = 0
     local function toggleHub()
         if hasMovedSignificant then return end
@@ -2780,13 +2759,13 @@ do
         if now - toggleDebounce < 0.25 then return end
         toggleDebounce = now
 
-        -- Micro bounce animation feedback
-        TweenService:Create(mobileToggleBtn, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.fromOffset(43, 43)
+        -- Spring bounce feedback
+        TweenService:Create(floatingPill, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 160, 0, 38)
         }):Play()
         task.delay(0.08, function()
-            TweenService:Create(mobileToggleBtn, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Size = UDim2.fromOffset(50, 50)
+            TweenService:Create(floatingPill, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, 172, 0, 42)
             }):Play()
         end)
 
@@ -2797,31 +2776,62 @@ do
         end
     end
 
-    mobileToggleBtn.Activated:Connect(toggleHub)
-    mobileToggleBtn.MouseButton1Click:Connect(toggleHub)
+    floatingPill.Activated:Connect(toggleHub)
+    floatingPill.MouseButton1Click:Connect(toggleHub)
 
-    -- Idle pulse when GUI is closed on mobile so player knows where to tap to reopen
+    -- Sync pill status text & visibility
+    local function updatePillState()
+        if Runtime.chilliIsOpen then
+            subLabel.Text = "● Tutup / Hide"
+            subLabel.TextColor3 = Color3.fromRGB(70, 255, 185)
+            if not isMobileTouch then
+                floatingPill.Visible = false
+            end
+        else
+            subLabel.Text = "▶ Buka / Restore"
+            subLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
+            floatingPill.Visible = true
+        end
+    end
+
+    Runtime.showRestorePill = function()
+        floatingPill.Visible = true
+        updatePillState()
+        floatingPill.Size = UDim2.new(0, 140, 0, 34)
+        TweenService:Create(floatingPill, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 172, 0, 42),
+        }):Play()
+    end
+
+    Runtime.hideRestorePill = function()
+        updatePillState()
+    end
+
+    updatePillState()
+
+    -- Glowing pulse when closed
     task.spawn(function()
-        while mobileToggleBtn and mobileToggleBtn.Parent do
-            if not Runtime.chilliIsOpen and mobileToggleBtn.Visible then
-                TweenService:Create(mStroke, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-                    Color = Color3.fromRGB(80, 245, 255),
-                    Thickness = 2.4,
+        while floatingPill and floatingPill.Parent do
+            if not Runtime.chilliIsOpen and floatingPill.Visible then
+                TweenService:Create(pillStroke, TweenInfo.new(0.85, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                    Color = Color3.fromRGB(90, 245, 255),
+                    Thickness = 2.2,
                 }):Play()
-                task.wait(0.8)
-                TweenService:Create(mStroke, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-                    Color = Color3.fromRGB(0, 180, 240),
-                    Thickness = 1.6,
+                task.wait(0.85)
+                TweenService:Create(pillStroke, TweenInfo.new(0.85, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                    Color = Color3.fromRGB(0, 190, 245),
+                    Thickness = 1.5,
                 }):Play()
-                task.wait(0.8)
+                task.wait(0.85)
             else
-                mStroke.Color = Color3.fromRGB(0, 225, 255)
-                mStroke.Thickness = 1.8
-                task.wait(1)
+                pillStroke.Color = Color3.fromRGB(0, 225, 255)
+                pillStroke.Thickness = 1.6
+                task.wait(0.8)
             end
         end
     end)
 
+    -- PC Keyboard Hotkeys (RightControl / Insert)
     UserInputService.InputBegan:Connect(function(input, gpe)
         if not gpe and (input.KeyCode == Enum.KeyCode.RightControl or input.KeyCode == Enum.KeyCode.Insert) then
             if Runtime.chilliIsOpen then
@@ -2832,20 +2842,6 @@ do
         end
     end)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 local RESIZE_LIMITS = {
     MinWidth = 0.20,
