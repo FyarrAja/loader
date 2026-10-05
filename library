@@ -2589,8 +2589,8 @@ do
     floatingPill.Name = "BlueHavenFloatingPill"
     floatingPill.Active = true
     floatingPill.AutoButtonColor = false
-    floatingPill.AnchorPoint = Vector2.new(0, 0.5)
-    floatingPill.Position = UDim2.new(0, 14, 0.40, 0)
+    floatingPill.AnchorPoint = Vector2.new(0.5, 0)
+    floatingPill.Position = UDim2.new(0.5, 0, 0, 12)
     floatingPill.Size = UDim2.new(0, 172, 0, 42)
     floatingPill.BackgroundColor3 = Color3.fromRGB(6, 26, 60)
     floatingPill.BackgroundTransparency = 0.18
@@ -14075,5 +14075,142 @@ task.spawn(function()
         task.wait(0.2)
     end
 end)
+
+-- ============================================================
+--  FRAMEWISP RUNTIME ENGINE (Audio, Ripple, Spring & Squish FX)
+-- ============================================================
+task.spawn(function()
+    local ok, err = pcall(function()
+        local Debris = game:GetService("Debris")
+        local HOVER_SOUND_ID = "rbxassetid://139800881181209"
+        local CLICK_SOUND_ID = "rbxassetid://102702078778790"
+
+        local function playFxSound(id, parent)
+            if not id or id == "" or id == "0" then return end
+            local s = Instance.new("Sound")
+            s.SoundId = tostring(id):match("^rbxassetid://") and tostring(id) or ("rbxassetid://" .. tostring(id))
+            s.Volume = 0.45
+            s.Parent = parent or rootGui
+            s.Ended:Once(function() s:Destroy() end)
+            s:Play()
+            Debris:AddItem(s, 4)
+        end
+
+        local wired = setmetatable({}, { __mode = "k" })
+
+        -- 1. Ripple Effect (Expanding circular neon glow wash on touch & click)
+        local function wireRipple(btn)
+            if btn:GetAttribute("FW_Ripple") then return end
+            btn:SetAttribute("FW_Ripple", true)
+            btn.InputBegan:Connect(function(input)
+                if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+                local host = Instance.new("Frame")
+                host.Name = "FW_RippleHost"
+                host.BackgroundTransparency = 1
+                host.Size = UDim2.fromScale(1, 1)
+                host.ClipsDescendants = true
+                host.ZIndex = btn.ZIndex + 4
+
+                local corner = btn:FindFirstChildWhichIsA("UICorner")
+                if corner then corner:Clone().Parent = host end
+                host.Parent = btn
+
+                local dot = Instance.new("Frame")
+                dot.AnchorPoint = Vector2.new(0.5, 0.5)
+                dot.BorderSizePixel = 0
+                dot.BackgroundColor3 = Color3.fromRGB(0, 225, 255)
+                dot.BackgroundTransparency = 0.5
+
+                local relX = input.Position.X - btn.AbsolutePosition.X
+                local relY = input.Position.Y - btn.AbsolutePosition.Y
+                dot.Position = UDim2.fromOffset(relX, relY)
+                dot.Size = UDim2.fromOffset(0, 0)
+
+                local round = Instance.new("UICorner")
+                round.CornerRadius = UDim.new(1, 0)
+                round.Parent = dot
+                dot.ZIndex = host.ZIndex
+                dot.Parent = host
+
+                local sz = btn.AbsoluteSize
+                local far = math.sqrt(math.max(relX, sz.X - relX) ^ 2 + math.max(relY, sz.Y - relY) ^ 2)
+                local m = far * 2.2
+
+                TweenService:Create(dot, TweenInfo.new(0.40, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    Size = UDim2.fromOffset(m, m)
+                }):Play()
+                TweenService:Create(dot, TweenInfo.new(0.36, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                    BackgroundTransparency = 1
+                }):Play()
+                task.delay(0.42, function() host:Destroy() end)
+            end)
+        end
+
+        -- 2. Spring Scale & Tactile Audio FX
+        local function wireSmooth(btn)
+            if wired[btn] then return end
+            wired[btn] = true
+
+            local sc = btn:FindFirstChild("FW_Scale")
+            if not sc then
+                sc = Instance.new("UIScale")
+                sc.Name = "FW_Scale"
+                sc.Scale = 1
+                sc.Parent = btn
+            end
+
+            local hovering = false
+            local held = false
+            local tween = nil
+
+            local function glide(target, t, style, dir)
+                if tween then tween:Cancel() end
+                tween = TweenService:Create(sc, TweenInfo.new(t or 0.12, style or Enum.EasingStyle.Quad, dir or Enum.EasingDirection.Out), { Scale = target })
+                tween:Play()
+            end
+
+            btn.MouseEnter:Connect(function()
+                hovering = true
+                playFxSound(HOVER_SOUND_ID, btn)
+                if not held then glide(1.035, 0.14) end
+            end)
+            btn.MouseLeave:Connect(function()
+                hovering = false
+                if not held then glide(1.0, 0.14) end
+            end)
+            btn.MouseButton1Down:Connect(function()
+                held = true
+                playFxSound(CLICK_SOUND_ID, btn)
+                glide(0.93, 0.07)
+            end)
+            local function release()
+                if not held then return end
+                held = false
+                glide(hovering and 1.035 or 1.0, 0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            end
+            btn.MouseButton1Up:Connect(release)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    release()
+                end
+            end)
+        end
+
+        -- 3. Scan all buttons & Auto-wire
+        local function scan(inst)
+            if inst:IsA("GuiButton") and not inst:GetAttribute("FW_Bypassed") then
+                wireSmooth(inst)
+                wireRipple(inst)
+            end
+        end
+
+        scan(rootGui)
+        for _, d in ipairs(rootGui:GetDescendants()) do scan(d) end
+        rootGui.DescendantAdded:Connect(scan)
+    end)
+    if not ok then warn("[Framewisp] ButtonFX: " .. tostring(err)) end
+end)
+
 return ChilliLibrary
 end
