@@ -80,9 +80,9 @@ _G.BH_CloseBgAssetId = "rbxassetid://101344938838576"
 -- 5. Floating Mobile Mascot Toggle (Touch-Draggable icon untuk buka/tutup GUI di HP)
 _G.BH_MobileToggle = true
 
--- Load BlueHaven library (commit 7ab9c6f - Unified Cyber Ocean Capsule Pill Widget with cat avatar badge)
+-- Load BlueHaven library (commit c5f052d - Top-Center Capsule Pill & Full Framewisp Audio/Ripple/Spring FX)
 local Library = loadLibrary(
-    "https://raw.githubusercontent.com/FyarrAja/loader/7ab9c6f/library"
+    "https://raw.githubusercontent.com/FyarrAja/loader/c5f052d/library"
 )
 
 -- ============================================================
