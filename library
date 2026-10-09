@@ -592,6 +592,7 @@ do
         pcall(chilliSetProperty, headerStrip, "ImageTransparency", 0)
         pcall(chilliSetProperty, headerStrip, "ScaleType", Enum.ScaleType.Stretch)
         headerStrip.Parent = objects.obj4
+        objects.obj4_strip = headerStrip
     end
 end
 
@@ -3113,21 +3114,24 @@ do
         local screenW = math.max(viewport.X - topLeftInset.X - bottomRightInset.X, 1)
         local screenH = math.max(viewport.Y - topLeftInset.Y - bottomRightInset.Y, 1)
 
-        local marginX = 24
-        local marginY = 20
-
         local baseW = 580
         local baseH = 430
 
-        local availW = screenW - (marginX * 2)
-        local availH = screenH - (marginY * 2)
-
-        local scaleX = availW / baseW
-        local scaleY = availH / baseH
-
-        local requiredScale = math.min(scaleX, scaleY)
-        local finalScale = math.clamp(requiredScale, 0.38, 1.0)
-        return finalScale, baseW, baseH
+        local isMobile = (UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled) or screenH < 540
+        if isMobile then
+            -- Compact mobile footprint: leaves generous vertical margin for top floating pill & bottom Roblox hotbar
+            local availW = math.min(screenW - 80, screenW * 0.62)
+            local availH = math.min(screenH - 116, screenH * 0.63)
+            local requiredScale = math.min(availW / baseW, availH / baseH)
+            local finalScale = math.clamp(requiredScale, 0.36, 0.66)
+            return finalScale, baseW, baseH
+        else
+            local availW = math.min(screenW - 96, screenW * 0.70)
+            local availH = math.min(screenH - 96, screenH * 0.70)
+            local requiredScale = math.min(availW / baseW, availH / baseH)
+            local finalScale = math.clamp(requiredScale, 0.48, 0.84)
+            return finalScale, baseW, baseH
+        end
     end
 
     local autoScale, baseW, baseH = calculateWindowAutoScale()
@@ -3507,8 +3511,8 @@ do
     floatingToggle.Active = true
     floatingToggle.AutoButtonColor = false
     floatingToggle.AnchorPoint = Vector2.new(0.5, 0)
-    floatingToggle.Position = UDim2.new(0.5, 0, 0, 12)
-    floatingToggle.Size = UDim2.new(0, 142, 0, 38)
+    floatingToggle.Position = UDim2.new(0.5, 0, 0, 6)
+    floatingToggle.Size = UDim2.new(0, 120, 0, 30)
     floatingToggle.BackgroundColor3 = Color3.fromRGB(20, 100, 205)
     floatingToggle.BackgroundTransparency = 0
     floatingToggle.BorderSizePixel = 0
@@ -3518,6 +3522,10 @@ do
     floatingToggle.Text = ""
     floatingToggle:SetAttribute("FW_Bypassed", true)
     floatingToggle.Parent = rootGui
+
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 8)
+    toggleCorner.Parent = floatingToggle
 
     -- Vibrant Electric Ocean Gradient matching Main GUI
     local toggleGrad = Instance.new("UIGradient")
@@ -3556,12 +3564,12 @@ do
     topRim.ZIndex = 1002
     topRim.Parent = floatingToggle
 
-    -- Crisp Outer Border: Pure White 1.4px matching Main GUI Canvas Outer Border
+    -- Crisp Outer Border: Pure White 1.3px matching Main GUI Canvas Outer Border
     local toggleStroke = Instance.new("UIStroke")
     toggleStroke.Name = "ToggleStroke"
     toggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     toggleStroke.Color = Color3.fromRGB(255, 255, 255)
-    toggleStroke.Thickness = 1.4
+    toggleStroke.Thickness = 1.3
     toggleStroke.Transparency = 0
     toggleStroke.Parent = floatingToggle
 
@@ -3570,13 +3578,17 @@ do
     avatarBadge.Name = "AvatarBadge"
     avatarBadge.Active = false
     avatarBadge.AnchorPoint = Vector2.new(0, 0.5)
-    avatarBadge.Position = UDim2.new(0, 6, 0.5, 0)
-    avatarBadge.Size = UDim2.fromOffset(28, 28)
+    avatarBadge.Position = UDim2.new(0, 5, 0.5, 0)
+    avatarBadge.Size = UDim2.fromOffset(22, 22)
     avatarBadge.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     avatarBadge.BackgroundTransparency = 0.85
     avatarBadge.BorderSizePixel = 0
     avatarBadge.ZIndex = 1003
     avatarBadge.Parent = floatingToggle
+
+    local badgeCorner = Instance.new("UICorner")
+    badgeCorner.CornerRadius = UDim.new(0, 6)
+    badgeCorner.Parent = avatarBadge
 
     local badgeGrad = Instance.new("UIGradient")
     badgeGrad.Name = "BadgeGradient"
@@ -3599,15 +3611,15 @@ do
     avatarStroke.Transparency = 0.35
     avatarStroke.Parent = avatarBadge
 
-    -- Mascot Image inside avatar badge: perfectly centered (dy = -2px to counteract top margin in PNG)
+    -- Mascot Image inside avatar badge: perfectly centered (dy = -1px to counteract top margin in PNG)
     local mascotImg = Instance.new("ImageLabel")
     mascotImg.Name = "MascotImage"
     mascotImg.Active = false
     mascotImg.BackgroundTransparency = 1
     mascotImg.BorderSizePixel = 0
     mascotImg.AnchorPoint = Vector2.new(0.5, 0.5)
-    mascotImg.Position = UDim2.new(0.5, 0, 0.5, -2)
-    mascotImg.Size = UDim2.fromOffset(26, 24)
+    mascotImg.Position = UDim2.new(0.5, 0, 0.5, -1)
+    mascotImg.Size = UDim2.fromOffset(20, 19)
     mascotImg.ScaleType = Enum.ScaleType.Fit
     local resolvedFloatingCat = (_G.BH_ResolveCatAsset and _G.BH_ResolveCatAsset()) or (objects.obj12 and objects.obj12.Image) or ""
     mascotImg.Image = (resolvedFloatingCat ~= "") and resolvedFloatingCat or "rbxassetid://109248302930363"
@@ -3621,12 +3633,12 @@ do
     titleLabel.BackgroundTransparency = 1
     titleLabel.BorderSizePixel = 0
     titleLabel.AnchorPoint = Vector2.new(0, 0.5)
-    titleLabel.Position = UDim2.new(0, 40, 0.5, 0)
-    titleLabel.Size = UDim2.new(1, -46, 0, 22)
+    titleLabel.Position = UDim2.new(0, 32, 0.5, 0)
+    titleLabel.Size = UDim2.new(1, -36, 0, 20)
     titleLabel.Font = Enum.Font.FredokaOne
     titleLabel.Text = "Blue Haven"
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 14
+    titleLabel.TextSize = 12.5
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.TextYAlignment = Enum.TextYAlignment.Center
     titleLabel.ZIndex = 1003
@@ -3757,7 +3769,7 @@ local RESIZE_LIMITS = {
     MaxHeight = 0.98,
 }
 
-local WINDUI_MIN_SIZE = Vector2.new(460, 340)
+local WINDUI_MIN_SIZE = Vector2.new(380, 260)
 local WINDUI_MAX_SIZE = Vector2.new(860, 580)
 
 local windowSizeConstraint = mainFrame:FindFirstChildOfClass("UISizeConstraint")
@@ -4110,7 +4122,8 @@ do
             closeIcon.Size = UDim2.new(1, 0, 1, 0)
         end
         
-        local hasStripImg = objects.obj4_strip and objects.obj4_strip.Image and objects.obj4_strip.Image ~= ""
+        local stripObj = objects.obj4_strip or (objects.obj4 and objects.obj4:FindFirstChild("HeaderStripTexture"))
+        local hasStripImg = stripObj and stripObj.Image and stripObj.Image ~= ""
         if hasStripImg then
             objects.obj9.Visible = false
             objects.obj9.Text = ""
@@ -9451,9 +9464,10 @@ do
             makeCorner(UDim2.new(1, -6, 1, -28), 2, 14)
         end
 
+        local targetCardScale = math.clamp((Runtime.autoScale or 0.72) * 1.05, 0.62, 0.88)
         local cardScale = Instance.new("UIScale")
         cardScale.Name = "CardScale"
-        cardScale.Scale = 0.85
+        cardScale.Scale = targetCardScale * 0.82
         cardScale.Parent = card
 
         -- Header Strip
@@ -9650,17 +9664,21 @@ do
             progressTrack.Active = false
             progressTrack.AnchorPoint = Vector2.new(0.5, 1)
             progressTrack.Position = UDim2.new(0.5, 0, 1, -12)
-            progressTrack.Size = UDim2.new(0.86, 0, 0, 5)
+            progressTrack.Size = UDim2.new(0.86, 0, 0, 4)
             progressTrack.BackgroundColor3 = Color3.fromRGB(4, 18, 44)
             progressTrack.BorderSizePixel = 0
             progressTrack.ZIndex = 612
             progressTrack.Parent = card
 
+            local ptCorner = Instance.new("UICorner")
+            ptCorner.CornerRadius = UDim.new(1, 0)
+            ptCorner.Parent = progressTrack
+
             local pStroke = Instance.new("UIStroke")
             pStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             pStroke.Color = Color3.fromRGB(0, 200, 255)
-            pStroke.Thickness = 1.0
-            pStroke.Transparency = 0.2
+            pStroke.Thickness = 0.8
+            pStroke.Transparency = 0.25
             pStroke.Parent = progressTrack
 
             progressBar = Instance.new("Frame")
@@ -9671,6 +9689,10 @@ do
             progressBar.Size = UDim2.new(1, 0, 1, 0)
             progressBar.ZIndex = 613
             progressBar.Parent = progressTrack
+
+            local pbCorner = Instance.new("UICorner")
+            pbCorner.CornerRadius = UDim.new(1, 0)
+            pbCorner.Parent = progressBar
 
             local bGrad = Instance.new("UIGradient")
             bGrad.Name = "BarGrad"
@@ -9683,7 +9705,7 @@ do
 
         -- Animate pop-in
         TweenService:Create(cardScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Scale = 1
+            Scale = targetCardScale
         }):Play()
 
         TweenService:Create(progressBar, TweenInfo.new(1.6, Enum.EasingStyle.Linear), {
@@ -9693,7 +9715,7 @@ do
         task.delay(1.6, function()
             -- Fade out card & blur smoothly
             TweenService:Create(cardScale, TweenInfo.new(0.30, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-                Scale = 0.82
+                Scale = targetCardScale * 0.80
             }):Play()
 
             local blurOut = TweenService:Create(shutdownBlur, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
@@ -16047,13 +16069,13 @@ Runtime.startBlueHavenLoading = function(window)
         shield.Activated:Connect(sinkLoadingInput)
         shield.InputBegan:Connect(sinkLoadingInput)
 
-        -- Modern Floating Capsule / Dynamic Island (360x76 px Horizontal Bar - Matches Main GUI Palette)
+        -- Sleek Compact Floating Capsule / Dynamic Island (320x64 px Horizontal Bar - Matches Main GUI Palette)
         local capsule = Instance.new("Frame")
         capsule.Name = "LoadingCapsule"
         capsule.Active = true
         capsule.AnchorPoint = Vector2.new(0.5, 0.5)
         capsule.Position = UDim2.new(0.5, 0, 0.53, 0)
-        capsule.Size = UDim2.new(0, 440, 0, 92)
+        capsule.Size = UDim2.new(0, 320, 0, 64)
         capsule.Visible = false
         capsule.BackgroundColor3 = Color3.fromRGB(24, 120, 215)
         capsule.BackgroundTransparency = 0
@@ -16061,6 +16083,10 @@ Runtime.startBlueHavenLoading = function(window)
         capsule.ZIndex = 505
         capsule.ClipsDescendants = true
         capsule.Parent = barrier
+
+        local capCorner = Instance.new("UICorner")
+        capCorner.CornerRadius = UDim.new(0, 12)
+        capCorner.Parent = capsule
 
         -- Vibrant Ocean Deep Gradient & Crisp Matrix Studs (Exact Main GUI Palette)
         do
@@ -16096,7 +16122,7 @@ Runtime.startBlueHavenLoading = function(window)
             topRim.BackgroundTransparency = 0.25
             topRim.BorderSizePixel = 0
             topRim.Position = UDim2.new(0, 0, 0, 0)
-            topRim.Size = UDim2.new(1, 0, 0, 2)
+            topRim.Size = UDim2.new(1, 0, 0, 1.5)
             topRim.ZIndex = 506
             topRim.Parent = capsule
 
@@ -16130,13 +16156,14 @@ Runtime.startBlueHavenLoading = function(window)
             stroke.Name = "CapsuleStroke"
             stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             stroke.Color = Color3.fromRGB(0, 235, 255)
-            stroke.Thickness = 1.8
+            stroke.Thickness = 1.5
             stroke.Parent = capsule
         end
 
+        local targetCapsuleScale = math.clamp((Runtime.autoScale or 0.72) * 1.12, 0.68, 0.90)
         local capsuleScale = Instance.new("UIScale")
         capsuleScale.Name = "CapsuleScale"
-        capsuleScale.Scale = 0.75
+        capsuleScale.Scale = targetCapsuleScale * 0.78
         capsuleScale.Parent = capsule
 
         -- Left Section: Cat Mascot Avatar Housing (Soft Frosted Squircle - High Contrast & Seamless)
@@ -16146,8 +16173,8 @@ Runtime.startBlueHavenLoading = function(window)
             avatarBox.Name = "AvatarBox"
             avatarBox.Active = false
             avatarBox.AnchorPoint = Vector2.new(0, 0.5)
-            avatarBox.Position = UDim2.new(0, 14, 0.5, 0)
-            avatarBox.Size = UDim2.fromOffset(72, 72)
+            avatarBox.Position = UDim2.new(0, 10, 0.5, 0)
+            avatarBox.Size = UDim2.fromOffset(46, 46)
             avatarBox.BackgroundColor3 = Color3.fromRGB(8, 34, 76)
             avatarBox.BackgroundTransparency = 0.40
             avatarBox.BorderSizePixel = 0
@@ -16155,13 +16182,13 @@ Runtime.startBlueHavenLoading = function(window)
             avatarBox.Parent = capsule
 
             local abCorner = Instance.new("UICorner")
-            abCorner.CornerRadius = UDim.new(0, 16)
+            abCorner.CornerRadius = UDim.new(0, 10)
             abCorner.Parent = avatarBox
 
             local abStroke = Instance.new("UIStroke")
             abStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             abStroke.Color = Color3.fromRGB(0, 225, 255)
-            abStroke.Thickness = 1.2
+            abStroke.Thickness = 1.0
             abStroke.Transparency = 0.45
             abStroke.Parent = avatarBox
 
@@ -16171,14 +16198,14 @@ Runtime.startBlueHavenLoading = function(window)
             mascotImg.BorderSizePixel = 0
             mascotImg.AnchorPoint = Vector2.new(0.5, 0.5)
             mascotImg.Position = UDim2.new(0.5, 0, 0.5, 0)
-            mascotImg.Size = UDim2.fromOffset(66, 60)
+            mascotImg.Size = UDim2.fromOffset(42, 38)
             mascotImg.Image = (_G.BH_ResolveLoadingAsset and _G.BH_ResolveLoadingAsset()) or (_G.BH_ResolveCatAsset and _G.BH_ResolveCatAsset()) or "rbxassetid://109248302930363"
             mascotImg.ScaleType = Enum.ScaleType.Fit
             mascotImg.ZIndex = 507
             mascotImg.Parent = avatarBox
         end
 
-        -- Right Section: Dynamic Island Info & Progress Bar
+        -- Right Section: Dynamic Island Info & Sleek Progress Bar
         local stepLabel = nil
         local percentLabel = nil
         local progressBar = nil
@@ -16189,8 +16216,8 @@ Runtime.startBlueHavenLoading = function(window)
             contentArea.Active = false
             contentArea.BackgroundTransparency = 1
             contentArea.BorderSizePixel = 0
-            contentArea.Position = UDim2.new(0, 98, 0, 12)
-            contentArea.Size = UDim2.new(1, -114, 1, -24)
+            contentArea.Position = UDim2.new(0, 66, 0, 9)
+            contentArea.Size = UDim2.new(1, -78, 1, -18)
             contentArea.ZIndex = 506
             contentArea.Parent = capsule
 
@@ -16200,7 +16227,7 @@ Runtime.startBlueHavenLoading = function(window)
             topRow.BackgroundTransparency = 1
             topRow.BorderSizePixel = 0
             topRow.Position = UDim2.new(0, 0, 0, 0)
-            topRow.Size = UDim2.new(1, 0, 0, 22)
+            topRow.Size = UDim2.new(1, 0, 0, 16)
             topRow.ZIndex = 507
             topRow.Parent = contentArea
 
@@ -16209,17 +16236,17 @@ Runtime.startBlueHavenLoading = function(window)
             titleLabel.BackgroundTransparency = 1
             titleLabel.BorderSizePixel = 0
             titleLabel.Position = UDim2.new(0, 0, 0, 0)
-            titleLabel.Size = UDim2.new(1, -60, 1, 0)
+            titleLabel.Size = UDim2.new(1, -46, 1, 0)
             titleLabel.Font = Enum.Font.FredokaOne
             titleLabel.Text = "BLUEHAVEN HUB"
             titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            titleLabel.TextSize = 15
+            titleLabel.TextSize = 12.5
             titleLabel.TextXAlignment = Enum.TextXAlignment.Left
             titleLabel.ZIndex = 508
             local tStroke = Instance.new("UIStroke")
             tStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
             tStroke.Color = Color3.fromRGB(0, 0, 0)
-            tStroke.Thickness = 1.8
+            tStroke.Thickness = 1.5
             tStroke.Parent = titleLabel
             titleLabel.Parent = topRow
 
@@ -16228,18 +16255,18 @@ Runtime.startBlueHavenLoading = function(window)
             deviceTagLabel.BackgroundTransparency = 1
             deviceTagLabel.BorderSizePixel = 0
             deviceTagLabel.AnchorPoint = Vector2.new(1, 0)
-            deviceTagLabel.Position = UDim2.new(1, -62, 0, 0)
-            deviceTagLabel.Size = UDim2.new(0, 140, 1, 0)
+            deviceTagLabel.Position = UDim2.new(1, -42, 0, 0)
+            deviceTagLabel.Size = UDim2.new(0, 105, 1, 0)
             deviceTagLabel.Font = Enum.Font.FredokaOne
             deviceTagLabel.Text = ""
             deviceTagLabel.TextColor3 = Color3.fromRGB(165, 235, 255)
-            deviceTagLabel.TextSize = 11.5
+            deviceTagLabel.TextSize = 9.5
             deviceTagLabel.TextXAlignment = Enum.TextXAlignment.Right
             deviceTagLabel.ZIndex = 508
             local dStroke = Instance.new("UIStroke")
             dStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
             dStroke.Color = Color3.fromRGB(0, 0, 0)
-            dStroke.Thickness = 1.3
+            dStroke.Thickness = 1.1
             dStroke.Parent = deviceTagLabel
             deviceTagLabel.Parent = topRow
 
@@ -16249,17 +16276,17 @@ Runtime.startBlueHavenLoading = function(window)
             percentLabel.BorderSizePixel = 0
             percentLabel.AnchorPoint = Vector2.new(1, 0)
             percentLabel.Position = UDim2.new(1, 0, 0, 0)
-            percentLabel.Size = UDim2.new(0, 56, 1, 0)
+            percentLabel.Size = UDim2.new(0, 40, 1, 0)
             percentLabel.Font = Enum.Font.FredokaOne
             percentLabel.Text = "0%"
             percentLabel.TextColor3 = Color3.fromRGB(0, 240, 255)
-            percentLabel.TextSize = 14
+            percentLabel.TextSize = 11.5
             percentLabel.TextXAlignment = Enum.TextXAlignment.Right
             percentLabel.ZIndex = 508
             local pStroke = Instance.new("UIStroke")
             pStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
             pStroke.Color = Color3.fromRGB(0, 0, 0)
-            pStroke.Thickness = 1.4
+            pStroke.Thickness = 1.2
             pStroke.Parent = percentLabel
             percentLabel.Parent = topRow
 
@@ -16268,37 +16295,42 @@ Runtime.startBlueHavenLoading = function(window)
             stepLabel.Name = "Status"
             stepLabel.BackgroundTransparency = 1
             stepLabel.BorderSizePixel = 0
-            stepLabel.Position = UDim2.new(0, 0, 0, 24)
-            stepLabel.Size = UDim2.new(1, 0, 0, 18)
+            stepLabel.Position = UDim2.new(0, 0, 0, 17)
+            stepLabel.Size = UDim2.new(1, 0, 0, 14)
             stepLabel.Font = Enum.Font.FredokaOne
             stepLabel.Text = "Memeriksa script..."
             stepLabel.TextColor3 = Color3.fromRGB(175, 235, 255)
-            stepLabel.TextSize = 12
+            stepLabel.TextSize = 10
+            stepLabel.TextTruncate = Enum.TextTruncate.AtEnd
             stepLabel.TextXAlignment = Enum.TextXAlignment.Left
             stepLabel.ZIndex = 508
             local sStroke = Instance.new("UIStroke")
             sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
             sStroke.Color = Color3.fromRGB(0, 0, 0)
-            sStroke.Thickness = 1.2
+            sStroke.Thickness = 1.0
             sStroke.Parent = stepLabel
             stepLabel.Parent = contentArea
 
-            -- Row 3: Modern Progress Bar
+            -- Row 3: Sleek Pill Progress Bar (4px height)
             local track = Instance.new("Frame")
             track.Name = "ProgressTrack"
             track.Active = false
             track.BorderSizePixel = 0
             track.BackgroundColor3 = Color3.fromRGB(10, 52, 110)
-            track.Position = UDim2.new(0, 0, 0, 48)
-            track.Size = UDim2.new(1, 0, 0, 8)
+            track.Position = UDim2.new(0, 0, 0, 36)
+            track.Size = UDim2.new(1, 0, 0, 4)
             track.ZIndex = 507
             track.Parent = contentArea
+
+            local trCorner = Instance.new("UICorner")
+            trCorner.CornerRadius = UDim.new(1, 0)
+            trCorner.Parent = track
 
             local trStroke = Instance.new("UIStroke")
             trStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             trStroke.Color = Color3.fromRGB(0, 220, 255)
-            trStroke.Thickness = 1.0
-            trStroke.Transparency = 0.20
+            trStroke.Thickness = 0.8
+            trStroke.Transparency = 0.30
             trStroke.Parent = track
 
             progressBar = Instance.new("Frame")
@@ -16310,6 +16342,10 @@ Runtime.startBlueHavenLoading = function(window)
             progressBar.Size = UDim2.new(0, 0, 1, 0)
             progressBar.ZIndex = 508
             progressBar.Parent = track
+
+            local pbCorner = Instance.new("UICorner")
+            pbCorner.CornerRadius = UDim.new(1, 0)
+            pbCorner.Parent = progressBar
 
             local barGrad = Instance.new("UIGradient")
             barGrad.Name = "BarGrad"
@@ -16325,7 +16361,7 @@ Runtime.startBlueHavenLoading = function(window)
         task.delay(1.0, function()
             capsule.Visible = true
             TweenService:Create(capsuleScale, TweenInfo.new(0.50, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Scale = 1
+                Scale = targetCapsuleScale
             }):Play()
             TweenService:Create(capsule, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
                 Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -16500,7 +16536,7 @@ Runtime.startBlueHavenLoading = function(window)
             end
 
             local exitTween = TweenService:Create(capsuleScale, TweenInfo.new(0.40, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
-                Scale = 0.78
+                Scale = targetCapsuleScale * 0.80
             })
             exitTween:Play()
             TweenService:Create(capsule, TweenInfo.new(0.38, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {
