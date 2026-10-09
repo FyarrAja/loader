@@ -929,13 +929,14 @@ do
 					StraightRun = true,
 					RunStyle = "Velocity",
 					CarryStyle = "Velocity",
-					SpeedJitter = 0.08,
+					SpeedJitter = 0,
 					Wobble = 0,
 					LaneOffset = 0,
 					JumpsPerMinute = 0,
 					PausesPerMinute = 0,
-					ReactMin = 0.2,
-					ReactMax = 0.6,
+					ReactMin = 0,
+					ReactMax = 0,
+					V2DirectRadius = 120,
 					CarryReact = 0,
 					SpeedRatio = 1.5,
 					ExcessSeconds = 5.5,
@@ -1184,7 +1185,24 @@ do
 
 				str1.ShieldPaused = false
 
+				str1.FastWalk = { CheckedAt = 0, TurnedOff = false }
+				str1.EnsureFastWalk = function()
+					if os.clock() < (str1.FastWalk.CheckedAt or 0) + 3 then return end
+					str1.FastWalk.CheckedAt = os.clock()
+					local rep = game:GetService("ReplicatedStorage")
+					local slowToggle = rep:FindFirstChild("RF/Treadmill/AskSlowToggle")
+					local slowSet = rep:FindFirstChild("RF/Treadmill/AskSlowToggleSet")
+					if slowToggle and slowSet then
+						local ok, val = pcall(slowToggle.InvokeServer, slowToggle)
+						if ok and val == true then
+							pcall(slowSet.InvokeServer, slowSet, false)
+							str1.FastWalk.TurnedOff = true
+						end
+					end
+				end
+
 				str1.WalkSpeed = function()
+					pcall(str1.EnsureFastWalk)
 					local character = localPlayer.Character
 					character = character and character:FindFirstChildOfClass("Humanoid")
 					character = character and character.WalkSpeed or 16
@@ -1204,7 +1222,11 @@ do
 					local n9
 
 					if ok and tonumber(result) and result > 0 then
-						n9 = math.min(character, result)
+						if str1.Steal and str1.Steal.Carrying then
+							n9 = math.min(character, result)
+						else
+							n9 = math.max(character, result)
+						end
 					else
 						n9 = character
 					end
@@ -3312,14 +3334,14 @@ do
 
 			str1.SafeCarry.RunHandle = obj14:CreateSlider({
 				Name = "Tween Speed",
-				Note = "Over 100% may glitch",
+				Note = "Speed multiplier when running to target egg",
 				Min = 50,
-				Max = 120,
-				Default = 100,
-				Increment = 1,
+				Max = 250,
+				Default = 120,
+				Increment = 5,
 				Unit = "%",
 				Callback = function(value)
-					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 100, 50, 120) / 100
+					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 120, 50, 250) / 100
 				end,
 			})
 
@@ -4424,10 +4446,10 @@ do
 							if n18 >= 4 then
 								return false
 							end
+						end
 
-							if type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
-								pcall(eggState.CarryFieldEgg, part4.Uid)
-							end
+						if type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
+							pcall(eggState.CarryFieldEgg, part4.Uid)
 						end
 
 						huge = 0
@@ -4991,9 +5013,8 @@ do
 								if typeof(fireproximityprompt) == "function" then
 									pcall(fireproximityprompt, uid5)
 								end
-							else
-								func85(part7.Uid)
 							end
+							task.spawn(func85, part7.Uid)
 
 							huge = 0
 						end
@@ -5912,7 +5933,7 @@ do
 					if position2 and result19 and position2.Position.X < x - 2 then
 						z = result19.Z
 
-						if (Vector3.new(position2.Position.X, 0, position2.Position.Z) - Vector3.new(result19.X, 0, result19.Z)).Magnitude > 20 then
+						if (Vector3.new(position2.Position.X, 0, position2.Position.Z) - Vector3.new(result19.X, 0, result19.Z)).Magnitude > (safeCarry.V2DirectRadius or 120) then
 							str9 = "safe"
 						end
 					end
@@ -6121,7 +6142,7 @@ do
 
 					local obj28 = func105(obj)
 					local now4 = os.clock()
-					local num42 = safeCarry.React(safeCarry.ReactMin, safeCarry.ReactMax)
+					local num42 = (safeCarry.ReactMin > 0 or safeCarry.ReactMax > 0) and safeCarry.React(safeCarry.ReactMin, safeCarry.ReactMax) or 0
 
 					while true do
 						if func63(param76) then
@@ -6130,7 +6151,7 @@ do
 							local n25 = os.clock() - now4
 							local n26 = safeCarry.RunWait + num42
 							local flag120 = not safeCarry.WaitGuard or not obj28 or obj28:GetAttribute("GuardState") == "Sleeping"
-							if n25 >= n26 and (flag120 or n25 >= n26 + 15) then
+							if (n26 <= 0 or n25 >= n26) and (flag120 or n25 >= n26 + 15) then
 								break
 							end
 							flag52 = n25 < n26 and string.format("Waiting before the grab, %.1fs", n26 - n25) or "Waiting for the guard to sleep"
@@ -7518,7 +7539,10 @@ do
 						value117 = type(value58.Set) == "function"
 					end
 
-					if value117 then
+					if not str1._lastStatus58 then str1._lastStatus58 = "" end
+					if not str1._lastStatus59 then str1._lastStatus59 = "" end
+					if value117 and str1._lastStatus58 ~= flag52 then
+						str1._lastStatus58 = flag52
 						pcall(value58.Set, nil, flag52)
 					end
 
@@ -7528,7 +7552,8 @@ do
 						value118 = type(value59.Set) == "function"
 					end
 
-					if value118 then
+					if value118 and str1._lastStatus59 ~= str6 then
+						str1._lastStatus59 = str6
 						pcall(value59.Set, nil, str6)
 					end
 
@@ -18662,6 +18687,7 @@ do
 		end)
 
 		local connection2 = RunService.Heartbeat:Connect(function()
+			if not value351 and not flag434 then return end
 			local character = localPlayer.Character
 			if not character or not func380(character) then
 				return
@@ -18696,6 +18722,7 @@ do
 		end)
 
 		local connection3 = RunService.Heartbeat:Connect(function()
+			if not value351 and not flag434 then return end
 			local character = localPlayer.Character
 			local flag442 = func378(character)
 			local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
@@ -19065,10 +19092,19 @@ do
 			end
 		end
 
+		local lastRagdollScan = 0
 		local function func407()
 			if not flag444 then
 				return
 			end
+			local now = os.clock()
+			if now <= n10 then
+				func404()
+			end
+			if now - lastRagdollScan < 0.12 then
+				return
+			end
+			lastRagdollScan = now
 			func406()
 			if not value359 or not humanoid or humanoid.Health <= 0 then
 				return
@@ -19078,13 +19114,9 @@ do
 				n10 = 0
 				return
 			end
-			local now = os.clock()
 
 			if func402() or func400() or func403() then
 				n10 = now + n7
-			end
-
-			if now <= n10 then
 				func404()
 			end
 		end
@@ -24613,7 +24645,13 @@ do
 		local value462 = nil
 		local value463 = nil
 
+		local lastHudFollow = 0
 		local function func563()
+			local now = os.clock()
+			if now - lastHudFollow < 0.15 then
+				return
+			end
+			lastHudFollow = now
 			local button = value443 and value443.Button
 			local eggs = value441.Eggs
 			local pets = value441.Pets
