@@ -3113,11 +3113,11 @@ do
 
         local isMobile = (UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled) or screenH < 540
         if isMobile then
-            -- Balanced mobile footprint: leaves margin for top floating pill & bottom Roblox hotbar while keeping controls crisp
-            local availW = math.min(screenW - 60, screenW * 0.68)
-            local availH = math.min(screenH - 104, screenH * 0.70)
+            -- Comfortably larger mobile footprint while keeping margin for top floating toggle & bottom controls
+            local availW = math.min(screenW - 36, screenW * 0.78)
+            local availH = math.min(screenH - 64, screenH * 0.80)
             local requiredScale = math.min(availW / baseW, availH / baseH)
-            local finalScale = math.clamp(requiredScale, 0.42, 0.72)
+            local finalScale = math.clamp(requiredScale, 0.50, 0.82)
             return finalScale, baseW, baseH
         else
             local availW = math.min(screenW - 96, screenW * 0.72)
@@ -3517,10 +3517,6 @@ do
     floatingToggle:SetAttribute("FW_Bypassed", true)
     floatingToggle.Parent = rootGui
 
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 8)
-    toggleCorner.Parent = floatingToggle
-
     -- Vibrant Electric Ocean Gradient matching Main GUI
     local toggleGrad = Instance.new("UIGradient")
     toggleGrad.Name = "ToggleGradient"
@@ -3579,10 +3575,6 @@ do
     avatarBadge.BorderSizePixel = 0
     avatarBadge.ZIndex = 1003
     avatarBadge.Parent = floatingToggle
-
-    local badgeCorner = Instance.new("UICorner")
-    badgeCorner.CornerRadius = UDim.new(0, 6)
-    badgeCorner.Parent = avatarBadge
 
     local badgeGrad = Instance.new("UIGradient")
     badgeGrad.Name = "BadgeGradient"
@@ -4426,10 +4418,6 @@ end
 
 -- Dedicated Navigation Sidebar INSIDE mainFrame (Single Left Column)
 local function applySidebarGlassDecor(frame)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = frame
-
     local stroke = Instance.new("UIStroke")
     stroke.Name = "NavStroke"
     stroke.Color = Color3.fromRGB(80, 215, 255)
@@ -4607,13 +4595,9 @@ local function buildRowPlate(parent, labelText)
     main.BackgroundTransparency = 0.40
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
-    main.Size = UDim2.fromScale(1, 0.92)
+    main.Size = UDim2.new(1, 0, 1, -6)
     main.ZIndex = 3
     main.Parent = parent
-    
-    local plateCorner = Instance.new("UICorner")
-    plateCorner.CornerRadius = UDim.new(0, 6)
-    plateCorner.Parent = main
 
     local plateGrad = Instance.new("UIGradient")
     plateGrad.Name = "GlassSheenGrad"
@@ -4707,6 +4691,7 @@ local function createDropdownRow(
     action,
     noteText
 )
+    local initHeadH = (noteText and tostring(noteText) ~= "") and 60 or 50
     local row = Instance.new("Frame")
     row.Name = name
     row.Active = false
@@ -4715,7 +4700,7 @@ local function createDropdownRow(
     row.BorderSizePixel = 0
     row.ClipsDescendants = false
     row.Position = UDim2.fromScale(0.5, 0.5)
-    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, 0)
+    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, initHeadH)
     row.ZIndex = 3
 
     local head = Instance.new("Frame")
@@ -4725,7 +4710,7 @@ local function createDropdownRow(
     head.BackgroundTransparency = 1
     head.BorderSizePixel = 0
     head.Position = UDim2.fromScale(0.5, 0)
-    head.Size = UDim2.new(1, 0, 0, 0)
+    head.Size = UDim2.new(1, 0, 0, initHeadH)
     head.ZIndex = 3
     head.Parent = row
 
@@ -4745,10 +4730,6 @@ local function createDropdownRow(
     box.Text = ""
     box.ZIndex = 6
     box.Parent = main
-
-    local boxCorner = Instance.new("UICorner")
-    boxCorner.CornerRadius = UDim.new(0, 6)
-    boxCorner.Parent = box
 
     local boxStroke = Instance.new("UIStroke")
     boxStroke.Name = "BoxStroke"
@@ -4915,10 +4896,6 @@ local function createDropdownRow(
     menuClip.ZIndex = 15
     menuClip.Parent = row
 
-    local menuCorner = Instance.new("UICorner")
-    menuCorner.CornerRadius = UDim.new(0, 6)
-    menuCorner.Parent = menuClip
-
     local menuGrad = Instance.new("UIGradient")
     menuGrad.Name = "GlassSheen"
     menuGrad.Rotation = 90
@@ -4955,10 +4932,6 @@ local function createDropdownRow(
         searchField.Size = UDim2.new(1, -12, 0, 34)
         searchField.ZIndex = 16
         searchField.Parent = menuClip
-
-        local sCorner = Instance.new("UICorner")
-        sCorner.CornerRadius = UDim.new(0, 5)
-        sCorner.Parent = searchField
 
         local sStroke = Instance.new("UIStroke")
         sStroke.Color = Color3.fromRGB(80, 210, 255)
@@ -5206,10 +5179,6 @@ local function createDropdownRow(
         item:SetAttribute("FW_Bypassed", true)
         item.Parent = scrollFrame
 
-        local itemCorner = Instance.new("UICorner")
-        itemCorner.CornerRadius = UDim.new(0, 5)
-        itemCorner.Parent = item
-
         local itemStroke = Instance.new("UIStroke")
         itemStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         itemStroke.Color = Color3.fromRGB(80, 215, 255)
@@ -5231,10 +5200,6 @@ local function createDropdownRow(
             tickBox.Size = UDim2.new(0, 18, 0, 18)
             tickBox.ZIndex = 18
             tickBox.Parent = item
-
-            local tbCorner = Instance.new("UICorner")
-            tbCorner.CornerRadius = UDim.new(0, 4)
-            tbCorner.Parent = tickBox
 
             tbStroke = Instance.new("UIStroke")
             tbStroke.Color = Color3.fromRGB(0, 200, 255)
@@ -5268,10 +5233,6 @@ local function createDropdownRow(
             accentBar.Visible = false
             accentBar.ZIndex = 18
             accentBar.Parent = item
-
-            local abCorner = Instance.new("UICorner")
-            abCorner.CornerRadius = UDim.new(0, 2)
-            abCorner.Parent = accentBar
 
             singleCheck = Instance.new("ImageLabel")
             singleCheck.Name = "CheckMark"
@@ -5442,7 +5403,7 @@ local function createDropdownRow(
     end
 
     local heightTween, menuTween
-    local headHeight = 0
+    local headHeight = initHeadH
     local menuHeight = 0
     local gapSize = 4
 
@@ -5465,7 +5426,7 @@ local function createDropdownRow(
         end
 
         if animated then
-            local info = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local info = TweenInfo.new(0.20, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
             heightTween = TweenService:Create(row, info, { Size = rowTarget })
             menuTween = TweenService:Create(menuClip, info, { Size = menuTarget })
             if not isOpen then
@@ -5487,15 +5448,15 @@ local function createDropdownRow(
     refreshGeometry = function(animated)
         local width = row.AbsoluteSize.X / getEffectiveWindowScale()
         if width <= 0 then
-            return
+            width = 380
         end
 
         local referenceWidth = width
         if not RESIZE_KEEPS_OPTION_WIDTH then
             referenceWidth = width / ContentScale.X
         end
-        local band = math.max(44, math.floor(referenceWidth / ROW_ASPECT + 0.5))
-        headHeight = currentNote ~= "" and math.max(54, math.floor(referenceWidth / ROW_ASPECT_WITH_NOTE + 0.5)) or band
+        local band = math.max(50, math.floor(referenceWidth / ROW_ASPECT + 0.5) + 6)
+        headHeight = currentNote ~= "" and math.max(60, math.floor(referenceWidth / ROW_ASPECT_WITH_NOTE + 0.5) + 6) or band
         head.Size = UDim2.new(1, 0, 0, headHeight)
         menuClip.Position = UDim2.new(0.5, 0, 0, headHeight + gapSize)
 
@@ -5891,10 +5852,6 @@ local function createInputRow(name, labelText, placeholder)
     field.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62)
     field.ZIndex = 4
     field.Parent = main
-
-    local fieldCorner = Instance.new("UICorner")
-    fieldCorner.CornerRadius = UDim.new(0, 6)
-    fieldCorner.Parent = field
 
     local fieldStroke = Instance.new("UIStroke")
     fieldStroke.Name = "FieldStroke"
@@ -6392,10 +6349,6 @@ local function createLibrarySliderRow(config)
     valueLabel.ZIndex = 5
     valueLabel.Parent = main
     applyPlainTextStyle(valueLabel)
-
-    local valueCorner = Instance.new("UICorner")
-    valueCorner.CornerRadius = UDim.new(0, 4)
-    valueCorner.Parent = valueLabel
 
     local valueStroke = Instance.new("UIStroke")
     valueStroke.Name = "ValueStroke"
@@ -8046,13 +7999,16 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
     row.BorderSizePixel = 0
     row.ClipsDescendants = false
     row.Position = UDim2.fromScale(0.5, 0.5)
-    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, 44)
+    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, currentNote ~= "" and 60 or 50)
     row.ZIndex = 3
 
     
     
     
     local function hostWidthScale()
+        if row.Parent and row.Parent.Name:find("CollapsibleContent") then
+            return 1
+        end
         if RESIZE_KEEPS_OPTION_WIDTH then
             return ROW_WIDTH_SCALE / ContentScale.X
         end
@@ -8067,7 +8023,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
             hostWidthScale(),
             0,
             0,
-            math.max(44, row.Size.Y.Offset)
+            math.max(50, row.Size.Y.Offset)
         )
     end)
 
@@ -8097,7 +8053,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
         primitiveController = mountedController
         primitiveRow.AnchorPoint = Vector2.new(0.5, 0)
         primitiveRow.Position = UDim2.fromScale(0.5, 0)
-        primitiveRow.Size = UDim2.new(1, 0, 0, 44)
+        primitiveRow.Size = UDim2.new(1, 0, 0, math.max(50, mountedRow.Size.Y.Offset))
         primitiveRow.Parent = row
 
         local function syncHostHeight()
@@ -8115,7 +8071,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
                 hostWidthScale(),
                 0,
                 0,
-                math.max(44, math.ceil(unscaledH))
+                math.max(50, math.ceil(unscaledH))
             )
             if row.Size ~= nextRowSize then
                 row.Size = nextRowSize
@@ -8123,6 +8079,9 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
         end
 
         mountedRow:GetPropertyChangedSignal("Size"):Connect(
+            syncHostHeight
+        )
+        row:GetPropertyChangedSignal("Parent"):Connect(
             syncHostHeight
         )
         
@@ -8411,10 +8370,6 @@ do
     windowSearchBar.ZIndex = 25
     windowSearchBar.Parent = mainFrame
 
-    local sCorner = Instance.new("UICorner")
-    sCorner.CornerRadius = UDim.new(0, 6)
-    sCorner.Parent = windowSearchBar
-
     local sStroke = Instance.new("UIStroke")
     sStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     sStroke.Color = Color3.fromRGB(90, 220, 255)
@@ -8663,10 +8618,6 @@ do
                     emptyNotice.Size = UDim2.new(0.96, 0, 0, 128)
                     emptyNotice.LayoutOrder = 99999
                     emptyNotice.ZIndex = 12
-
-                    local nCorner = Instance.new("UICorner")
-                    nCorner.CornerRadius = UDim.new(0, 10)
-                    nCorner.Parent = emptyNotice
 
                     local nCardStroke = Instance.new("UIStroke")
                     nCardStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -9090,10 +9041,6 @@ do
         btn.ZIndex = 207
         btn.Parent = parent
 
-        local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 5)
-        btnCorner.Parent = btn
-
         local btnStroke = Instance.new("UIStroke")
         btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         btnStroke.Color = Color3.fromRGB(255, 255, 255)
@@ -9200,10 +9147,6 @@ do
     cancelBtn.TextSize = 11
     cancelBtn.ZIndex = 207
     cancelBtn.Parent = modalCard
-
-    local cancelCorner = Instance.new("UICorner")
-    cancelCorner.CornerRadius = UDim.new(0, 5)
-    cancelCorner.Parent = cancelBtn
 
     local cancelBtnStroke = Instance.new("UIStroke")
     cancelBtnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -9527,7 +9470,7 @@ do
             title.Parent = header
         end
 
-        -- Mascot Avatar Badge (Soft Rounded Squircle - Seamless Liquid Glass)
+        -- Mascot Avatar Badge (Crisp Boxy Frame - Seamless Liquid Glass)
         do
             local aura = Instance.new("Frame")
             aura.Name = "AvatarAura"
@@ -9541,10 +9484,6 @@ do
             aura.ZIndex = 611
             aura.Parent = card
 
-            local auraCorner = Instance.new("UICorner")
-            auraCorner.CornerRadius = UDim.new(0, 18)
-            auraCorner.Parent = aura
-
             local badge = Instance.new("Frame")
             badge.Name = "AvatarBadge"
             badge.Active = false
@@ -9556,10 +9495,6 @@ do
             badge.BorderSizePixel = 0
             badge.ZIndex = 612
             badge.Parent = card
-
-            local badgeCorner = Instance.new("UICorner")
-            badgeCorner.CornerRadius = UDim.new(0, 16)
-            badgeCorner.Parent = badge
 
             local bGrad = Instance.new("UIGradient")
             bGrad.Name = "BadgeGradient"
@@ -9664,10 +9599,6 @@ do
             progressTrack.ZIndex = 612
             progressTrack.Parent = card
 
-            local ptCorner = Instance.new("UICorner")
-            ptCorner.CornerRadius = UDim.new(1, 0)
-            ptCorner.Parent = progressTrack
-
             local pStroke = Instance.new("UIStroke")
             pStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             pStroke.Color = Color3.fromRGB(0, 200, 255)
@@ -9683,10 +9614,6 @@ do
             progressBar.Size = UDim2.new(1, 0, 1, 0)
             progressBar.ZIndex = 613
             progressBar.Parent = progressTrack
-
-            local pbCorner = Instance.new("UICorner")
-            pbCorner.CornerRadius = UDim.new(1, 0)
-            pbCorner.Parent = progressBar
 
             local bGrad = Instance.new("UIGradient")
             bGrad.Name = "BarGrad"
@@ -10955,7 +10882,7 @@ ApiImpl[43] = function(self)
     if initH <= 1 then
         initH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
     end
-    initH = math.max(44, initH)
+    initH = math.max(50, initH)
 
     local host = Instance.new("Frame")
     host.Name = row.Name .. "CollapsibleContent"
@@ -10972,6 +10899,7 @@ ApiImpl[43] = function(self)
     )
     host.Visible = row.Visible
     host.ZIndex = row.ZIndex
+    host:SetAttribute("BH_IsVisHost", true)
     host.Parent = parent
 
     row.LayoutOrder = 1
@@ -10984,6 +10912,17 @@ ApiImpl[43] = function(self)
     self._visibilityAnimating = false
     self._visibilityHostConnections = self._visibilityHostConnections or {}
 
+    local function notifySectionHeight()
+        if self._destroyed or not self.Section or self.Section._destroyed then
+            return
+        end
+        if self.Section._refreshHeightSync then
+            self.Section._refreshHeightSync()
+        else
+            self.Section._refreshHeight()
+        end
+    end
+
     local function syncExpandedHeight()
         if self._destroyed or not host.Parent or not row.Parent then
             return
@@ -10992,9 +10931,9 @@ ApiImpl[43] = function(self)
         if unscaledRowH <= 1 then
             unscaledRowH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
         end
-        local height = math.max(44, unscaledRowH)
+        local height = math.max(50, unscaledRowH)
         self._visibilityExpandedHeight = height
-        if not self._visibilityAnimating and self._resolvedVisible ~= false then
+        if not self._visibilityAnimating and self._resolvedVisible ~= false and host.Visible then
             local nextHostSize = UDim2.new(
                 self._visibilityHostWidth or 1,
                 0,
@@ -11010,6 +10949,14 @@ ApiImpl[43] = function(self)
         self._visibilityHostConnections,
         row:GetPropertyChangedSignal("Size"):Connect(syncExpandedHeight)
     )
+    table.insert(
+        self._visibilityHostConnections,
+        host:GetPropertyChangedSignal("Size"):Connect(notifySectionHeight)
+    )
+    table.insert(
+        self._visibilityHostConnections,
+        host:GetPropertyChangedSignal("Visible"):Connect(notifySectionHeight)
+    )
     syncExpandedHeight()
     return host
 end
@@ -11020,14 +10967,6 @@ ApiImpl[44] = function(self, animated)
     local visible = resolvedOptionVisibility(self)
     self._resolvedVisible = visible
 
-    
-    
-    
-    
-    
-    
-    
-    
     if previous ~= visible and not self._cascadingVisibility then
         self._cascadingVisibility = true
         for _, dependency in ipairs(self._visibilityDependents or {}) do
@@ -11047,12 +10986,14 @@ ApiImpl[44] = function(self, animated)
         return self
     end
 
-    
-    
     if self._preSearchVisible ~= nil then
         self._preSearchVisible = visible
         host.Visible = self._searchMatched == true and visible
-        task.defer(self.Section._refreshHeight)
+        if self.Section._refreshHeightSync then
+            self.Section._refreshHeightSync()
+        else
+            task.defer(self.Section._refreshHeight)
+        end
         return self
     end
 
@@ -11076,7 +11017,7 @@ ApiImpl[44] = function(self, animated)
         unscaledRowH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
     end
     local expandedHeight = math.max(
-        44,
+        50,
         self._visibilityExpandedHeight or 0,
         unscaledRowH
     )
@@ -11088,23 +11029,34 @@ ApiImpl[44] = function(self, animated)
         visible and expandedHeight or 0
     )
 
-    if visible then
-        
-        
-        host.Visible = true
-    end
     if animated == false then
         self._visibilityAnimating = false
         host.Size = targetSize
         host.Visible = visible
-        task.defer(self.Section._refreshHeight)
+        if self.Section._refreshHeightSync then
+            self.Section._refreshHeightSync()
+        else
+            task.defer(self.Section._refreshHeight)
+        end
         return self
     end
 
     self._visibilityAnimating = true
+    if visible and not host.Visible then
+        host.Size = UDim2.new(
+            self._visibilityHostWidth or 1,
+            0,
+            0,
+            0
+        )
+        host.Visible = true
+    elseif visible then
+        host.Visible = true
+    end
+
     local info = TweenInfo.new(
-        0.16,
-        Enum.EasingStyle.Quad,
+        0.22,
+        Enum.EasingStyle.Quart,
         Enum.EasingDirection.Out
     )
     self._visibilityTween = TweenService:Create(host, info, {
@@ -11127,11 +11079,26 @@ ApiImpl[44] = function(self, animated)
                 0,
                 self._visibilityExpandedHeight or expandedHeight
             )
+        else
+            host.Size = UDim2.new(
+                self._visibilityHostWidth or 1,
+                0,
+                0,
+                0
+            )
         end
-        self.Section._refreshHeight()
+        if self.Section._refreshHeightSync then
+            self.Section._refreshHeightSync()
+        else
+            self.Section._refreshHeight()
+        end
     end)
     self._visibilityTween:Play()
-    task.defer(self.Section._refreshHeight)
+    if self.Section._refreshHeightSync then
+        self.Section._refreshHeightSync()
+    else
+        task.defer(self.Section._refreshHeight)
+    end
     return self
 end
 
@@ -11252,18 +11219,17 @@ ApiImpl[48] = function(self, source)
     source._subOptions = source._subOptions or {}
     table.insert(source._subOptions, self)
 
-    
-    
-    
-    
     if not self._subAspectApplied then
         self._subAspectApplied = true
     end
 
-    
-    
-    
-    ApiImpl[44](self, false)
+    if (source.Type == "toggle" or source.Type == "switch")
+        and #(self._visibilityDependencies or {}) == 0
+    then
+        ApiImpl[47](self, source)
+    else
+        ApiImpl[44](self, false)
+    end
     return self
 end
 
@@ -11685,10 +11651,10 @@ local function bindResponsiveFixedRowHeight(section, row)
         end
         lastRefWidth = referenceWidth
         lastAspect = currentAspect
-        local minH = (currentAspect <= ROW_ASPECT_WITH_NOTE + 0.5) and 54 or 44
+        local minH = (currentAspect <= ROW_ASPECT_WITH_NOTE + 0.5) and 60 or 50
         local rowHeight = math.max(
             minH,
-            math.floor(referenceWidth * ROW_WIDTH_SCALE / math.max(currentAspect, 1) + 0.5)
+            math.floor(referenceWidth * ROW_WIDTH_SCALE / math.max(currentAspect, 1) + 0.5) + 6
         )
         local widthScale = ROW_WIDTH_SCALE
         if RESIZE_KEEPS_OPTION_WIDTH then
@@ -11734,7 +11700,7 @@ local function addRowToSection(section, optionType, row, controller)
     row.Parent = section._content
     local cleanupResponsive = bindResponsiveFixedRowHeight(section, row)
     local rowSizeConnection = row:GetPropertyChangedSignal("Size"):Connect(
-        section._refreshHeight
+        section._refreshHeightSync or section._refreshHeight
     )
     controller = controller or {}
     local originalDestroy = controller.Destroy
@@ -14952,7 +14918,7 @@ ApiImpl[87] = function(self, expanded, animated)
         self._measureExpandedHeight()
         targetHeight = self._expandedHeight
         if targetHeight <= 0 and #self.Options > 0 then
-            targetHeight = #self.Options * 38
+            targetHeight = #self.Options * 44
         end
     end
 
@@ -14968,10 +14934,10 @@ ApiImpl[87] = function(self, expanded, animated)
     self._group.ClipsDescendants = true
 
     if expanded then
-        self._group.Visible = true
-        if self._group.Size.Y.Offset == 0 then
+        if not self._group.Visible or self._group.Size.Y.Offset <= 0 then
             self._group.Size = UDim2.new(1, 0, 0, 0)
         end
+        self._group.Visible = true
     end
 
     if animated == false then
@@ -14979,14 +14945,14 @@ ApiImpl[87] = function(self, expanded, animated)
         self._group.Visible = expanded
         self._group.ClipsDescendants = not expanded
         self._arrow.Rotation = targetRotation
-        task.defer(self._refreshContainer)
+        self._refreshContainer()
         task.defer(self.Tab._updateCanvas)
         return self
     end
 
-    local duration = expanded and 0.24 or 0.22
+    local duration = 0.22
     local easingStyle = Enum.EasingStyle.Quart
-    local easingDir = expanded and Enum.EasingDirection.Out or Enum.EasingDirection.In
+    local easingDir = Enum.EasingDirection.Out
 
     local heightInfo = TweenInfo.new(duration, easingStyle, easingDir)
     local arrowInfo = TweenInfo.new(0.22, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
@@ -15019,7 +14985,11 @@ ApiImpl[87] = function(self, expanded, animated)
             else
                 self._group.Size = UDim2.new(1, 0, 0, 0)
             end
-            self._refreshHeight()
+            if self._refreshHeightSync then
+                self._refreshHeightSync()
+            else
+                self._refreshHeight()
+            end
             self._refreshContainer()
             pcall(function() self.Tab._updateCanvas() end)
         end
@@ -15088,15 +15058,6 @@ ApiImpl[90] = function(self, config)
 
     self._nextSectionOrder = self._nextSectionOrder + 1
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
     local isQuickSection = tostring(sectionConfig.Name):lower():find("quick access") ~= nil
     local isNormalTab = (self.Name ~= "Quick & Keys")
 
@@ -15128,7 +15089,7 @@ ApiImpl[90] = function(self, config)
     sectionLayout.FillDirection = Enum.FillDirection.Vertical
     sectionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     sectionLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-    sectionLayout.Padding = UDim.new(0, 8)
+    sectionLayout.Padding = UDim.new(0, 0)
     sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
     sectionLayout.Parent = container
 
@@ -15203,7 +15164,7 @@ ApiImpl[90] = function(self, config)
     group.ClipsDescendants = not isInitExp
     group.LayoutOrder = 2
     group.AutomaticSize = Enum.AutomaticSize.None
-    group.Size = UDim2.new(1, 0, 0, isInitExp and 44 or 0)
+    group.Size = UDim2.new(1, 0, 0, isInitExp and 50 or 0)
     group.Visible = isInitExp
     group.ZIndex = 3
     group.Parent = container
@@ -15215,16 +15176,21 @@ ApiImpl[90] = function(self, config)
     content.BorderSizePixel = 0
     content.Position = UDim2.fromScale(0, 0)
     content.AutomaticSize = Enum.AutomaticSize.None
-    content.Size = UDim2.new(1, 0, 0, 44)
+    content.Size = UDim2.new(1, 0, 0, 50)
     content.ZIndex = 3
     content.Parent = group
+
+    local contentTopPad = Instance.new("UIPadding")
+    contentTopPad.Name = "TopGap"
+    contentTopPad.PaddingTop = UDim.new(0, 6)
+    contentTopPad.Parent = content
 
     local contentLayout = Instance.new("UIListLayout")
     contentLayout.Name = "OptionLayout"
     contentLayout.FillDirection = Enum.FillDirection.Vertical
     contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     contentLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-    contentLayout.Padding = UDim.new(0, 6)
+    contentLayout.Padding = UDim.new(0, 0)
     contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
     contentLayout.Parent = content
 
@@ -15254,15 +15220,11 @@ ApiImpl[90] = function(self, config)
         if section._destroyed then
             return
         end
-        local winScale = getEffectiveWindowScale()
-        local headerH = header.Visible and math.max(40, header.Size.Y.Offset, math.ceil(header.AbsoluteSize.Y / winScale)) or 0
-        local groupH = (group.Visible and section.Expanded)
-            and (section._heightTween and math.ceil(group.AbsoluteSize.Y / winScale) or math.max(0, group.Size.Y.Offset))
+        local headerH = header.Visible and math.max(40, header.Size.Y.Offset) or 0
+        local groupH = (group.Visible and (section.Expanded or section._heightTween ~= nil))
+            and math.max(0, group.Size.Y.Offset)
             or 0
-        local padH = (header.Visible and group.Visible and groupH > 0)
-            and sectionLayout.Padding.Offset
-            or 0
-        local sectionHeight = math.ceil(headerH + padH + groupH)
+        local sectionHeight = math.round(headerH + groupH)
         local nextContainerSize = UDim2.new(1, 0, 0, sectionHeight)
         if container.Size ~= nextContainerSize then
             container.Size = nextContainerSize
@@ -15298,36 +15260,24 @@ ApiImpl[90] = function(self, config)
         for _, child in ipairs(content:GetChildren()) do
             if child:IsA("GuiObject") and child.Visible then
                 visibleCount = visibleCount + 1
+                local isVisHost = child:GetAttribute("BH_IsVisHost") == true
                 local childHeight = child.Size.Y.Offset
-                if childHeight <= 0 then
+                if childHeight <= 0 and not isVisHost then
                     childHeight = math.ceil(child.AbsoluteSize.Y / winScale)
+                    if childHeight <= 0 then
+                        childHeight = 50
+                    end
                 end
-                if childHeight <= 0 then
-                    childHeight = 44
-                end
+                childHeight = math.max(0, childHeight)
                 summedHeight = summedHeight + childHeight
             end
         end
-        if visibleCount == 0 then
+        if visibleCount == 0 or summedHeight <= 0 then
             section._expandedHeight = 0
             return 0
         end
-        if visibleCount > 1 then
-            summedHeight = summedHeight
-                + (visibleCount - 1) * contentLayout.Padding.Offset
-        end
-        local measuredHeight = 0
-        if visibleCount == #section.Options then
-            measuredHeight = math.max(
-                0,
-                math.ceil(contentLayout.AbsoluteContentSize.Y / winScale)
-            )
-        end
-        section._expandedHeight = math.max(
-            measuredHeight,
-            math.ceil(summedHeight),
-            visibleCount * 44 + math.max(0, visibleCount - 1) * contentLayout.Padding.Offset
-        )
+        summedHeight = summedHeight + 6
+        section._expandedHeight = math.max(0, math.round(summedHeight))
         return section._expandedHeight
     end
 
@@ -15362,6 +15312,17 @@ ApiImpl[90] = function(self, config)
         end
         updateContainerSizeSync()
         section._refreshContainer()
+    end
+
+    section._refreshHeightSync = function()
+        if section._destroyed then
+            return
+        end
+        if Runtime.windowAnimating or not section.Tab.Page.Visible then
+            section._refreshHeight()
+            return
+        end
+        applyMeasuredHeight()
     end
 
     section._refreshHeight = function()
@@ -15456,6 +15417,12 @@ ApiImpl[90] = function(self, config)
         section._refreshContainer
     ))
     table.insert(section._connections, header:GetPropertyChangedSignal("Size"):Connect(
+        section._refreshContainer
+    ))
+    table.insert(section._connections, group:GetPropertyChangedSignal("Size"):Connect(
+        updateContainerSizeSync
+    ))
+    table.insert(section._connections, group:GetPropertyChangedSignal("Visible"):Connect(
         section._refreshContainer
     ))
     local lastSectionClickSoundAt = 0
@@ -15697,7 +15664,6 @@ ApiImpl[95] = function(self, config)
                 pLayout.Padding = UDim.new(0, 10)
             end
             local winScale = getEffectiveWindowScale()
-            local unscaledContentH = math.ceil(pLayout.AbsoluteContentSize.Y / winScale) + 24
             local summedPageH = 24
             local visSections = 0
             for _, child in ipairs(page:GetChildren()) do
@@ -15713,8 +15679,8 @@ ApiImpl[95] = function(self, config)
             if visSections > 1 then
                 summedPageH = summedPageH + (visSections - 1) * pLayout.Padding.Offset
             end
-            local targetCanvasY = math.max(unscaledContentH, summedPageH)
-            if math.abs(page.CanvasSize.Y.Offset - targetCanvasY) > 1 then
+            local targetCanvasY = math.max(summedPageH, 24)
+            if math.abs(page.CanvasSize.Y.Offset - targetCanvasY) >= 1 then
                 page.CanvasSize = UDim2.new(0, 0, 0, targetCanvasY)
             end
         end
@@ -16158,7 +16124,7 @@ Runtime.startBlueHavenLoading = function(window)
         shield.Activated:Connect(sinkLoadingInput)
         shield.InputBegan:Connect(sinkLoadingInput)
 
-        -- Sleek Compact Floating Capsule / Dynamic Island (356x71 px Horizontal Bar - +11% Larger)
+        -- Sleek Compact Boxy Progress Bar (356x71 px Horizontal Box - +11% Larger, Kotak Not Rounded)
         local capsule = Instance.new("Frame")
         capsule.Name = "LoadingCapsule"
         capsule.Active = true
@@ -16172,10 +16138,6 @@ Runtime.startBlueHavenLoading = function(window)
         capsule.ZIndex = 505
         capsule.ClipsDescendants = true
         capsule.Parent = barrier
-
-        local capCorner = Instance.new("UICorner")
-        capCorner.CornerRadius = UDim.new(0, 14)
-        capCorner.Parent = capsule
 
         -- Vibrant Ocean Deep Gradient & Crisp Matrix Studs (Exact Main GUI Palette)
         do
@@ -16244,8 +16206,8 @@ Runtime.startBlueHavenLoading = function(window)
             local stroke = Instance.new("UIStroke")
             stroke.Name = "CapsuleStroke"
             stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            stroke.Color = Color3.fromRGB(0, 235, 255)
-            stroke.Thickness = 1.5
+            stroke.Color = Color3.fromRGB(255, 255, 255)
+            stroke.Thickness = 1.6
             stroke.Parent = capsule
         end
 
@@ -16255,7 +16217,7 @@ Runtime.startBlueHavenLoading = function(window)
         capsuleScale.Scale = targetCapsuleScale * 0.78
         capsuleScale.Parent = capsule
 
-        -- Left Section: Cat Mascot Avatar Housing (Soft Frosted Squircle - High Contrast & Seamless)
+        -- Left Section: Cat Mascot Avatar Housing (Sharp Boxy Frame)
         local bobTween = nil
         do
             local avatarBox = Instance.new("Frame")
@@ -16265,20 +16227,16 @@ Runtime.startBlueHavenLoading = function(window)
             avatarBox.Position = UDim2.new(0, 11, 0.5, 0)
             avatarBox.Size = UDim2.fromOffset(51, 51)
             avatarBox.BackgroundColor3 = Color3.fromRGB(8, 34, 76)
-            avatarBox.BackgroundTransparency = 0.40
+            avatarBox.BackgroundTransparency = 0.35
             avatarBox.BorderSizePixel = 0
             avatarBox.ZIndex = 506
             avatarBox.Parent = capsule
 
-            local abCorner = Instance.new("UICorner")
-            abCorner.CornerRadius = UDim.new(0, 11)
-            abCorner.Parent = avatarBox
-
             local abStroke = Instance.new("UIStroke")
             abStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             abStroke.Color = Color3.fromRGB(0, 225, 255)
-            abStroke.Thickness = 1.0
-            abStroke.Transparency = 0.45
+            abStroke.Thickness = 1.2
+            abStroke.Transparency = 0.25
             abStroke.Parent = avatarBox
 
             local mascotImg = Instance.new("ImageLabel")
@@ -16294,7 +16252,7 @@ Runtime.startBlueHavenLoading = function(window)
             mascotImg.Parent = avatarBox
         end
 
-        -- Right Section: Dynamic Island Info & Sleek Progress Bar
+        -- Right Section: Info & Boxy Progress Bar
         local stepLabel = nil
         local percentLabel = nil
         local progressBar = nil
@@ -16400,26 +16358,22 @@ Runtime.startBlueHavenLoading = function(window)
             sStroke.Parent = stepLabel
             stepLabel.Parent = contentArea
 
-            -- Row 3: Sleek Pill Progress Bar (5px height)
+            -- Row 3: Boxy Progress Bar (6px height)
             local track = Instance.new("Frame")
             track.Name = "ProgressTrack"
             track.Active = false
             track.BorderSizePixel = 0
             track.BackgroundColor3 = Color3.fromRGB(10, 52, 110)
             track.Position = UDim2.new(0, 0, 0, 40)
-            track.Size = UDim2.new(1, 0, 0, 5)
+            track.Size = UDim2.new(1, 0, 0, 6)
             track.ZIndex = 507
             track.Parent = contentArea
-
-            local trCorner = Instance.new("UICorner")
-            trCorner.CornerRadius = UDim.new(1, 0)
-            trCorner.Parent = track
 
             local trStroke = Instance.new("UIStroke")
             trStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             trStroke.Color = Color3.fromRGB(0, 220, 255)
-            trStroke.Thickness = 0.8
-            trStroke.Transparency = 0.30
+            trStroke.Thickness = 1.0
+            trStroke.Transparency = 0.25
             trStroke.Parent = track
 
             progressBar = Instance.new("Frame")
@@ -16431,10 +16385,6 @@ Runtime.startBlueHavenLoading = function(window)
             progressBar.Size = UDim2.new(0, 0, 1, 0)
             progressBar.ZIndex = 508
             progressBar.Parent = track
-
-            local pbCorner = Instance.new("UICorner")
-            pbCorner.CornerRadius = UDim.new(1, 0)
-            pbCorner.Parent = progressBar
 
             local barGrad = Instance.new("UIGradient")
             barGrad.Name = "BarGrad"
