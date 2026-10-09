@@ -891,7 +891,7 @@ pcall(chilliSetProperty, objects.obj25, "BorderSizePixel", 0)
 pcall(chilliSetProperty, objects.obj25, "ClipsDescendants", true)
 pcall(chilliSetProperty, objects.obj25, "Position", UDim2.new(0, 138, 0, 88))
 pcall(chilliSetProperty, objects.obj25, "Rotation", 0)
-pcall(chilliSetProperty, objects.obj25, "Selectable", true)
+pcall(chilliSetProperty, objects.obj25, "Selectable", false)
 pcall(chilliSetProperty, objects.obj25, "SelectionOrder", 0)
 pcall(chilliSetProperty, objects.obj25, "Size", UDim2.new(1, -146, 1, -96))
 pcall(chilliSetProperty, objects.obj25, "SizeConstraint", Enum.SizeConstraint.RelativeXY)
@@ -900,7 +900,7 @@ pcall(chilliSetProperty, objects.obj25, "AutomaticSize", Enum.AutomaticSize.None
 pcall(chilliSetProperty, objects.obj25, "LayoutOrder", 1)
 pcall(chilliSetProperty, objects.obj25, "CanvasPosition", Vector2.new(0,0))
 pcall(chilliSetProperty, objects.obj25, "CanvasSize", UDim2.new(0,0,0,0))
-pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSize.Y)
+pcall(chilliSetProperty, objects.obj25, "AutomaticCanvasSize", Enum.AutomaticSize.None)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarThickness", 6)
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageColor3", Color3.fromRGB(120,210,255))
 pcall(chilliSetProperty, objects.obj25, "ScrollBarImageTransparency", 0)
@@ -11006,10 +11006,7 @@ ApiImpl[43] = function(self)
         self._visibilityHostConnections,
         row:GetPropertyChangedSignal("Size"):Connect(syncExpandedHeight)
     )
-    table.insert(
-        self._visibilityHostConnections,
-        host:GetPropertyChangedSignal("Size"):Connect(notifySectionHeight)
-    )
+    -- Only notify section height when visibility toggles, NOT every frame during tween
     table.insert(
         self._visibilityHostConnections,
         host:GetPropertyChangedSignal("Visible"):Connect(notifySectionHeight)
@@ -11032,7 +11029,7 @@ ApiImpl[44] = function(self, animated)
                 and child
                 and not child._destroyed
             then
-                ApiImpl[44](child, animated)
+                ApiImpl[44](child, false) -- always instant for SubOf dependents
             end
         end
         self._cascadingVisibility = false
@@ -11055,7 +11052,6 @@ ApiImpl[44] = function(self, animated)
     end
 
     self._visibilityRevision = (self._visibilityRevision or 0) + 1
-    local revision = self._visibilityRevision
     local wasAnimating = self._visibilityTween ~= nil
     if self._visibilityTween then
         self._visibilityTween:Cancel()
@@ -11086,71 +11082,10 @@ ApiImpl[44] = function(self, animated)
         visible and expandedHeight or 0
     )
 
-    if animated == false then
-        self._visibilityAnimating = false
-        host.Size = targetSize
-        host.Visible = visible
-        if self.Section._refreshHeightSync then
-            self.Section._refreshHeightSync()
-        else
-            task.defer(self.Section._refreshHeight)
-        end
-        return self
-    end
-
-    self._visibilityAnimating = true
-    if visible and not host.Visible then
-        host.Size = UDim2.new(
-            self._visibilityHostWidth or 1,
-            0,
-            0,
-            0
-        )
-        host.Visible = true
-    elseif visible then
-        host.Visible = true
-    end
-
-    local info = TweenInfo.new(
-        0.22,
-        Enum.EasingStyle.Quart,
-        Enum.EasingDirection.Out
-    )
-    self._visibilityTween = TweenService:Create(host, info, {
-        Size = targetSize,
-    })
-    self._visibilityTween.Completed:Connect(function()
-        if self._destroyed
-            or revision ~= self._visibilityRevision
-            or not self._visibilityHost
-        then
-            return
-        end
-        self._visibilityTween = nil
-        self._visibilityAnimating = false
-        host.Visible = visible
-        if visible then
-            host.Size = UDim2.new(
-                self._visibilityHostWidth or 1,
-                0,
-                0,
-                self._visibilityExpandedHeight or expandedHeight
-            )
-        else
-            host.Size = UDim2.new(
-                self._visibilityHostWidth or 1,
-                0,
-                0,
-                0
-            )
-        end
-        if self.Section._refreshHeightSync then
-            self.Section._refreshHeightSync()
-        else
-            self.Section._refreshHeight()
-        end
-    end)
-    self._visibilityTween:Play()
+    -- Always use instant show/hide for SubOf children to prevent layout thrashing
+    self._visibilityAnimating = false
+    host.Size = targetSize
+    host.Visible = visible
     if self.Section._refreshHeightSync then
         self.Section._refreshHeightSync()
     else
@@ -15003,7 +14938,18 @@ ApiImpl[87] = function(self, expanded, animated)
         self._group.ClipsDescendants = not expanded
         self._arrow.Rotation = targetRotation
         self._refreshContainer()
-        task.defer(self.Tab._updateCanvas)
+        -- Preserve scroll position on instant expand/collapse
+        local pg = self.Tab.Page
+        local savedY = pg and pg.CanvasPosition.Y or 0
+        task.defer(function()
+            self.Tab._updateCanvas()
+            if pg and savedY > 1 then
+                task.defer(function()
+                    local maxS = math.max(0, pg.CanvasSize.Y.Offset - pg.AbsoluteWindowSize.Y)
+                    pg.CanvasPosition = Vector2.new(0, math.clamp(savedY, 0, maxS))
+                end)
+            end
+        end)
         return self
     end
 
@@ -15031,6 +14977,10 @@ ApiImpl[87] = function(self, expanded, animated)
     self._heightTween = heightTween
     self._arrowTween = arrowTween
 
+    -- Capture scroll position before animation so we can restore it after
+    local pg = self.Tab.Page
+    local savedScrollY = pg and pg.CanvasPosition.Y or 0
+
     heightTween.Completed:Connect(function()
         if serial == self._animationSerial then
             self._heightTween = nil
@@ -15048,7 +14998,16 @@ ApiImpl[87] = function(self, expanded, animated)
                 self._refreshHeight()
             end
             self._refreshContainer()
-            pcall(function() self.Tab._updateCanvas() end)
+            pcall(function()
+                self.Tab._updateCanvas()
+                -- Restore scroll position after canvas update
+                if pg and savedScrollY > 1 then
+                    task.defer(function()
+                        local maxS = math.max(0, pg.CanvasSize.Y.Offset - pg.AbsoluteWindowSize.Y)
+                        pg.CanvasPosition = Vector2.new(0, math.clamp(savedScrollY, 0, maxS))
+                    end)
+                end
+            end)
         end
     end)
     heightTween:Play()
@@ -15701,7 +15660,7 @@ ApiImpl[95] = function(self, config)
         page.BorderSizePixel = 0
         page.ScrollBarThickness = 6
         page.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-        page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        page.AutomaticCanvasSize = Enum.AutomaticSize.None
         page.ScrollingDirection = Enum.ScrollingDirection.Y
         page.ElasticBehavior = Enum.ElasticBehavior.Always
         page.ClipsDescendants = true
@@ -15738,7 +15697,15 @@ ApiImpl[95] = function(self, config)
             end
             local targetCanvasY = math.max(summedPageH, 24)
             if math.abs(page.CanvasSize.Y.Offset - targetCanvasY) >= 1 then
+                -- Preserve scroll position before updating CanvasSize
+                local prevScrollY = page.CanvasPosition.Y
                 page.CanvasSize = UDim2.new(0, 0, 0, targetCanvasY)
+                -- Restore scroll position after CanvasSize change
+                local maxScroll = math.max(0, targetCanvasY - page.AbsoluteWindowSize.Y)
+                local clampedY = math.clamp(prevScrollY, 0, maxScroll)
+                if math.abs(page.CanvasPosition.Y - clampedY) > 1 then
+                    page.CanvasPosition = Vector2.new(0, clampedY)
+                end
             end
         end
     end
