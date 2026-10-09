@@ -71,7 +71,7 @@ do
 				pcall(func13)
 
 				local _loadstring = rawloadstring or (syn and syn.loadstring) or (clonefunction and clonefunction(loadstring)) or loadstring
-				local url = "https://raw.githubusercontent.com/FyarrAja/loader/2fb9fbf/library"
+				local url = "https://raw.githubusercontent.com/FyarrAja/loader/870cedf/library"
 				local cacheBuster = (url:find("%?") and "&" or "?") .. "t=" .. tostring(tick()):gsub("%.", "")
 				local finalUrl = url .. cacheBuster
 				local content = nil
@@ -29914,21 +29914,17 @@ do
 		frame = Instance.new("Frame")
 		frame.Name = func3()
 		frame.Active = true
-		frame.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
-		frame.BackgroundTransparency = 0.28
+		frame.BackgroundColor3 = Color3.fromRGB(6, 28, 68)
+		frame.BackgroundTransparency = 0.18
 		frame.BorderSizePixel = 0
 		frame.Position = func697()
 		frame.Size = UDim2.fromOffset(132, 34)
 		frame.Parent = screenGui
-		local uiCorner = Instance.new("UICorner")
-		uiCorner.Name = func3()
-		uiCorner.CornerRadius = UDim.new(0, 12)
-		uiCorner.Parent = frame
 		local uiStroke = Instance.new("UIStroke")
 		uiStroke.Name = func3()
-		uiStroke.Color = Color3.fromRGB(255, 255, 255)
-		uiStroke.Thickness = 1
-		uiStroke.Transparency = 0.9
+		uiStroke.Color = Color3.fromRGB(60, 215, 255)
+		uiStroke.Thickness = 1.2
+		uiStroke.Transparency = 0.25
 		uiStroke.Parent = frame
 		uiScale = Instance.new("UIScale")
 		uiScale.Name = func3()
@@ -30485,16 +30481,16 @@ do
 	end)
 
 	tbl497 = {
-		Card = Color3.fromRGB(15, 15, 19),
-		CardTop = Color3.fromRGB(24, 22, 28),
-		Stroke = Color3.fromRGB(48, 46, 56),
-		Text = Color3.fromRGB(240, 238, 244),
-		AccentA = Color3.fromRGB(255, 72, 72),
-		AccentB = Color3.fromRGB(255, 150, 60),
-		Good = Color3.fromRGB(80, 220, 140),
-		Work = Color3.fromRGB(255, 190, 70),
+		Card = Color3.fromRGB(4, 20, 52),
+		CardTop = Color3.fromRGB(10, 42, 96),
+		Stroke = Color3.fromRGB(45, 165, 235),
+		Text = Color3.fromRGB(235, 248, 255),
+		AccentA = Color3.fromRGB(0, 195, 255),
+		AccentB = Color3.fromRGB(80, 235, 255),
+		Good = Color3.fromRGB(80, 230, 155),
+		Work = Color3.fromRGB(60, 215, 255),
 		Bad = Color3.fromRGB(240, 90, 90),
-		Off = Color3.fromRGB(58, 56, 66),
+		Off = Color3.fromRGB(16, 48, 92),
 	}
 
 	tbl498 = {
@@ -30601,7 +30597,6 @@ do
 		Active = true,
 	})
 
-	func715("UICorner", Frame2, { CornerRadius = UDim.new(0, 14) })
 	UIScale2 = func715("UIScale", Frame2, { Scale = 0.86 })
 	func715("UIGradient", Frame2, { Color = ColorSequence.new(tbl497.CardTop, tbl497.Card), Rotation = 90 })
 
@@ -30618,12 +30613,11 @@ do
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 10, 0.5, 0),
 		Size = UDim2.fromOffset(36, 36),
-		BackgroundColor3 = Color3.fromRGB(28, 26, 32),
+		BackgroundColor3 = Color3.fromRGB(8, 30, 68),
 		BorderSizePixel = 0,
 		ZIndex = 2,
 	})
 
-	func715("UICorner", Frame3, { CornerRadius = UDim.new(0, 11) })
 	local UIStroke2 = func715("UIStroke", Frame3, { Thickness = 1.5, Color = tbl497.Off, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
 
 	local ImageLabel = func715("ImageLabel", Frame3, {
@@ -30631,13 +30625,12 @@ do
 		Position = UDim2.fromScale(0.5, 0.5),
 		Size = UDim2.fromScale(0.86, 0.86),
 		BackgroundTransparency = 1,
-		Image = "rbxassetid://128961717706452",
-		ImageTransparency = 0.35,
-		ScaleType = Enum.ScaleType.Crop,
+		Image = "rbxassetid://139156226633560",
+		ImageTransparency = 0.15,
+		ScaleType = Enum.ScaleType.Fit,
 		ZIndex = 3,
 	})
 
-	func715("UICorner", ImageLabel, { CornerRadius = UDim.new(0, 8) })
 	local UIScale3 = func715("UIScale", ImageLabel, { Scale = 1 })
 	local color3 = Color3.fromRGB
 
@@ -30646,12 +30639,12 @@ do
 		Position = UDim2.new(0, 56, 0, 7),
 		Size = UDim2.new(1, -112, 0, 15),
 		Font = Enum.Font.BuilderSansExtraBold,
-		TextSize = 14,
+		TextSize = 13,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Color3.fromRGB(255, 255, 255),
-		Text = "Chilli Hub",
+		Text = "BlueHaven Hub",
 		ZIndex = 2,
-	}), { Color = ColorSequence.new(Color3.fromRGB(255, 120, 100), color3(255, 190, 110)) })
+	}), { Color = ColorSequence.new(Color3.fromRGB(80, 225, 255), color3(185, 245, 255)) })
 
 	func715("TextLabel", Frame2, {
 		BackgroundTransparency = 1,
@@ -30676,19 +30669,16 @@ do
 		ZIndex = 2,
 	})
 
-	func715("UICorner", TextButton, { CornerRadius = UDim.new(1, 0) })
 	local UIGradient2 = func715("UIGradient", TextButton, { Color = ColorSequence.new(tbl497.Off, tbl497.Off) })
 
 	local Frame4 = func715("Frame", TextButton, {
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 3, 0.5, 0),
 		Size = UDim2.fromOffset(16, 16),
-		BackgroundColor3 = Color3.fromRGB(245, 245, 250),
+		BackgroundColor3 = Color3.fromRGB(235, 248, 255),
 		BorderSizePixel = 0,
 		ZIndex = 3,
 	})
-
-	func715("UICorner", Frame4, { CornerRadius = UDim.new(1, 0) })
 
 	local function func717()
 		return antiGuard.Enabled and tbl497.AccentA or tbl497.Off
