@@ -286,8 +286,22 @@ do
     local isf = (type(isfile) == "function" and isfile)
     local rf = (type(readfile) == "function" and readfile)
     local wf = (type(writefile) == "function" and writefile)
+    local mf = (type(makefolder) == "function" and makefolder)
 
     local function decodeB64(data)
+        if type(data) ~= "string" or data == "" then
+            return ""
+        end
+        local nativeDec = (type(crypt) == "table" and (crypt.base64decode or (type(crypt.base64) == "table" and crypt.base64.decode)))
+            or (type(base64_decode) == "function" and base64_decode)
+            or (type(base64decode) == "function" and base64decode)
+        if type(nativeDec) == "function" then
+            local ok, res = pcall(nativeDec, data)
+            if ok and type(res) == "string" and #res > 100 then
+                return res
+            end
+        end
+
         local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
         data = string.gsub(data, "[^" .. b .. "=]", "")
         local res = {}
@@ -297,6 +311,7 @@ do
         for i = 1, 64 do
             charToVal[string.byte(b, i)] = i - 1
         end
+        local n = 0
         for i = 1, #data do
             local ch = string.byte(data, i)
             local val = charToVal[ch]
@@ -305,8 +320,11 @@ do
                 bitCount = bitCount + 6
                 if bitCount >= 8 then
                     bitCount = bitCount - 8
-                    local byteVal = math.floor(bitPattern / (2 ^ bitCount)) % 256
-                    table.insert(res, string.char(byteVal))
+                    local divisor = 2 ^ bitCount
+                    local byteVal = math.floor(bitPattern / divisor) % 256
+                    bitPattern = bitPattern % divisor
+                    n = n + 1
+                    res[n] = string.char(byteVal)
                 end
             end
         end
@@ -332,7 +350,9 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
         end
 
         if getasset then
-            -- Check if file already written or available in figma_assets
+            if mf then
+                pcall(mf, "figma_assets")
+            end
             local searchFiles = { filename, "figma_assets/" .. filename }
             local tagMap = {
                 loading_icon = { "figma_assets/icon_loading_clean.png", "figma_assets/icon_loading.png" },
@@ -351,7 +371,34 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
 
             for _, candidate in ipairs(searchFiles) do
                 if isf and isf(candidate) then
-                    local okA, aUrl = pcall(getasset, candidate)
+                    local validSize = true
+                    if rf then
+                        local okR, content = pcall(rf, candidate)
+                        if not okR or type(content) ~= "string" or #content < 200 then
+                            validSize = false
+                        end
+                    end
+                    if validSize then
+                        local okA, aUrl = pcall(getasset, candidate)
+                        if okA and aUrl and aUrl ~= "" then
+                            if tag then resolvedAssetCache[tag] = aUrl end
+                            return aUrl
+                        end
+                    end
+                end
+            end
+
+            local primaryPath = (extra and extra[1]) or ("figma_assets/" .. filename)
+            -- Decode and write if missing or invalid
+            if wf and b64Data and #b64Data > 100 then
+                local okDec, decoded = pcall(decodeB64, b64Data)
+                if okDec and decoded and #decoded > 200 then
+                    pcall(wf, primaryPath, decoded)
+                    pcall(wf, filename, decoded)
+                    local okA, aUrl = pcall(getasset, primaryPath)
+                    if not (okA and aUrl and aUrl ~= "") then
+                        okA, aUrl = pcall(getasset, filename)
+                    end
                     if okA and aUrl and aUrl ~= "" then
                         if tag then resolvedAssetCache[tag] = aUrl end
                         return aUrl
@@ -359,12 +406,17 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
                 end
             end
 
-            -- Decode and write if missing
-            if wf and b64Data and #b64Data > 100 then
-                local okDec, decoded = pcall(decodeB64, b64Data)
-                if okDec and decoded and #decoded > 100 then
-                    pcall(wf, filename, decoded)
-                    local okA, aUrl = pcall(getasset, filename)
+            -- Direct binary fallback from GitHub raw if base64 decode fails
+            if wf and extra and extra[1] then
+                local rawUrl = "https://raw.githubusercontent.com/FyarrAja/loader/main/" .. extra[1]
+                local okH, binData = pcall(function() return game:HttpGet(rawUrl) end)
+                if okH and type(binData) == "string" and #binData > 200 then
+                    pcall(wf, primaryPath, binData)
+                    pcall(wf, filename, binData)
+                    local okA, aUrl = pcall(getasset, primaryPath)
+                    if not (okA and aUrl and aUrl ~= "") then
+                        okA, aUrl = pcall(getasset, filename)
+                    end
                     if okA and aUrl and aUrl ~= "" then
                         if tag then resolvedAssetCache[tag] = aUrl end
                         return aUrl
@@ -381,7 +433,7 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
 
     local resolveCanvasAsset
     resolveCanvasAsset = function()
-        local res = resolveFigmaAsset("canvas", "bh_canvas_figma_v8.png", FIGMA_CANVAS_B64, _G.BH_CanvasAssetId)
+        local res = resolveFigmaAsset("canvas", "bh_canvas_figma_v9.png", FIGMA_CANVAS_B64, _G.BH_CanvasAssetId)
         if res and res ~= "" then return res end
         return (_G.BH_CanvasAssetId and _G.BH_CanvasAssetId ~= "") and _G.BH_CanvasAssetId or ""
     end
@@ -389,7 +441,7 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
 
     local resolveHeaderStripAsset
     resolveHeaderStripAsset = function()
-        local res = resolveFigmaAsset("header_strip", "bh_strip_figma_v8.png", FIGMA_HEADER_B64, _G.BH_HeaderStripId)
+        local res = resolveFigmaAsset("header_strip", "bh_strip_figma_v9.png", FIGMA_HEADER_B64, _G.BH_HeaderStripId)
         if res and res ~= "" then return res end
         return (_G.BH_HeaderStripId and _G.BH_HeaderStripId ~= "") and _G.BH_HeaderStripId or ""
     end
@@ -398,24 +450,24 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
     local resolveCatAsset
     resolveCatAsset = function(id)
         local override = id or _G.BH_CatMascotId
-        local res = resolveFigmaAsset("cat", "bh_cat_figma_v8.png", FIGMA_CAT_B64, override)
+        local res = resolveFigmaAsset("cat", "bh_cat_figma_v9.png", FIGMA_CAT_B64, override)
         if res and res ~= "" then return res end
-        return (override and override ~= "") and override or "rbxassetid://96054470467014"
+        return (override and override ~= "") and override or ""
     end
     _G.BH_ResolveCatAsset = resolveCatAsset
 
     local resolveCloseAsset
     resolveCloseAsset = function()
-        local res = resolveFigmaAsset("close", "bh_close_figma_v8.png", FIGMA_CLOSE_B64, _G.BH_CloseButtonId)
+        local res = resolveFigmaAsset("close", "bh_close_figma_v9.png", FIGMA_CLOSE_B64, _G.BH_CloseButtonId)
         if res and res ~= "" then return res end
-        return (_G.BH_CloseButtonId and _G.BH_CloseButtonId ~= "") and _G.BH_CloseButtonId or "rbxassetid://121248223515226"
+        return (_G.BH_CloseButtonId and _G.BH_CloseButtonId ~= "") and _G.BH_CloseButtonId or ""
     end
     _G.BH_ResolveCloseAsset = resolveCloseAsset
 
     local resolveLoadingAsset
     resolveLoadingAsset = function(id)
         local override = id or _G.BH_LoadingIconId
-        local res = resolveFigmaAsset("loading_icon", "bh_loading_icon_v1.png", FIGMA_LOADING_B64, override)
+        local res = resolveFigmaAsset("loading_icon", "bh_loading_icon_v9.png", FIGMA_LOADING_B64, override)
         if res and res ~= "" then return res end
         return (override and override ~= "") and override or (resolveCatAsset and resolveCatAsset()) or "rbxassetid://109248302930363"
     end
@@ -424,7 +476,7 @@ local FIGMA_CANVAS_B64 = "iVBORw0KGgoAAAANSUhEUgAAAwAAAAIACAIAAAC6lJxtAAEAAElEQV
     local resolveGoodbyeAsset
     resolveGoodbyeAsset = function(id)
         local override = id or _G.BH_GoodbyeIconId
-        local res = resolveFigmaAsset("goodbye_icon", "bh_goodbye_icon_v1.png", FIGMA_GOODBYE_B64, override)
+        local res = resolveFigmaAsset("goodbye_icon", "bh_goodbye_icon_v9.png", FIGMA_GOODBYE_B64, override)
         if res and res ~= "" then return res end
         return (override and override ~= "") and override or (resolveCatAsset and resolveCatAsset()) or "rbxassetid://109248302930363"
     end
@@ -2657,6 +2709,9 @@ local function makeDraggable(handle, target, canStart, moved)
     end
 
     trackRootConnection(handle.InputBegan:Connect(function(input)
+        if Runtime.isResizing then
+            return
+        end
         if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
             return
         end
@@ -3554,7 +3609,8 @@ do
     mascotImg.Position = UDim2.new(0.5, 0, 0.5, -2)
     mascotImg.Size = UDim2.fromOffset(26, 24)
     mascotImg.ScaleType = Enum.ScaleType.Fit
-    mascotImg.Image = (objects.obj12 and objects.obj12.Image and objects.obj12.Image ~= "") and objects.obj12.Image or "rbxassetid://96054470467014"
+    local resolvedFloatingCat = (_G.BH_ResolveCatAsset and _G.BH_ResolveCatAsset()) or (objects.obj12 and objects.obj12.Image) or ""
+    mascotImg.Image = (resolvedFloatingCat ~= "") and resolvedFloatingCat or "rbxassetid://109248302930363"
     mascotImg.ZIndex = 1004
     mascotImg.Parent = avatarBadge
 
@@ -3701,9 +3757,17 @@ local RESIZE_LIMITS = {
     MaxHeight = 0.98,
 }
 
+local WINDUI_MIN_SIZE = Vector2.new(460, 340)
+local WINDUI_MAX_SIZE = Vector2.new(860, 580)
 
-
-
+local windowSizeConstraint = mainFrame:FindFirstChildOfClass("UISizeConstraint")
+if not windowSizeConstraint then
+    windowSizeConstraint = Instance.new("UISizeConstraint")
+    windowSizeConstraint.Name = "WindUISizeConstraint"
+    windowSizeConstraint.Parent = mainFrame
+end
+windowSizeConstraint.MinSize = WINDUI_MIN_SIZE
+windowSizeConstraint.MaxSize = WINDUI_MAX_SIZE
 
 local RESIZE_KEEPS_OPTION_WIDTH = false
 
@@ -3716,7 +3780,7 @@ resizeGrip.BackgroundTransparency = 1
 resizeGrip.BorderSizePixel = 0
 resizeGrip.Position = UDim2.new(1, -2, 1, -2)
 resizeGrip.Selectable = false
-resizeGrip.Size = UDim2.fromOffset(24, 24)
+resizeGrip.Size = UDim2.fromOffset(28, 28)
 resizeGrip.Text = ""
 resizeGrip.ZIndex = 120
 resizeGrip:SetAttribute("FW_Bypassed", true)
@@ -3788,7 +3852,7 @@ beamGrad.Parent = resizeBeam
 local resizeDragging = false
 local resizeActiveTouch = nil
 local resizeStartPointer = Vector2.new(0, 0)
-local resizeStartSize = Vector2.new(0, 0)
+local resizeStartSize = Vector2.new(580, 430)
 local activeResizeTween = nil
 
 local beamTween = nil
@@ -3801,7 +3865,6 @@ local function setResizeGlowState(state)
     end
 
     if state == "dragging" then
-        -- 1. Vibrant electric cyan neon stroke fades in smoothly
         if objects.obj3 then
             TweenService:Create(objects.obj3, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Color = Color3.fromRGB(40, 235, 255),
@@ -3810,7 +3873,6 @@ local function setResizeGlowState(state)
             }):Play()
         end
 
-        -- 2. Cyber Laser Sweep Beam animates continuously across the bottom
         if resizeBeam and beamGrad then
             resizeBeam.BackgroundTransparency = 0
             local function runBeamCycle()
@@ -3827,7 +3889,6 @@ local function setResizeGlowState(state)
             runBeamCycle()
         end
 
-        -- 3. Dynamic cascading pulse on the 6 corner grip dots
         for i, dot in ipairs(resizeGripBars) do
             local stagger = (i - 1) * 0.03
             task.delay(stagger, function()
@@ -3868,7 +3929,6 @@ local function setResizeGlowState(state)
             }):Play()
         end
 
-        -- Satisfying, lingering glow fade-out: lasts 1.1s smoothly with gentle cooldown!
         if objects.obj3 then
             activeGlowFadeTween = TweenService:Create(objects.obj3, TweenInfo.new(1.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 Color = Color3.fromRGB(0, 150, 240),
@@ -3904,41 +3964,43 @@ end
 
 local syncAllWindowLayout
 
-local function applyResizeSize(widthPixels, heightPixels, isFinal)
-    local region = rootGui.AbsoluteSize
-    if region.X <= 0 or region.Y <= 0 then
-        return
-    end
-    local currentScale = Runtime.autoScale or 1.0
-    local clampedW = math.clamp(math.floor(widthPixels / currentScale + 0.5), 460, 850)
-    local clampedH = math.clamp(math.floor(heightPixels / currentScale + 0.5), 340, 560)
+-- WindUI-style resize: operates directly in unscaled UDim2.fromOffset coordinates with smooth Quad Out tween
+local function applyWindUIResize(unscaledWidth, unscaledHeight)
+    local clampedW = math.clamp(math.floor(unscaledWidth + 0.5), WINDUI_MIN_SIZE.X, WINDUI_MAX_SIZE.X)
+    local clampedH = math.clamp(math.floor(unscaledHeight + 0.5), WINDUI_MIN_SIZE.Y, WINDUI_MAX_SIZE.Y)
     Runtime.menuSize = UDim2.fromOffset(clampedW, clampedH)
     rootGui:SetAttribute("MenuSize", Runtime.menuSize)
-    
+
     if activeResizeTween then
         activeResizeTween:Cancel()
     end
-    
-    if isFinal then
-        activeResizeTween = TweenService:Create(mainFrame, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = Runtime.menuSize
-        })
-        activeResizeTween:Play()
-    else
-        mainFrame.Size = Runtime.menuSize
-    end
+    activeResizeTween = TweenService:Create(mainFrame, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = Runtime.menuSize,
+    })
+    activeResizeTween:Play()
+
     ContentScale.Refresh()
     if type(syncAllWindowLayout) == "function" then
         syncAllWindowLayout()
     end
 end
 
-local function resizeFromInputPosition(position, isFinal)
-    local delta = Vector2.new(position.X, position.Y) - resizeStartPointer
-    applyResizeSize(
+local function applyResizeSize(widthPixels, heightPixels)
+    if resizeDragging then
+        return
+    end
+    local currentScale = Runtime.autoScale or 1.0
+    if currentScale <= 0 then currentScale = 1.0 end
+    applyWindUIResize(widthPixels / currentScale, heightPixels / currentScale)
+end
+
+local function resizeFromInputPosition(position)
+    local currentScale = Runtime.autoScale or 1.0
+    if currentScale <= 0 then currentScale = 1.0 end
+    local delta = (Vector2.new(position.X, position.Y) - resizeStartPointer) / currentScale
+    applyWindUIResize(
         resizeStartSize.X + delta.X * 2,
-        resizeStartSize.Y + delta.Y * 2,
-        isFinal
+        resizeStartSize.Y + delta.Y * 2
     )
 end
 
@@ -3963,22 +4025,22 @@ resizeGrip.InputBegan:Connect(function(input)
     then
         return
     end
-    local pointer = Vector2.new(input.Position.X, input.Position.Y)
-    local gripPosition = resizeGrip.AbsolutePosition
-    local gripSize = resizeGrip.AbsoluteSize
-    if pointer.X < gripPosition.X
-        or pointer.X > gripPosition.X + gripSize.X
-        or pointer.Y < gripPosition.Y
-        or pointer.Y > gripPosition.Y + gripSize.Y
-    then
+    if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
         return
     end
+
     resizeDragging = true
+    Runtime.isResizing = true
+    if Runtime.windowDragController and type(Runtime.windowDragController.Cancel) == "function" then
+        Runtime.windowDragController.Cancel()
+    end
     resizeActiveTouch = input.UserInputType == Enum.UserInputType.Touch
         and input
         or nil
     resizeStartPointer = Vector2.new(input.Position.X, input.Position.Y)
-    resizeStartSize = mainFrame.AbsoluteSize
+    local startW = mainFrame.Size.X.Offset > 0 and mainFrame.Size.X.Offset or 580
+    local startH = mainFrame.Size.Y.Offset > 0 and mainFrame.Size.Y.Offset or 430
+    resizeStartSize = Vector2.new(startW, startH)
     setResizeGlowState("dragging")
 end)
 
@@ -3988,10 +4050,10 @@ trackRootConnection(UserInputService.InputChanged:Connect(function(input)
     end
     if resizeActiveTouch then
         if input == resizeActiveTouch or input.UserInputType == Enum.UserInputType.Touch then
-            resizeFromInputPosition(input.Position, false)
+            resizeFromInputPosition(input.Position)
         end
     elseif input.UserInputType == Enum.UserInputType.MouseMovement then
-        resizeFromInputPosition(input.Position, false)
+        resizeFromInputPosition(input.Position)
     end
 end))
 
@@ -4002,30 +4064,30 @@ trackRootConnection(UserInputService.InputEnded:Connect(function(input)
     then
         if resizeDragging then
             resizeDragging = false
+            Runtime.isResizing = false
             resizeActiveTouch = nil
             setResizeGlowState("idle")
-            resizeFromInputPosition(input.Position, true)
+            resizeFromInputPosition(input.Position)
         end
     end
 end))
 
 
 ContentScale.OnChanged(function(scaleX, scaleY)
-    resizeGrip.Position = UDim2.new(1, -4, 1, -4)
-    resizeGrip.Size = UDim2.fromOffset(22, 22)
+    resizeGrip.Position = UDim2.new(1, -2, 1, -2)
+    resizeGrip.Size = UDim2.fromOffset(28, 28)
 end)
 
 
 
 do
     local function syncHeaderElements()
-        local barH = topBar.AbsoluteSize.Y
-        if barH <= 0 then barH = 44 end
+        local unscaledMainH = (mainFrame.Size.Y.Offset > 0 and mainFrame.Size.Y.Offset) or 430
+        local barH = math.clamp(math.round(unscaledMainH * 0.124), 44, 72)
         
         -- Cat Mascot + Bhv Emblem: Sits in top-left header corner matching Figma
         -- User high-res clean no-bg mascot aspect ratio: 1231 / 987 = ~1.2472
-        -- Total height = 1.55 * barH (~68px for 44px bar, cat & ZZZ poke out ~37% above header)
-        local emblemH = math.clamp(math.round(barH * 1.55), 64, 80)
+        local emblemH = math.clamp(math.round(barH * 1.48), 62, 82)
         local emblemW = math.round(emblemH * (1231 / 987))
         objects.obj12.AnchorPoint = Vector2.new(0, 1)
         objects.obj12.Position = UDim2.new(0, 4, 1, -2)
@@ -4040,7 +4102,7 @@ do
 
         local closeFallback = objects.obj16:FindFirstChild("CloseFallbackX")
         if closeFallback then
-            closeFallback.TextSize = math.clamp(math.round(barH * 0.92), 36, 46)
+            closeFallback.TextSize = math.clamp(math.round(barH * 0.85), 32, 46)
             closeFallback.Size = UDim2.new(0.92, 0, 0.92, 0)
         end
         local closeIcon = objects.obj16:FindFirstChild("CloseIcon")
@@ -4048,12 +4110,22 @@ do
             closeIcon.Size = UDim2.new(1, 0, 1, 0)
         end
         
-        objects.obj9.Visible = false
-        objects.obj9.Text = ""
-        objects.obj9.TextTransparency = 1
+        local hasStripImg = objects.obj4_strip and objects.obj4_strip.Image and objects.obj4_strip.Image ~= ""
+        if hasStripImg then
+            objects.obj9.Visible = false
+            objects.obj9.Text = ""
+            objects.obj9.TextTransparency = 1
+        else
+            objects.obj9.Visible = true
+            if objects.obj9.Text == "" then
+                objects.obj9.Text = "Blue Haven"
+            end
+            objects.obj9.TextTransparency = 0
+        end
     end
 
     topBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(syncHeaderElements)
+    mainFrame:GetPropertyChangedSignal("Size"):Connect(syncHeaderElements)
 
     ContentScale.OnChanged(function(scaleX, scaleY)
         topBar.Size = UDim2.new(1, 0, 0.124, 0)
@@ -4735,8 +4807,8 @@ local function createDropdownRow(
     noteLabel.AnchorPoint = Vector2.new(0, 0.5)
     noteLabel.BackgroundTransparency = 1
     noteLabel.BorderSizePixel = 0
-    noteLabel.Position = UDim2.fromScale(0.025, 0.755)
-    noteLabel.Size = UDim2.fromScale(math.max(0.3, boxLeft - 0.045), 0.3)
+    noteLabel.Position = UDim2.fromScale(0.025, 0.70)
+    noteLabel.Size = UDim2.fromScale(math.max(0.3, boxLeft - 0.045), 0.25)
     noteLabel.Text = currentNote
     noteLabel.TextWrapped = false
     noteLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4758,7 +4830,7 @@ local function createDropdownRow(
         noteLabel.Text = currentNote
         noteLabel.Visible = hasNote
         if hasNote then
-            titleLabel.Position = UDim2.fromScale(0.025, 0.34)
+            titleLabel.Position = UDim2.fromScale(0.025, 0.32)
             titleLabel.Size = UDim2.fromScale(0.65, 0.64 * noteVScale * NOTE_TITLE_SCALE)
             box.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62 * noteVScale)
         else
@@ -6283,8 +6355,8 @@ local function createLibrarySliderRow(config)
     noteLabel.AnchorPoint = Vector2.new(0, 0.5)
     noteLabel.BackgroundTransparency = 1
     noteLabel.BorderSizePixel = 0
-    noteLabel.Position = UDim2.fromScale(0.025, 0.755)
-    noteLabel.Size = UDim2.fromScale(0.48, 0.3)
+    noteLabel.Position = UDim2.fromScale(0.025, 0.70)
+    noteLabel.Size = UDim2.fromScale(0.48, 0.25)
     noteLabel.Text = ""
     noteLabel.TextWrapped = false
     noteLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -6306,8 +6378,8 @@ local function createLibrarySliderRow(config)
     valueLabel.Name = "Value"
     valueLabel.Active = true
     valueLabel.AnchorPoint = Vector2.new(0, 0.5)
-    valueLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    valueLabel.BackgroundTransparency = 0.6
+    valueLabel.BackgroundColor3 = Color3.fromRGB(14, 52, 108)
+    valueLabel.BackgroundTransparency = 0.25
     valueLabel.BorderSizePixel = 0
     valueLabel.ClearTextOnFocus = false
     valueLabel.MultiLine = false
@@ -6321,15 +6393,21 @@ local function createLibrarySliderRow(config)
     valueLabel.ZIndex = 5
     valueLabel.Parent = main
     applyPlainTextStyle(valueLabel)
-    
-    
-    
-    addScaledStroke(valueLabel, Enum.ApplyStrokeMode.Border, 0.1)
+
+    local valueCorner = Instance.new("UICorner")
+    valueCorner.CornerRadius = UDim.new(0, 4)
+    valueCorner.Parent = valueLabel
+
+    local valueStroke = Instance.new("UIStroke")
+    valueStroke.Name = "ValueStroke"
+    valueStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    valueStroke.Color = Color3.fromRGB(80, 215, 255)
+    valueStroke.Thickness = 1.0
+    valueStroke.Transparency = 0.30
+    valueStroke.Parent = valueLabel
 
     local valuePadding = Instance.new("UIPadding")
     valuePadding.Name = "ValuePadding"
-    
-    
     valuePadding.PaddingLeft = UDim.new(0, 0)
     valuePadding.PaddingRight = UDim.new(0, 0)
     valuePadding.PaddingTop = UDim.new(0, 0)
@@ -6340,15 +6418,26 @@ local function createLibrarySliderRow(config)
     track.Name = "Slider"
     track.Active = true
     track.AnchorPoint = Vector2.new(0.5, 0.5)
-    track.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    track.BackgroundTransparency = 0.6
+    track.BackgroundColor3 = Color3.fromRGB(10, 36, 78)
+    track.BackgroundTransparency = 0.20
     track.BorderSizePixel = 0
     track.ClipsDescendants = false
     track.Position = UDim2.fromScale(0.8075, 0.5)
-    track.Size = UDim2.fromScale(0.345, 0.45)
+    track.Size = UDim2.fromScale(0.345, 0.34)
     track.ZIndex = 3
     track.Parent = main
-    addScaledStroke(track, Enum.ApplyStrokeMode.Border, 0.1)
+
+    local trackCorner = Instance.new("UICorner")
+    trackCorner.CornerRadius = UDim.new(1, 0)
+    trackCorner.Parent = track
+
+    local trackStroke = Instance.new("UIStroke")
+    trackStroke.Name = "TrackStroke"
+    trackStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    trackStroke.Color = Color3.fromRGB(60, 195, 255)
+    trackStroke.Thickness = 1.0
+    trackStroke.Transparency = 0.35
+    trackStroke.Parent = track
 
     local bar = Instance.new("Frame")
     bar.Name = "Bar"
@@ -6362,49 +6451,58 @@ local function createLibrarySliderRow(config)
     bar.Parent = track
     addAccentGradient(bar)
 
+    local barCorner = Instance.new("UICorner")
+    barCorner.CornerRadius = UDim.new(1, 0)
+    barCorner.Parent = bar
+
     local hold = Instance.new("Frame")
     hold.Name = "Hold"
     hold.Active = true
     hold.AnchorPoint = Vector2.new(0.5, 0.5)
-    hold.BackgroundColor3 = Color3.fromRGB(89, 89, 89)
+    hold.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     hold.BackgroundTransparency = 1
     hold.BorderSizePixel = 0
     hold.ClipsDescendants = false
     hold.Position = UDim2.fromScale(0.5, 0.5)
-    hold.Size = UDim2.fromScale(0.115, 1.2)
+    hold.Size = UDim2.fromScale(0.08, 1.45)
     hold.ZIndex = 5
     hold.Parent = track
 
-    local holdStroke = addScaledStroke(
-        hold,
-        Enum.ApplyStrokeMode.Border,
-        0.09
-    )
-    holdStroke.Color = Color3.fromRGB(39, 39, 39)
+    local holdAspect = Instance.new("UIAspectRatioConstraint")
+    holdAspect.AspectRatio = 1
+    holdAspect.AspectType = Enum.AspectType.FitWithinMaxSize
+    holdAspect.DominantAxis = Enum.DominantAxis.Height
+    holdAspect.Parent = hold
 
     local holdColor = Instance.new("Frame")
     holdColor.Name = "Color"
     holdColor.Active = false
-    holdColor.AnchorPoint = Vector2.new(0.5, 0)
-    holdColor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    holdColor.AnchorPoint = Vector2.new(0.5, 0.5)
+    holdColor.BackgroundColor3 = Color3.fromRGB(240, 250, 255)
     holdColor.BorderSizePixel = 0
-    holdColor.Position = UDim2.fromScale(0.5, 0)
+    holdColor.Position = UDim2.fromScale(0.5, 0.5)
     holdColor.Size = UDim2.fromScale(1, 1)
     holdColor.ZIndex = 6
     holdColor.Parent = hold
 
-    
-    
-    
-    
-    
-    
+    local holdCorner = Instance.new("UICorner")
+    holdCorner.CornerRadius = UDim.new(1, 0)
+    holdCorner.Parent = holdColor
+
+    local holdStroke = Instance.new("UIStroke")
+    holdStroke.Name = "HoldStroke"
+    holdStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    holdStroke.Color = Color3.fromRGB(0, 185, 255)
+    holdStroke.Thickness = 1.2
+    holdStroke.Transparency = 0.15
+    holdStroke.Parent = holdColor
+
     local unitDivider = Instance.new("Frame")
     unitDivider.Name = "UnitDivider"
     unitDivider.Active = false
     unitDivider.AnchorPoint = Vector2.new(0.5, 0.5)
-    unitDivider.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    unitDivider.BackgroundTransparency = 0.3
+    unitDivider.BackgroundColor3 = Color3.fromRGB(80, 215, 255)
+    unitDivider.BackgroundTransparency = 0.45
     unitDivider.BorderSizePixel = 0
     unitDivider.Position = UDim2.fromScale(0.5935, 0.5)
     unitDivider.Size = UDim2.fromScale(0.0025, 0.36)
@@ -6483,29 +6581,16 @@ local function createLibrarySliderRow(config)
         )
     end
 
-    
-    
     local function numberText()
         if valueFormatFn then
             local ok, text = pcall(valueFormatFn, currentValue)
             if ok and text ~= nil then
                 return tostring(text)
             end
-            if not ok then
-                
-                
-                
-            end
         end
         return formatValue(currentValue)
     end
 
-    
-    
-    
-    
-    
-    
     local function displayValueText()
         local text = numberText()
         local unit = nil
@@ -6527,11 +6612,6 @@ local function createLibrarySliderRow(config)
             )
             if ok and composed ~= nil then
                 return tostring(composed), valueColorEnabled
-            end
-            if not ok then
-                
-                
-                
             end
         end
 
@@ -6557,8 +6637,6 @@ local function createLibrarySliderRow(config)
         return (ok and length) or #plain
     end
 
-    
-    
     refreshValueBoxGeometry = function(text)
         local showUnit = unitEnabled and #unitOptions > 0
         local showSelector = showUnit and unitSelectorEnabled
@@ -6580,12 +6658,12 @@ local function createLibrarySliderRow(config)
         local controlScale = hasNote and noteVScale or 1
         valueLabel.Position = UDim2.fromScale(leftEdge, 0.5)
         valueLabel.Size = UDim2.fromScale(width, 0.56 * controlScale)
-        track.Size = UDim2.fromScale(0.345, 0.45 * controlScale)
+        track.Size = UDim2.fromScale(0.345, 0.34 * controlScale)
         unitDivider.Size = UDim2.fromScale(0.0025, 0.36 * controlScale)
         unitButton.Size = UDim2.fromScale(0.025, 0.46 * controlScale)
 
         local normalLabelWidth = showUnit and 0.43 or 0.45
-        label.Position = UDim2.fromScale(0.025, hasNote and 0.34 or 0.5)
+        label.Position = UDim2.fromScale(0.025, hasNote and 0.32 or 0.5)
         label.Size = UDim2.fromScale(
             math.min(normalLabelWidth, math.max(0.28, leftEdge - 0.045)),
             hasNote and 0.64 * noteVScale * NOTE_TITLE_SCALE or 0.64
@@ -6593,7 +6671,7 @@ local function createLibrarySliderRow(config)
 
         noteLabel.Text = sliderNote
         noteLabel.Visible = hasNote
-        noteLabel.Size = UDim2.fromScale(math.max(0.2, leftEdge - 0.045), 0.3)
+        noteLabel.Size = UDim2.fromScale(math.max(0.2, leftEdge - 0.045), 0.25)
         local rowAspect = row:FindFirstChildOfClass("UIAspectRatioConstraint")
         if rowAspect then
             rowAspect.AspectRatio = hasNote and ROW_ASPECT_WITH_NOTE or ROW_ASPECT
@@ -6603,7 +6681,6 @@ local function createLibrarySliderRow(config)
             hasNote and ROW_ASPECT_WITH_NOTE or ROW_ASPECT
         )
 
-        
         valuePadding.PaddingRight = UDim.new(
             showSelector
                 and math.min(0.45, 0.034 / math.max(width, 0.001))
@@ -7072,9 +7149,10 @@ local function createLibrarySliderRow(config)
             alpha = (currentValue - minimum) / (maximum - minimum)
         end
         
-        local visualAlpha = math.clamp(alpha, 0.0575, 0.9425)
-        bar.Size = UDim2.new(visualAlpha, 0, 1, 0)
-        hold.Position = UDim2.new(visualAlpha, 0, 0.5, 0)
+        local barAlpha = alpha <= 0.001 and 0 or math.clamp(alpha, 0.04, 1)
+        local holdAlpha = math.clamp(alpha, 0.04, 0.96)
+        bar.Size = UDim2.new(barAlpha, 0, 1, 0)
+        hold.Position = UDim2.new(holdAlpha, 0, 0.5, 0)
         if fireCallback ~= false then
             safeCallback(config.Callback, currentValue)
         end
@@ -7436,11 +7514,11 @@ end
 
 local function createLibraryToggleRow(config)
     local row, main, label = buildFixedRow(config.Name, config.Name)
-    label.Position = UDim2.new(0, 10, 0.5, 0)
-    label.Size = UDim2.new(1, -74, 0.72, 0)
+    label.Position = UDim2.fromScale(0.025, 0.5)
+    label.Size = UDim2.fromScale(0.76, 0.64)
     label.AnchorPoint = Vector2.new(0, 0.5)
 
-    -- Toggle Switch Track (Enlarged 50x26 boxy rectangular slot matching slider aesthetic)
+    -- Toggle Switch Track (Scale-based boxy rectangular slot that scales proportionally on mobile & PC)
     local switch = Instance.new("Frame")
     switch.Name = "Switch"
     switch.Active = false
@@ -7449,12 +7527,17 @@ local function createLibraryToggleRow(config)
     switch.BackgroundTransparency = 0.15
     switch.BorderSizePixel = 0
     switch.ClipsDescendants = true
-    switch.Position = UDim2.new(1, -10, 0.5, 0)
-    switch.Size = UDim2.fromOffset(46, 24)
+    switch.Position = UDim2.fromScale(0.982, 0.5)
+    switch.Size = UDim2.fromScale(0.14, 0.64)
     switch.ZIndex = 3
     switch.Parent = main
 
-    -- Sharp rectangular edges (No UICorner per user instruction: "togglenya kurang besar dan harusnya kotak bukan rounded")
+    local switchAspect = Instance.new("UIAspectRatioConstraint")
+    switchAspect.AspectRatio = 1.92
+    switchAspect.AspectType = Enum.AspectType.FitWithinMaxSize
+    switchAspect.DominantAxis = Enum.DominantAxis.Height
+    switchAspect.Parent = switch
+
     local switchStroke = Instance.new("UIStroke")
     switchStroke.Name = "SwitchStroke"
     switchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -7485,15 +7568,15 @@ local function createLibraryToggleRow(config)
     activeGrad.Rotation = 0
     activeGrad.Parent = activeFill
 
-    -- Clean Boxy Rectangular Thumb (18x20px sharp rectangular block matching slider hold aesthetic)
+    -- Clean Boxy Rectangular Thumb (Scale-based so it always fits inside Switch on mobile & PC)
     local thumb = Instance.new("Frame")
     thumb.Name = "Thumb"
     thumb.Active = false
     thumb.AnchorPoint = Vector2.new(0.5, 0.5)
     thumb.BackgroundColor3 = Color3.fromRGB(180, 200, 220)
     thumb.BorderSizePixel = 0
-    thumb.Position = UDim2.new(0, 12, 0.5, 0)
-    thumb.Size = UDim2.fromOffset(20, 20)
+    thumb.Position = UDim2.fromScale(0.26, 0.5)
+    thumb.Size = UDim2.fromScale(0.42, 0.78)
     thumb.ZIndex = 6
     thumb.Parent = switch
 
@@ -7539,7 +7622,7 @@ local function createLibraryToggleRow(config)
     local function setValue(value, fireCallback, animated)
         enabled = value == true
 
-        local targetPos = enabled and UDim2.new(1, -12, 0.5, 0) or UDim2.new(0, 12, 0.5, 0)
+        local targetPos = enabled and UDim2.fromScale(0.74, 0.5) or UDim2.fromScale(0.26, 0.5)
         local targetFillTrans = enabled and 0 or 1
         local targetStrokeColor = enabled and Color3.fromRGB(60, 225, 255) or Color3.fromRGB(28, 52, 84)
         local targetStrokeTrans = enabled and 0.1 or 0.35
@@ -7554,7 +7637,6 @@ local function createLibraryToggleRow(config)
             thumb.BackgroundColor3 = targetThumbColor
             thumbStroke.Color = targetThumbStroke
         else
-            -- Pure clean slide & fade in / out (0.14s Quad Out)
             local animInfo = TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             TweenService:Create(thumb, animInfo, { Position = targetPos }):Play()
             TweenService:Create(activeFill, animInfo, { BackgroundTransparency = targetFillTrans }):Play()
@@ -7575,7 +7657,6 @@ local function createLibraryToggleRow(config)
         end
     end
 
-    -- Clean Hover Feedback (subtle stroke highlighting, no wobbling/scaling)
     button.MouseEnter:Connect(function()
         if Runtime.isElementBlockedByModal and Runtime.isElementBlockedByModal(button) then return end
         TweenService:Create(switchStroke, TweenInfo.new(0.12), {
@@ -7632,7 +7713,7 @@ local function addNoteToButtonRow(row, config, button)
     row:SetAttribute("ChilliResponsiveAspect", ROW_ASPECT_WITH_NOTE)
     local noteVScale = ROW_ASPECT_WITH_NOTE / ROW_ASPECT
     if title then
-        title.Position = UDim2.fromScale(0.025, 0.34)
+        title.Position = UDim2.fromScale(0.025, 0.32)
         title.Size = UDim2.fromScale(0.62, 0.64 * noteVScale * NOTE_TITLE_SCALE)
     end
     local note = Instance.new("TextLabel")
@@ -7641,8 +7722,8 @@ local function addNoteToButtonRow(row, config, button)
     note.AnchorPoint = Vector2.new(0, 0.5)
     note.BackgroundTransparency = 1
     note.BorderSizePixel = 0
-    note.Position = UDim2.fromScale(0.025, 0.755)
-    note.Size = UDim2.fromScale(getNoteWidthForRightControl(button), 0.3)
+    note.Position = UDim2.fromScale(0.025, 0.70)
+    note.Size = UDim2.fromScale(getNoteWidthForRightControl(button), 0.25)
     note.Text = ""
     note.TextWrapped = false
     note.TextXAlignment = Enum.TextXAlignment.Left
@@ -7680,8 +7761,8 @@ end
 
 local function createLibraryTextRow(config)
     local row, main, label = buildFixedRow(config.Name, config.Name)
-    label.Position = UDim2.new(0, 10, 0.5, 0)
-    label.Size = UDim2.new(1, -20, 0.72, 0)
+    label.Position = UDim2.fromScale(0.025, 0.5)
+    label.Size = UDim2.fromScale(0.95, 0.64)
     label.AnchorPoint = Vector2.new(0, 0.5)
 
     local noteController = nil
@@ -7769,8 +7850,8 @@ local function createLibraryInputRow(config)
     noteLabel.AnchorPoint = Vector2.new(0, 0.5)
     noteLabel.BackgroundTransparency = 1
     noteLabel.BorderSizePixel = 0
-    noteLabel.Position = UDim2.fromScale(0.025, 0.755)
-    noteLabel.Size = UDim2.fromScale(math.max(0.3, fieldLeft - 0.045), 0.3)
+    noteLabel.Position = UDim2.fromScale(0.025, 0.70)
+    noteLabel.Size = UDim2.fromScale(math.max(0.3, fieldLeft - 0.045), 0.25)
     noteLabel.Text = ""
     noteLabel.TextWrapped = false
     noteLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -7800,7 +7881,7 @@ local function createLibraryInputRow(config)
             hasNote and ROW_ASPECT_WITH_NOTE or ROW_ASPECT
         )
         if hasNote then
-            title.Position = UDim2.fromScale(0.025, 0.34)
+            title.Position = UDim2.fromScale(0.025, 0.32)
             title.Size = UDim2.fromScale(0.65, 0.64 * noteVScale * NOTE_TITLE_SCALE)
             field.Size = UDim2.fromScale(CONTROL_LAYOUT.WideWidth, 0.62 * noteVScale)
         else
@@ -7846,9 +7927,9 @@ local function createLibraryNoteToggleRow(config)
         aspect.AspectRatio = ROW_ASPECT_WITH_NOTE
     end
 
-    title.Position = UDim2.fromScale(0.025, 0.34)
+    title.Position = UDim2.fromScale(0.025, 0.32)
     title.Size = UDim2.fromScale(
-        0.62,
+        0.74,
         0.64 * vScale * NOTE_TITLE_SCALE
     )
 
@@ -7858,8 +7939,8 @@ local function createLibraryNoteToggleRow(config)
     note.AnchorPoint = Vector2.new(0, 0.5)
     note.BackgroundTransparency = 1
     note.BorderSizePixel = 0
-    note.Position = UDim2.fromScale(0.025, 0.755)
-    note.Size = UDim2.fromScale(0.65, 0.3)
+    note.Position = UDim2.fromScale(0.025, 0.70)
+    note.Size = UDim2.fromScale(0.76, 0.25)
     note.Text = tostring(config.Note or config.Description or "")
     note.TextWrapped = false
     note.TextXAlignment = Enum.TextXAlignment.Left
@@ -7875,9 +7956,9 @@ local function createLibraryNoteToggleRow(config)
         noteStroke.Transparency = 0.2
     end
 
-    -- Keep switch balanced and consistent at 50x26px boxy style, vertically centered!
-    switch.Size = UDim2.fromOffset(46, 24)
-    switch.Position = UDim2.new(1, -10, 0.5, 0)
+    -- Scale-based switch sizing so note toggles never overlap adjacent rows on mobile
+    switch.Size = UDim2.fromScale(0.14, 0.64 * vScale)
+    switch.Position = UDim2.fromScale(0.982, 0.5)
 
     local currentNote = note.Text
     controller.GetNote = function()
@@ -9681,39 +9762,31 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     header.BackgroundTransparency = 1
     header.BorderSizePixel = 0
     header.LayoutOrder = layoutOrder
-    header.Size = UDim2.new(0.97, 0, 0, 38)
+    header.Size = UDim2.new(0.97, 0, 0, 36)
     header.ZIndex = 4
 
-    -- Centered Row: Automatically centers Arrow + Title together and guarantees 12px clean gap
+    -- Consistent Left-Aligned Section Row: keeps all chevron icons and section numbers in a straight vertical column
     local centerRow = Instance.new("Frame")
     centerRow.Name = "CenterRow"
     centerRow.Active = false
     centerRow.AnchorPoint = Vector2.new(0.5, 0.5)
     centerRow.Position = UDim2.fromScale(0.5, 0.5)
-    centerRow.Size = UDim2.new(1, -16, 1, 0)
+    centerRow.Size = UDim2.new(1, -8, 1, 0)
     centerRow.BackgroundTransparency = 1
     centerRow.BorderSizePixel = 0
     centerRow.ZIndex = header.ZIndex
     centerRow.Parent = header
 
-    local rowLayout = Instance.new("UIListLayout")
-    rowLayout.Name = "RowLayout"
-    rowLayout.FillDirection = Enum.FillDirection.Horizontal
-    rowLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    rowLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-    rowLayout.Padding = UDim.new(0, 12) -- Clean 12px distance between arrow and number
-    rowLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    rowLayout.Parent = centerRow
-
     local arrowClip = Instance.new("Frame")
     arrowClip.Name = "ArrowClip"
     arrowClip.Active = false
-    arrowClip.AnchorPoint = Vector2.new(0.5, 0.5)
+    arrowClip.AnchorPoint = Vector2.new(0, 0.5)
     arrowClip.BackgroundTransparency = 1
     arrowClip.BorderSizePixel = 0
     arrowClip.ClipsDescendants = false
     arrowClip.LayoutOrder = 1
-    arrowClip.Size = UDim2.fromOffset(26, 26)
+    arrowClip.Position = UDim2.new(0, 6, 0.5, 0)
+    arrowClip.Size = UDim2.fromOffset(22, 22)
     arrowClip.ZIndex = header.ZIndex + 2
     arrowClip.Parent = centerRow
 
@@ -9724,7 +9797,7 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     arrow.BackgroundTransparency = 1
     arrow.BorderSizePixel = 0
     arrow.Position = UDim2.fromScale(0.5, 0.5)
-    arrow.Size = UDim2.fromOffset(26, 26)
+    arrow.Size = UDim2.fromOffset(22, 22)
     arrow.ZIndex = header.ZIndex + 2
     arrow.Parent = arrowClip
 
@@ -9782,20 +9855,23 @@ local function createSectionHeader(title, layoutOrder, clipViewport)
     titleLabel.Name = "TitleLabel"
     titleLabel.Active = false
     titleLabel.AutoLocalize = false
-    titleLabel.AutomaticSize = Enum.AutomaticSize.X
+    titleLabel.AnchorPoint = Vector2.new(0, 0.5)
     titleLabel.BackgroundTransparency = 1
     titleLabel.BorderSizePixel = 0
     titleLabel.LayoutOrder = 2
-    titleLabel.Size = UDim2.new(0, 0, 1, 0)
+    titleLabel.Position = UDim2.new(0, 36, 0.5, 0)
+    titleLabel.Size = UDim2.new(1, -44, 0.72, 0)
     titleLabel.Text = title
-    titleLabel.TextScaled = false
-    titleLabel.TextSize = 20
+    titleLabel.TextScaled = true
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.TextYAlignment = Enum.TextYAlignment.Center
     titleLabel.ZIndex = header.ZIndex + 2
     applyShinyTextStyle(titleLabel, normalTextFont)
-    titleLabel.TextScaled = false
-    titleLabel.TextSize = 20
+    titleLabel.TextScaled = true
+    local titleSizeConstraint = Instance.new("UITextSizeConstraint")
+    titleSizeConstraint.MaxTextSize = 19
+    titleSizeConstraint.MinTextSize = 11
+    titleSizeConstraint.Parent = titleLabel
     titleLabel.Parent = centerRow
 
     local function updateArrowVisibility()
@@ -16570,7 +16646,7 @@ local function runChilliEngine()
         [19] = connectSafeActivation, [20] = makeButtonFeedback,
         [21] = closedWindowPosition, [22] = ContentScale,
         [23] = setLeftCenterHidden, [24] = RESIZE_KEEPS_OPTION_WIDTH,
-        [25] = applyResizeSize, [26] = normalTextFont,
+        [25] = function() end, [26] = normalTextFont,
         [27] = italicTextFont, [28] = applyShinyTextStyle,
         [29] = applyPlainTextStyle, [30] = rebirthOuterGradient,
         [31] = addRedGradient, [32] = addScaledStroke,
