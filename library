@@ -2604,21 +2604,44 @@ rootGui.Destroying:Connect(function()
     disconnectSourceConnections()
 end)
 
-local function applyOriginalStrokeSizing()
-    
-    
-    
-    
+local function enforceStrokeSizingOnInstance(inst)
+    if not inst or not inst:IsA("UIStroke") then return end
     pcall(function()
-        for _, inst in ipairs(rootGui:GetDescendants()) do
-            if inst:IsA("UIStroke") then
-                inst.StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize
-                inst.BorderStrokePosition = Enum.BorderStrokePosition.Outer
-                inst.BorderOffset = UDim.new(0, 0)
-            end
+        if inst.Thickness > 0 and inst.Thickness < 0.35 then
+            inst.StrokeSizingMode = Enum.StrokeSizingMode.ScaledSize
+            inst.BorderStrokePosition = Enum.BorderStrokePosition.Outer
+            inst.BorderOffset = UDim.new(0, 0)
+        else
+            inst.StrokeSizingMode = Enum.StrokeSizingMode.FixedSize
+        end
+        if not inst:GetAttribute("BH_StrokeGuarded") then
+            inst:SetAttribute("BH_StrokeGuarded", true)
+            inst:GetPropertyChangedSignal("StrokeSizingMode"):Connect(function()
+                if inst.Thickness == 0 or inst.Thickness >= 0.35 then
+                    if inst.StrokeSizingMode ~= Enum.StrokeSizingMode.FixedSize then
+                        inst.StrokeSizingMode = Enum.StrokeSizingMode.FixedSize
+                    end
+                end
+            end)
+            inst:GetPropertyChangedSignal("Thickness"):Connect(function()
+                if inst.Thickness == 0 or inst.Thickness >= 0.35 then
+                    if inst.StrokeSizingMode ~= Enum.StrokeSizingMode.FixedSize then
+                        inst.StrokeSizingMode = Enum.StrokeSizingMode.FixedSize
+                    end
+                end
+            end)
         end
     end)
 end
+
+local function applyOriginalStrokeSizing()
+    pcall(function()
+        for _, inst in ipairs(rootGui:GetDescendants()) do
+            enforceStrokeSizingOnInstance(inst)
+        end
+    end)
+end
+rootGui.DescendantAdded:Connect(enforceStrokeSizingOnInstance)
 
 local function makeDraggable(handle, target, canStart, moved)
     handle.Active = true
@@ -16571,6 +16594,7 @@ local function runChilliEngine()
     end
 end
 runChilliEngine()
+pcall(applyOriginalStrokeSizing)
 do
     local engineFinalize = ChilliLibrary.Finalize
     ChilliLibrary.Finalize = function(self, config)
@@ -16579,6 +16603,7 @@ do
             local ok, r = pcall(engineFinalize, self, config)
             if ok then res = r end
         end
+        pcall(applyOriginalStrokeSizing)
         if purgeBottomSearchBar then
             pcall(purgeBottomSearchBar)
         end
