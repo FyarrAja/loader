@@ -3095,6 +3095,14 @@ end
 
 
 
+local function getEffectiveWindowScale()
+    local ws = mainFrame and mainFrame:FindFirstChild("WindowScale")
+    if ws and ws:IsA("UIScale") and ws.Scale > 0.05 then
+        return ws.Scale
+    end
+    return 1
+end
+
 do
     local aspectConstraint = objects.obj24
     aspectConstraint.Parent = nil
@@ -3119,17 +3127,17 @@ do
 
         local isMobile = (UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled) or screenH < 540
         if isMobile then
-            -- Compact mobile footprint: leaves generous vertical margin for top floating pill & bottom Roblox hotbar
-            local availW = math.min(screenW - 80, screenW * 0.62)
-            local availH = math.min(screenH - 116, screenH * 0.63)
+            -- Balanced mobile footprint: leaves margin for top floating pill & bottom Roblox hotbar while keeping controls crisp
+            local availW = math.min(screenW - 60, screenW * 0.68)
+            local availH = math.min(screenH - 104, screenH * 0.70)
             local requiredScale = math.min(availW / baseW, availH / baseH)
-            local finalScale = math.clamp(requiredScale, 0.36, 0.66)
+            local finalScale = math.clamp(requiredScale, 0.42, 0.72)
             return finalScale, baseW, baseH
         else
-            local availW = math.min(screenW - 96, screenW * 0.70)
-            local availH = math.min(screenH - 96, screenH * 0.70)
+            local availW = math.min(screenW - 96, screenW * 0.72)
+            local availH = math.min(screenH - 96, screenH * 0.72)
             local requiredScale = math.min(availW / baseW, availH / baseH)
-            local finalScale = math.clamp(requiredScale, 0.48, 0.84)
+            local finalScale = math.clamp(requiredScale, 0.52, 0.86)
             return finalScale, baseW, baseH
         end
     end
@@ -3720,11 +3728,11 @@ do
 
         -- Micro-depression & elastic bounce
         TweenService:Create(floatingToggle, TweenInfo.new(0.06, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 134, 0, 35)
+            Size = UDim2.new(0, 114, 0, 28)
         }):Play()
         task.delay(0.065, function()
             TweenService:Create(floatingToggle, TweenInfo.new(0.14, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0, 142, 0, 38)
+                Size = UDim2.new(0, 120, 0, 30)
             }):Play()
         end)
 
@@ -4526,7 +4534,7 @@ local ACCENT_GRADIENT = ColorSequence.new({
 })
 
 
-local ROW_ASPECT = 10
+local ROW_ASPECT = 8.8
 local ROW_WIDTH_SCALE = 0.97
 
 
@@ -4566,7 +4574,7 @@ local SEARCH_MIN_OPTIONS = 5
 
 
 
-local ROW_ASPECT_WITH_NOTE = 7.5
+local ROW_ASPECT_WITH_NOTE = 6.8
 
 
 
@@ -4613,12 +4621,12 @@ local function buildRowPlate(parent, labelText)
     main.BackgroundTransparency = 0.40
     main.BorderSizePixel = 0
     main.Position = UDim2.fromScale(0.5, 0.5)
-    main.Size = UDim2.fromScale(1, 0.85)
+    main.Size = UDim2.fromScale(1, 0.92)
     main.ZIndex = 3
     main.Parent = parent
     
     local plateCorner = Instance.new("UICorner")
-    plateCorner.CornerRadius = UDim.new(0, 5)
+    plateCorner.CornerRadius = UDim.new(0, 6)
     plateCorner.Parent = main
 
     local plateGrad = Instance.new("UIGradient")
@@ -4649,8 +4657,8 @@ local function buildRowPlate(parent, labelText)
     label.AnchorPoint = Vector2.new(0, 0.5)
     label.BackgroundTransparency = 1
     label.BorderSizePixel = 0
-    label.Position = UDim2.fromScale(0.025, 0.5)
-    label.Size = UDim2.fromScale(0.65, 0.64)
+    label.Position = UDim2.fromScale(0.028, 0.5)
+    label.Size = UDim2.fromScale(0.65, 0.68)
     label.Text = labelText
     label.TextWrapped = true
     label.TextXAlignment = Enum.TextXAlignment.Left
@@ -5498,7 +5506,7 @@ local function createDropdownRow(
     end
 
     refreshGeometry = function(animated)
-        local width = row.AbsoluteSize.X
+        local width = row.AbsoluteSize.X / getEffectiveWindowScale()
         if width <= 0 then
             return
         end
@@ -5507,8 +5515,8 @@ local function createDropdownRow(
         if not RESIZE_KEEPS_OPTION_WIDTH then
             referenceWidth = width / ContentScale.X
         end
-        local band = referenceWidth / ROW_ASPECT
-        headHeight = currentNote ~= "" and referenceWidth / ROW_ASPECT_WITH_NOTE or band
+        local band = math.max(44, math.floor(referenceWidth / ROW_ASPECT + 0.5))
+        headHeight = currentNote ~= "" and math.max(54, math.floor(referenceWidth / ROW_ASPECT_WITH_NOTE + 0.5)) or band
         head.Size = UDim2.new(1, 0, 0, headHeight)
         menuClip.Position = UDim2.new(0.5, 0, 0, headHeight + gapSize)
 
@@ -5530,7 +5538,7 @@ local function createDropdownRow(
         local visCount = #visibleItems
         local maxVisibleItems = 5
         local displayedCount = math.clamp(visCount, 1, maxVisibleItems)
-        local itemH = 28
+        local itemH = 30
         local itemPad = 4
         local listH = displayedCount * itemH + math.max(0, displayedCount - 1) * itemPad
         if visCount == 0 then
@@ -7939,6 +7947,7 @@ local function createLibraryNoteToggleRow(config)
     if aspect then
         aspect.AspectRatio = ROW_ASPECT_WITH_NOTE
     end
+    row:SetAttribute("ChilliResponsiveAspect", ROW_ASPECT_WITH_NOTE)
 
     title.Position = UDim2.fromScale(0.025, 0.32)
     title.Size = UDim2.fromScale(
@@ -8055,6 +8064,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
     
     
     
+    
     local row = Instance.new("Frame")
     row.Name = config.Name
     row.Active = false
@@ -8063,7 +8073,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
     row.BorderSizePixel = 0
     row.ClipsDescendants = false
     row.Position = UDim2.fromScale(0.5, 0.5)
-    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, 1)
+    row.Size = UDim2.new(ROW_WIDTH_SCALE, 0, 0, 44)
     row.ZIndex = 3
 
     
@@ -8084,7 +8094,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
             hostWidthScale(),
             0,
             0,
-            math.max(1, row.Size.Y.Offset)
+            math.max(44, row.Size.Y.Offset)
         )
     end)
 
@@ -8114,7 +8124,7 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
         primitiveController = mountedController
         primitiveRow.AnchorPoint = Vector2.new(0.5, 0)
         primitiveRow.Position = UDim2.fromScale(0.5, 0)
-        primitiveRow.Size = UDim2.new(1, 0, 0, 1)
+        primitiveRow.Size = UDim2.new(1, 0, 0, 44)
         primitiveRow.Parent = row
 
         local function syncHostHeight()
@@ -8124,14 +8134,21 @@ local function createLibraryDropdownRow(config, forceMulti, actionMode)
             then
                 return
             end
+            local unscaledH = mountedRow.Size.Y.Offset
+            if unscaledH <= 1 then
+                unscaledH = mountedRow.AbsoluteSize.Y / getEffectiveWindowScale()
+            end
             row.Size = UDim2.new(
                 hostWidthScale(),
                 0,
                 0,
-                math.max(1, math.ceil(mountedRow.AbsoluteSize.Y))
+                math.max(44, math.ceil(unscaledH))
             )
         end
 
+        mountedRow:GetPropertyChangedSignal("Size"):Connect(
+            syncHostHeight
+        )
         mountedRow:GetPropertyChangedSignal("AbsoluteSize"):Connect(
             syncHostHeight
         )
@@ -8261,7 +8278,7 @@ do
     sideButtonPadding.PaddingTop = UDim.new(0, 0)
 
     local function syncSideButtonsHeight()
-        local contentH = math.max(38, sideButtonLayout.AbsoluteContentSize.Y)
+        local contentH = math.max(38, math.ceil(sideButtonLayout.AbsoluteContentSize.Y / getEffectiveWindowScale()))
         sideButtons.Size = UDim2.new(1, 0, 0, contentH)
         navScroll.CanvasSize = UDim2.new(0, 0, 0, contentH + 14)
     end
@@ -8341,7 +8358,10 @@ do
         if isSyncingLayout then return end
         isSyncingLayout = true
 
-        local topH = (topBar and topBar.AbsoluteSize.Y > 0) and topBar.AbsoluteSize.Y or 44
+        local unscaledMainH = (mainFrame and mainFrame.Size.Y.Offset > 0)
+            and mainFrame.Size.Y.Offset
+            or ((mainFrame and mainFrame.AbsoluteSize.Y > 0) and (mainFrame.AbsoluteSize.Y / getEffectiveWindowScale()) or 430)
+        local topH = math.clamp(math.round(unscaledMainH * 0.124), 48, 72)
         local sidebarW = 144
         local margin = 8
         
@@ -8356,7 +8376,7 @@ do
 
         local contentX = margin + sidebarW + 10 -- 162px offset
         local contentW = -(contentX + margin)   -- -170px width offset
-        local searchH = 30
+        local searchH = 32
         
         -- 2. Dedicated Native Ocean Search Bar at the TOP
         if windowSearchBar then
@@ -10971,9 +10991,9 @@ ApiImpl[43] = function(self)
     
     
     
-    local hostWidth = #(self._visibilityDependencies or {}) > 0 and 0.96 or 1
+    local hostWidth = #(self._visibilityDependencies or {}) > 0 and 0.98 or 1
     if self._subOfParent then
-        hostWidth = 0.9
+        hostWidth = 0.94
     end
     self._visibilityHostWidth = hostWidth
     if self._visibilityHost and self._visibilityHost.Parent then
@@ -10993,6 +11013,12 @@ ApiImpl[43] = function(self)
         return row
     end
 
+    local initH = row.Size.Y.Offset
+    if initH <= 1 then
+        initH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
+    end
+    initH = math.max(44, initH)
+
     local host = Instance.new("Frame")
     host.Name = row.Name .. "CollapsibleContent"
     host.Active = false
@@ -11004,7 +11030,7 @@ ApiImpl[43] = function(self)
         hostWidth,
         0,
         0,
-        math.max(1, row.AbsoluteSize.Y)
+        initH
     )
     host.Visible = row.Visible
     host.ZIndex = row.ZIndex
@@ -11024,7 +11050,11 @@ ApiImpl[43] = function(self)
         if self._destroyed or not host.Parent or not row.Parent then
             return
         end
-        local height = math.max(1, row.AbsoluteSize.Y, row.Size.Y.Offset)
+        local unscaledRowH = row.Size.Y.Offset
+        if unscaledRowH <= 1 then
+            unscaledRowH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
+        end
+        local height = math.max(44, unscaledRowH)
         self._visibilityExpandedHeight = height
         if not self._visibilityAnimating and self._resolvedVisible ~= false then
             host.Size = UDim2.new(
@@ -11104,11 +11134,14 @@ ApiImpl[44] = function(self, animated)
     end
 
     local row = self.Instance
+    local unscaledRowH = row and row.Size.Y.Offset or 0
+    if unscaledRowH <= 1 and row then
+        unscaledRowH = math.ceil(row.AbsoluteSize.Y / getEffectiveWindowScale())
+    end
     local expandedHeight = math.max(
-        1,
+        44,
         self._visibilityExpandedHeight or 0,
-        row and row.AbsoluteSize.Y or 0,
-        row and row.Size.Y.Offset or 0
+        unscaledRowH
     )
     self._visibilityExpandedHeight = expandedHeight
     local targetSize = UDim2.new(
@@ -11290,12 +11323,7 @@ ApiImpl[48] = function(self, source)
     
     
     if not self._subAspectApplied then
-        local aspect = self.Instance
-            and self.Instance:FindFirstChildOfClass("UIAspectRatioConstraint")
-        if aspect then
-            self._subAspectApplied = true
-            aspect.AspectRatio = aspect.AspectRatio * 1.16
-        end
+        self._subAspectApplied = true
     end
 
     
@@ -11685,9 +11713,71 @@ end
 
 
 local function bindResponsiveFixedRowHeight(section, row)
-    local callback = Protected[1]
-    assert(type(callback) == "function", "Protected UI engine is not ready.")
-    return callback(section, row)
+    local aspect = row:FindFirstChildOfClass("UIAspectRatioConstraint")
+    local attrAspect = row:GetAttribute("ChilliResponsiveAspect")
+    if not aspect and not attrAspect then
+        return function() end
+    end
+    local initialAspect = attrAspect or (aspect and aspect.AspectRatio) or ROW_ASPECT
+    if aspect then
+        aspect.Parent = nil
+    end
+    row:SetAttribute("ChilliResponsiveAspect", initialAspect)
+
+    section._rowUpdaters = section._rowUpdaters or {}
+
+    local function updateRowHeight()
+        if section._destroyed or not row.Parent then
+            return
+        end
+        local winScale = getEffectiveWindowScale()
+        local availableWidth = (section._content and section._content.AbsoluteSize.X or 0) / winScale
+        if availableWidth <= 0 and section.Tab and section.Tab.Page then
+            availableWidth = section.Tab.Page.AbsoluteSize.X / winScale
+        end
+        if availableWidth <= 0 then
+            availableWidth = 400
+        end
+        local scale = math.max(ContentScale.X, 0.001)
+        local referenceWidth = availableWidth / scale
+        local currentAspect = tonumber(row:GetAttribute("ChilliResponsiveAspect")) or initialAspect or ROW_ASPECT
+        local minH = (currentAspect <= ROW_ASPECT_WITH_NOTE + 0.5) and 54 or 44
+        local rowHeight = math.max(
+            minH,
+            math.floor(referenceWidth * ROW_WIDTH_SCALE / math.max(currentAspect, 1) + 0.5)
+        )
+        local widthScale = ROW_WIDTH_SCALE
+        if RESIZE_KEEPS_OPTION_WIDTH then
+            widthScale = ROW_WIDTH_SCALE / scale
+        end
+        if row.Parent and row.Parent.Name:find("CollapsibleContent") then
+            widthScale = 1
+        end
+        local nextSize = UDim2.new(widthScale, 0, 0, rowHeight)
+        if row.Size ~= nextSize then
+            row.Size = nextSize
+        end
+    end
+
+    table.insert(section._rowUpdaters, updateRowHeight)
+    local contentConn = section._content and section._content:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateRowHeight)
+    local attrConn = row:GetAttributeChangedSignal("ChilliResponsiveAspect"):Connect(updateRowHeight)
+    local parentConn = row:GetPropertyChangedSignal("Parent"):Connect(updateRowHeight)
+    updateRowHeight()
+    task.defer(updateRowHeight)
+
+    return function()
+        if contentConn and contentConn.Connected then contentConn:Disconnect() end
+        if attrConn and attrConn.Connected then attrConn:Disconnect() end
+        if parentConn and parentConn.Connected then parentConn:Disconnect() end
+        if section._rowUpdaters then
+            for i = #section._rowUpdaters, 1, -1 do
+                if section._rowUpdaters[i] == updateRowHeight then
+                    table.remove(section._rowUpdaters, i)
+                end
+            end
+        end
+    end
 end
 
 
@@ -12830,18 +12920,19 @@ optionFactories[10] = (function()
 
         local function layout()
             local host = row.Parent
-            local rowWidth = row.AbsoluteSize.X
+            local winScale = getEffectiveWindowScale()
+            local rowWidth = row.AbsoluteSize.X / winScale
             if not host or rowWidth <= 0 then
                 return
             end
-            lastWidth = rowWidth
+            lastWidth = row.AbsoluteSize.X
 
-            local referenceWidth = host.AbsoluteSize.X * ROW_WIDTH_SCALE / math.max(ContentScale.X, 0.001)
+            local referenceWidth = (host.AbsoluteSize.X / winScale) * ROW_WIDTH_SCALE / math.max(ContentScale.X, 0.001)
             if referenceWidth <= 0 then
                 referenceWidth = rowWidth
             end
 
-            local bandHeight = referenceWidth / ROW_ASPECT * 0.85
+            local bandHeight = math.max(38, referenceWidth / ROW_ASPECT * 0.92)
             local sideInset = rowWidth * 0.025
             local padY = bandHeight * 0.2 * math.max(0, tonumber(style.Padding) or 1)
             local showTitle = content.ShowTitle and content.Title ~= ""
@@ -15082,15 +15173,15 @@ ApiImpl[90] = function(self, config)
     sectionLayout.FillDirection = Enum.FillDirection.Vertical
     sectionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     sectionLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-    sectionLayout.Padding = UDim.new(0, 6)
+    sectionLayout.Padding = UDim.new(0, 8)
     sectionLayout.SortOrder = Enum.SortOrder.LayoutOrder
     sectionLayout.Parent = container
 
-    -- Ensure page layout has clean 8px gap between all section containers
+    -- Ensure page layout has clean 10px gap between all section containers
     pcall(function()
         local pLayout = self.Page:FindFirstChildOfClass("UIListLayout")
         if pLayout then
-            pLayout.Padding = UDim.new(0, 8)
+            pLayout.Padding = UDim.new(0, 10)
         end
     end)
 
@@ -15103,16 +15194,17 @@ ApiImpl[90] = function(self, config)
         self.Page
     )
     header.Parent = container
-    header.Size = UDim2.new(0.97, 0, 0, 38)
+    header.Size = UDim2.new(0.97, 0, 0, 40)
 
     local lastHeaderWidth = -1
     local function updateHeaderHeight(force)
         if not force and (Runtime.windowAnimating or not self.Page.Visible) then
             return
         end
-        local availableWidth = container.AbsoluteSize.X
+        local winScale = getEffectiveWindowScale()
+        local availableWidth = container.AbsoluteSize.X / winScale
         if availableWidth <= 0 then
-            availableWidth = self.Page.AbsoluteSize.X
+            availableWidth = self.Page.AbsoluteSize.X / winScale
         end
         if availableWidth <= 0 then
             availableWidth = 400
@@ -15124,7 +15216,7 @@ ApiImpl[90] = function(self, config)
         end
         lastHeaderWidth = referenceWidth
         local headerHeight = math.max(
-            38,
+            40,
             math.floor(
                 referenceWidth * 0.97 / SECTION_HEADER_ASPECT + 0.5
             )
@@ -15156,7 +15248,7 @@ ApiImpl[90] = function(self, config)
     group.ClipsDescendants = not isInitExp
     group.LayoutOrder = 2
     group.AutomaticSize = Enum.AutomaticSize.None
-    group.Size = UDim2.new(1, 0, 0, isInitExp and 36 or 0)
+    group.Size = UDim2.new(1, 0, 0, isInitExp and 44 or 0)
     group.Visible = isInitExp
     group.ZIndex = 3
     group.Parent = container
@@ -15168,7 +15260,7 @@ ApiImpl[90] = function(self, config)
     content.BorderSizePixel = 0
     content.Position = UDim2.fromScale(0, 0)
     content.AutomaticSize = Enum.AutomaticSize.None
-    content.Size = UDim2.new(1, 0, 0, 36)
+    content.Size = UDim2.new(1, 0, 0, 44)
     content.ZIndex = 3
     content.Parent = group
 
@@ -15177,7 +15269,7 @@ ApiImpl[90] = function(self, config)
     contentLayout.FillDirection = Enum.FillDirection.Vertical
     contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     contentLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-    contentLayout.Padding = UDim.new(0, 0)
+    contentLayout.Padding = UDim.new(0, 6)
     contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
     contentLayout.Parent = content
 
@@ -15207,9 +15299,10 @@ ApiImpl[90] = function(self, config)
         if section._destroyed then
             return
         end
-        local headerH = header.Visible and math.max(38, header.Size.Y.Offset, header.AbsoluteSize.Y) or 0
+        local winScale = getEffectiveWindowScale()
+        local headerH = header.Visible and math.max(40, header.Size.Y.Offset, math.ceil(header.AbsoluteSize.Y / winScale)) or 0
         local groupH = (group.Visible and section.Expanded)
-            and (section._heightTween and group.AbsoluteSize.Y or math.max(0, group.Size.Y.Offset))
+            and (section._heightTween and math.ceil(group.AbsoluteSize.Y / winScale) or math.max(0, group.Size.Y.Offset))
             or 0
         local padH = (header.Visible and group.Visible and groupH > 0)
             and sectionLayout.Padding.Offset
@@ -15244,19 +15337,21 @@ ApiImpl[90] = function(self, config)
     local heightRefreshQueued = false
     local heightRefreshAgain = false
     section._measureExpandedHeight = function()
+        local winScale = getEffectiveWindowScale()
         local summedHeight = 0
         local visibleCount = 0
         for _, child in ipairs(content:GetChildren()) do
             if child:IsA("GuiObject") and child.Visible then
                 visibleCount = visibleCount + 1
                 local childHeight = child.Size.Y.Offset
+                local unscaledAbsY = math.ceil(child.AbsoluteSize.Y / winScale)
                 if childHeight <= 0 then
-                    childHeight = child.AbsoluteSize.Y
-                elseif child.AbsoluteSize.Y > childHeight then
-                    childHeight = child.AbsoluteSize.Y
+                    childHeight = unscaledAbsY
+                elseif unscaledAbsY > childHeight then
+                    childHeight = unscaledAbsY
                 end
                 if childHeight <= 0 then
-                    childHeight = 38
+                    childHeight = 44
                 end
                 summedHeight = summedHeight + childHeight
             end
@@ -15271,20 +15366,20 @@ ApiImpl[90] = function(self, config)
                     * (
                         contentLayout.Padding.Offset
                         + contentLayout.Padding.Scale
-                            * content.AbsoluteSize.Y
+                            * (content.AbsoluteSize.Y / winScale)
                     )
         end
         local measuredHeight = 0
         if visibleCount == #section.Options then
             measuredHeight = math.max(
                 0,
-                math.ceil(contentLayout.AbsoluteContentSize.Y)
+                math.ceil(contentLayout.AbsoluteContentSize.Y / winScale)
             )
         end
         section._expandedHeight = math.max(
             measuredHeight,
             math.ceil(summedHeight),
-            visibleCount * 36
+            visibleCount * 44 + math.max(0, visibleCount - 1) * contentLayout.Padding.Offset
         )
         return section._expandedHeight
     end
@@ -15497,7 +15592,7 @@ ApiImpl[93] = function(self)
                     tab.Button.Size = UDim2.new(1, -4, 0, 38)
                 end
                 if column.Frame and column.Layout then
-                    local contentH = math.max(38, column.Layout.AbsoluteContentSize.Y, #columnTabs * 46 - 8)
+                    local contentH = math.max(38, math.ceil(column.Layout.AbsoluteContentSize.Y / getEffectiveWindowScale()), #columnTabs * 46 - 8)
                     column.Frame.Size = UDim2.new(1, 0, 0, contentH)
                     if navScroll then
                         navScroll.CanvasSize = UDim2.new(0, 0, 0, contentH + 14)
@@ -15631,12 +15726,38 @@ ApiImpl[95] = function(self, config)
         page.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
         page.AutomaticCanvasSize = Enum.AutomaticSize.Y
         page.ScrollingDirection = Enum.ScrollingDirection.Y
-page.ElasticBehavior = Enum.ElasticBehavior.Always
+        page.ElasticBehavior = Enum.ElasticBehavior.Always
         page.ClipsDescendants = true
         page.ZIndex = 20
         page.Parent = mainFrame
     end
-    local _, updateCanvas = Protected[3](page, tabConfig.Name)
+    local pageLayout, rawUpdateCanvas = Protected[3](page, tabConfig.Name)
+    local function updateCanvas()
+        if rawUpdateCanvas then
+            pcall(rawUpdateCanvas)
+        end
+        local pLayout = pageLayout or page:FindFirstChildOfClass("UIListLayout")
+        if pLayout then
+            pLayout.Padding = UDim.new(0, 10)
+            local winScale = getEffectiveWindowScale()
+            local unscaledContentH = math.ceil(pLayout.AbsoluteContentSize.Y / winScale) + 24
+            local summedPageH = 24
+            local visSections = 0
+            for _, child in ipairs(page:GetChildren()) do
+                if child:IsA("GuiObject") and child.Visible then
+                    visSections = visSections + 1
+                    summedPageH = summedPageH + math.max(child.Size.Y.Offset, math.ceil(child.AbsoluteSize.Y / winScale))
+                end
+            end
+            if visSections > 1 then
+                summedPageH = summedPageH + (visSections - 1) * pLayout.Padding.Offset
+            end
+            local targetCanvasY = math.max(unscaledContentH, summedPageH)
+            if page.CanvasSize.Y.Offset < targetCanvasY or math.abs(page.CanvasSize.Y.Offset - targetCanvasY) > 2 then
+                page.CanvasSize = UDim2.new(0, 0, 0, targetCanvasY)
+            end
+        end
+    end
     if not page.Parent then
         page.Parent = mainFrame
     end
