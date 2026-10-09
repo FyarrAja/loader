@@ -71,28 +71,10 @@ do
 				pcall(func13)
 
 				local _loadstring = rawloadstring or (syn and syn.loadstring) or (clonefunction and clonefunction(loadstring)) or loadstring
-				local url = "https://raw.githubusercontent.com/FyarrAja/loader/9a5f8cd/library"
+				local url = "https://raw.githubusercontent.com/FyarrAja/loader/637ed45/library"
 				local cacheBuster = (url:find("%?") and "&" or "?") .. "t=" .. tostring(tick()):gsub("%.", "")
 				local finalUrl = url .. cacheBuster
 				local content = nil
-
-				if type(readfile) == "function" then
-					pcall(function()
-						local paths = {
-							"library_bluehaven.txt",
-							"asset bluehaven script only/library_bluehaven.txt",
-							"bh_library.lua",
-							"library.txt",
-						}
-						for _, p in ipairs(paths) do
-							local ok, f = pcall(readfile, p)
-							if ok and f and #f > 100 then
-								content = f
-								break
-							end
-						end
-					end)
-				end
 
 				local httpReq = (type(request) == "function" and request)
 					or (type(http_request) == "function" and http_request)
