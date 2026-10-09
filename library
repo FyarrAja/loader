@@ -932,7 +932,14 @@ Runtime.isLoadingActive = function()
 end
 
 Runtime.isElementBlockedByModal = function(guiElement)
-    if Runtime.isSystemLoadingActive then return true end
+    if Runtime.isSystemLoadingActive then
+        local barrier = rootGui and rootGui:FindFirstChild("BlueHavenLoadingBarrier")
+        if not barrier then
+            Runtime.isSystemLoadingActive = false
+        else
+            return true
+        end
+    end
     if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
         local modal = Runtime.closeConfirmationModal
         if modal and guiElement and typeof(guiElement) == "Instance" then
@@ -1345,9 +1352,9 @@ do
             startMagnetLoop()
         end
 
-        -- Smooth Spring Scaling (Skipped for list/grid children so sibling buttons never shift or misalign)
+        -- Smooth Spring Scaling (Only when explicitly requested via FigmaSmoothScale so library controls never shift AnchorPoint/hitbox)
         btn.AutoButtonColor = false
-        if not laidOutBy(btn) then
+        if (btn:GetAttribute("FigmaSmoothScale") == true) and not laidOutBy(btn) then
             centreAnchor(btn)
             local scale = fwChannel(btn, "k_btn")
             local base = scale.Value
@@ -2827,19 +2834,35 @@ end
 
 
 
-local SAFE_TOUCH_TAP_DISTANCE = 10
+local SAFE_TOUCH_TAP_DISTANCE = 28
 local safeTouchPresses = setmetatable({}, { __mode = "k" })
 
 local function pointInsideGui(guiObject, point)
-    if not guiObject or not guiObject.Parent or not guiObject.Visible then
+    if not guiObject or not guiObject.Parent or not guiObject.Visible or not point then
         return false
     end
     local position = guiObject.AbsolutePosition
     local size = guiObject.AbsoluteSize
-    return point.X >= position.X
-        and point.X <= position.X + size.X
-        and point.Y >= position.Y
-        and point.Y <= position.Y + size.Y
+    local pad = 8
+    local insideX = point.X >= (position.X - pad) and point.X <= (position.X + size.X + pad)
+    if not insideX then
+        return false
+    end
+    if point.Y >= (position.Y - pad) and point.Y <= (position.Y + size.Y + pad) then
+        return true
+    end
+    local okInset, inset = pcall(function()
+        return game:GetService("GuiService"):GetGuiInset()
+    end)
+    if okInset and typeof(inset) == "Vector2" then
+        local py1 = point.Y + inset.Y
+        local py2 = point.Y - inset.Y
+        if (py1 >= (position.Y - pad) and py1 <= (position.Y + size.Y + pad))
+            or (py2 >= (position.Y - pad) and py2 <= (position.Y + size.Y + pad)) then
+            return true
+        end
+    end
+    return false
 end
 
 trackRootConnection(UserInputService.InputChanged:Connect(function(input)
@@ -2862,13 +2885,9 @@ trackRootConnection(UserInputService.InputEnded:Connect(function(input)
     local point = Vector2.new(input.Position.X, input.Position.Y)
     press.Position = point
     press.Ended = true
-    if (point - press.Start).Magnitude > SAFE_TOUCH_TAP_DISTANCE
-        or not pointInsideGui(press.Button, point)
-    then
+    if (point - press.Start).Magnitude > SAFE_TOUCH_TAP_DISTANCE then
         press.Cancelled = true
     end
-    
-    
     task.delay(0.2, function()
         if safeTouchPresses[input] == press then
             safeTouchPresses[input] = nil
@@ -2878,31 +2897,36 @@ end))
 
 local function connectSafeActivation(button, callback)
     button.Active = true
+    pcall(function() button.Interactable = true end)
     local lastTrigger = 0
     local function trigger()
-        -- Hard-block: Never activate any underlying GUI control if confirmation modal is open
         if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
             return
         end
-        local now = tick()
-        if now - lastTrigger < 0.05 then return end
+        if Runtime.isSystemLoadingActive then
+            local barrier = rootGui and rootGui:FindFirstChild("BlueHavenLoadingBarrier")
+            if not barrier then
+                Runtime.isSystemLoadingActive = false
+            else
+                return
+            end
+        end
+        local now = os.clock()
+        if now - lastTrigger < 0.08 then return end
         lastTrigger = now
         callback()
     end
 
-    button.InputBegan:Connect(function(input)
+    local connBegan = button.InputBegan:Connect(function(input)
         if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
             return
         end
-        if input.UserInputType ~= Enum.UserInputType.Touch
+        if (input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1)
             or input.UserInputState ~= Enum.UserInputState.Begin
         then
             return
         end
         local point = Vector2.new(input.Position.X, input.Position.Y)
-        if not pointInsideGui(button, point) then
-            return
-        end
         safeTouchPresses[input] = {
             Button = button,
             Start = point,
@@ -2912,12 +2936,27 @@ local function connectSafeActivation(button, callback)
         }
     end)
 
-    -- Universal Activated event (Fires exactly ONCE for mouse, touch, and gamepad; no duplicate MouseButton1Click)
+    local connEnded = button.InputEnded:Connect(function(input)
+        if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
+            return
+        end
+        if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+            return
+        end
+        local press = safeTouchPresses[input]
+        if press then
+            local point = Vector2.new(input.Position.X, input.Position.Y)
+            if not press.Cancelled and (point - press.Start).Magnitude <= SAFE_TOUCH_TAP_DISTANCE and pointInsideGui(button, point) then
+                trigger()
+            end
+        end
+    end)
+
     local conn1 = button.Activated:Connect(function(input)
         if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
             return
         end
-        if input and input.UserInputType == Enum.UserInputType.Touch then
+        if input and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) then
             local press = safeTouchPresses[input]
             if press and press.Cancelled then
                 return
@@ -2926,11 +2965,29 @@ local function connectSafeActivation(button, callback)
         trigger()
     end)
 
+    local connClick = nil
+    if button:IsA("GuiButton") then
+        connClick = button.MouseButton1Click:Connect(function()
+            if Runtime.isCloseConfirmationModalOpen and Runtime.isCloseConfirmationModalOpen() then
+                return
+            end
+            for _, press in pairs(safeTouchPresses) do
+                if press.Button == button and press.Cancelled then
+                    return
+                end
+            end
+            trigger()
+        end)
+    end
+
     local handlerObj = { Connected = true }
     function handlerObj:Disconnect()
         self.Connected = false
         pcall(function()
             if conn1 and conn1.Connected then conn1:Disconnect() end
+            if connClick and connClick.Connected then connClick:Disconnect() end
+            if connBegan and connBegan.Connected then connBegan:Disconnect() end
+            if connEnded and connEnded.Connected then connEnded:Disconnect() end
         end)
     end
     return handlerObj
@@ -7535,7 +7592,7 @@ local function createLibraryToggleRow(config)
     thumbStroke.Transparency = 0.2
     thumbStroke.Parent = thumb
 
-    -- Interactive Click Hitbox
+    -- Interactive Click Hitbox (covers full toggle row for effortless clicking/tapping)
     local button = Instance.new("TextButton")
     button.Name = "Button"
     button.Active = true
@@ -7548,7 +7605,7 @@ local function createLibraryToggleRow(config)
     button.Text = ""
     button.ZIndex = 99
     button:SetAttribute("FW_Bypassed", true)
-    button.Parent = switch
+    button.Parent = main
 
     local enabled = config.Default == true
 
@@ -16063,7 +16120,7 @@ Runtime.startBlueHavenLoading = function(window)
 
         local delaySec = tonumber(_G.BH_LoadingDelay)
         if delaySec == nil then
-            delaySec = 2.0
+            delaySec = 0.15
         end
         if delaySec > 0 then
             task.wait(delaySec)
@@ -16582,17 +16639,24 @@ Runtime.startBlueHavenLoading = function(window)
                 Position = UDim2.new(0.5, 0, 0.47, 0)
             }):Play()
 
-            -- Phase 5: Once blur disappears smoothly, wait 1 second on clean screen, then open Main GUI!
+            -- Phase 5: Guaranteed cleanup of barrier & blur and smooth open of Main GUI!
+            local finishedLoading = false
             local function finishAndOpen()
+                if finishedLoading then return end
+                finishedLoading = true
                 pcall(function()
                     if loadingBlur and loadingBlur.Parent then
                         loadingBlur:Destroy()
                     end
                 end)
-                pcall(function() barrier:Destroy() end)
+                pcall(function()
+                    if barrier and barrier.Parent then
+                        barrier:Destroy()
+                    end
+                end)
                 Runtime.isSystemLoadingActive = false
 
-                task.wait(1.0)
+                task.wait(0.15)
 
                 -- Reveal Main GUI with signature smooth open animation
                 Runtime.chilliIsOpen = false
@@ -16627,6 +16691,8 @@ Runtime.startBlueHavenLoading = function(window)
             else
                 exitTween.Completed:Connect(finishAndOpen)
             end
+            task.wait(0.65)
+            finishAndOpen()
         end)
     end)
 end
@@ -16753,6 +16819,9 @@ do
         if type(engineFinalize) == "function" then
             local ok, r = pcall(engineFinalize, self, config)
             if ok then res = r end
+        end
+        if Runtime.isSystemLoadingActive then
+            mainFrame.Visible = false
         end
         pcall(applyOriginalStrokeSizing)
         if purgeBottomSearchBar then
