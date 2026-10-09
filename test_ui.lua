@@ -71,7 +71,7 @@ do
 				pcall(func13)
 
 				local _loadstring = rawloadstring or (syn and syn.loadstring) or (clonefunction and clonefunction(loadstring)) or loadstring
-				local url = "https://raw.githubusercontent.com/FyarrAja/loader/5bf8e69/library"
+				local url = "https://raw.githubusercontent.com/FyarrAja/loader/f223b0b/library"
 				local cacheBuster = (url:find("%?") and "&" or "?") .. "t=" .. tostring(tick()):gsub("%.", "")
 				local finalUrl = url .. cacheBuster
 				local content = nil
