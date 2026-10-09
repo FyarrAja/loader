@@ -32,7 +32,7 @@ do
 			_G.BH_HeaderStripId = _G.BH_HeaderStripId or nil
 			_G.BH_MobileToggle = _G.BH_MobileToggle or nil
 			if _G.BH_LoadingScreen == nil then _G.BH_LoadingScreen = true end
-			if _G.BH_LoadingDelay == nil then _G.BH_LoadingDelay = 2.0 end
+			if _G.BH_LoadingDelay == nil then _G.BH_LoadingDelay = 0.15 end
 			if _G.BH_ShowNotification == nil then _G.BH_ShowNotification = true end
 
 			local function func11()
@@ -71,7 +71,7 @@ do
 				pcall(func13)
 
 				local _loadstring = rawloadstring or (syn and syn.loadstring) or (clonefunction and clonefunction(loadstring)) or loadstring
-				local url = "https://raw.githubusercontent.com/FyarrAja/loader/870cedf/library"
+				local url = "https://raw.githubusercontent.com/FyarrAja/loader/6033d80/library"
 				local cacheBuster = (url:find("%?") and "&" or "?") .. "t=" .. tostring(tick()):gsub("%.", "")
 				local finalUrl = url .. cacheBuster
 				local content = nil
@@ -561,15 +561,7 @@ do
 							value14({ value16.GearInventory, value16.Inventory }, 2)
 						end)
 
-						if type(getgc) == "function" then
-							pcall(function()
-								for _, item5 in ipairs(getgc(false)) do
-									if type(item5) == "function" and islclosure(item5) then
-										pcall(debug.info, item5, "n")
-									end
-								end
-							end)
-						end
+						-- Startup full getgc(false) scan removed to prevent heavy GC frame spikes
 					end)
 				end
 				;(typeof(getgenv) == "function" and getgenv() or _G).ChilliToolKeeper = chilliToolKeeper
@@ -581,16 +573,19 @@ do
 				local n8 = 0.35
 				local n9 = 5
 				local tbl22 = {}
-				local flag11 = true
+				local rrIdx = 1
 
 				tbl2 = {
 					Add = function(param12)
-						local tbl23 = { Run = param12, Gap = n8, Idle = n9, Repeat = false, Hold = 0 }
+						local stagger = (#tbl22 % 10) * 0.035
+						local tbl23 = { Run = param12, Gap = n8 - stagger, Idle = n9 - stagger * 8, Repeat = false, Hold = 0, Woken = true }
 						table.insert(tbl22, tbl23)
 						return tbl23
 					end,
 					Wake = function()
-						flag11 = true
+						for _, w in ipairs(tbl22) do
+							w.Woken = true
+						end
 					end,
 					Backoff = function(param13, param14)
 						if param13 then
@@ -600,28 +595,30 @@ do
 				}
 
 				local connection = RunService.Heartbeat:Connect(function(deltaTime)
-					local flag12 = flag11
-					flag11 = false
-
-					for _, item6 in ipairs(tbl22) do
+					local count = #tbl22
+					if count == 0 then return end
+					for i = 1, count do
+						local item6 = tbl22[i]
 						item6.Gap = item6.Gap + deltaTime
 						item6.Idle = item6.Idle + deltaTime
-
 						if item6.Hold > 0 then
 							item6.Hold = item6.Hold - deltaTime
-						else
-							local flag13 = item6.Gap >= n8
-							local repeat_
+						end
+					end
 
-							if flag13 then
-								repeat_ = flag12 or item6.Repeat or item6.Idle >= n9
-							else
-								repeat_ = flag13
-							end
+					local ranThisFrame = 0
+					for step = 1, count do
+						if ranThisFrame >= 2 then break end
+						if rrIdx > count then rrIdx = 1 end
+						local item6 = tbl22[rrIdx]
+						rrIdx = rrIdx + 1
 
-							if repeat_ then
+						if item6.Hold <= 0 and item6.Gap >= n8 then
+							if item6.Woken or item6.Repeat or item6.Idle >= n9 then
+								item6.Woken = false
 								item6.Gap = 0
 								item6.Idle = 0
+								ranThisFrame = ranThisFrame + 1
 								local ok, result = pcall(item6.Run, item6)
 								item6.Repeat = ok and result == true
 							end
@@ -1623,6 +1620,19 @@ do
 			end
 
 			str1.Belt = function()
+				if treadmill and treadmill.AdminTreadmill ~= false then
+					local adminModel = workspace:FindFirstChild("AdminTreadmill")
+					if adminModel then
+						local adminPart = (adminModel:IsA("BasePart") and adminModel)
+							or adminModel:FindFirstChild("TreadmillBottom", true)
+							or adminModel:FindFirstChild("BoundingBoxPart", true)
+							or (adminModel:IsA("Model") and adminModel.PrimaryPart)
+							or adminModel:FindFirstChildWhichIsA("BasePart", true)
+						if adminPart then
+							return adminPart
+						end
+					end
+				end
 				local obj17 = str1.Plot()
 				if not obj17 then
 					return nil
@@ -3427,7 +3437,30 @@ do
 					return false
 				end)
 
-				local capState = { Handle = nil, TakeHandle = nil, Height = 45, KeepAway = 45, Status = "Off", Generation = 0 }
+				local capState = { Handle = nil, TakeHandle = nil, Height = 45, KeepAway = 45, Status = "Off", Generation = 0, LastGrab = 0 }
+				str1.CaptureEgg = capState
+				local function isCaptureEventActive()
+					return workspace:GetAttribute("Event_CaptureTheEgg") == true
+						or workspace:GetAttribute("Event_CaptureTheEggGameplay") == true
+						or type(workspace:GetAttribute("Event_CaptureTheEggUid")) == "string"
+				end
+				local function findCaptureEggRecord()
+					local eggState = tbl1.EggState
+					if type(eggState) ~= "table" or type(eggState.ReadFieldEggs) ~= "function" then return nil end
+					local ok, res = pcall(eggState.ReadFieldEggs)
+					local recs = ok and type(res) == "table" and res.Records or nil
+					if type(recs) ~= "table" then return nil end
+					local targetUid = workspace:GetAttribute("Event_CaptureTheEggUid")
+					if type(targetUid) == "string" and recs[targetUid] then
+						return recs[targetUid]
+					end
+					for _, r in pairs(recs) do
+						if type(r) == "table" and (r.IsCaptureEgg == true or tostring(r.AssetCategory or ""):find("Capture") or tostring(r.EggType or ""):find("Capture")) then
+							return r
+						end
+					end
+					return nil
+				end
 				capState.Handle = obj14:CreateToggle({
 					Name = "Auto Capture Event Egg",
 					Default = false,
@@ -3463,7 +3496,65 @@ do
 					SubOf = capState.Handle,
 					Callback = function(v) capState.KeepAway = math.clamp(tonumber(v) or 45, 20, 150) end,
 				})
+				tbl2.Add(function()
+					if not str1.Toggle(capState.Handle, false) then
+						capState.Status = "Off"
+						return false
+					end
+					if not isCaptureEventActive() then
+						capState.Status = "Waiting for Capture The Egg"
+						return false
+					end
+					local rec = findCaptureEggRecord()
+					local root = str1.Root()
+					local char = localPlayer.Character
+					if not rec or not root or not char then
+						capState.Status = "Event active, waiting for egg"
+						return false
+					end
+					local carrierId = tonumber(rec.CarrierUserId or rec.OwnerUserId)
+					if carrierId == localPlayer.UserId then
+						capState.Status = "Holding Event Egg (Keep Away)"
+						local basePos = root.Position
+						local pushVec = Vector3.zero
+						for _, pl in ipairs(Players:GetPlayers()) do
+							if pl ~= localPlayer and pl.Character then
+								local pr = pl.Character:FindFirstChild("HumanoidRootPart")
+								if pr then
+									local diff = Vector3.new(basePos.X - pr.Position.X, 0, basePos.Z - pr.Position.Z)
+									if diff.Magnitude < capState.KeepAway and diff.Magnitude > 0.01 then
+										pushVec += diff.Unit * (capState.KeepAway - diff.Magnitude)
+									end
+								end
+							end
+						end
+						local targetPos = Vector3.new(basePos.X + pushVec.X, math.max(basePos.Y, 68 + capState.Height), basePos.Z + pushVec.Z)
+						pcall(function()
+							char:PivotTo(CFrame.new(targetPos))
+							root.AssemblyLinearVelocity = Vector3.zero
+						end)
+						return true
+					end
+					if carrierId and not str1.Toggle(capState.TakeHandle, true) then
+						capState.Status = "Another player is holding the egg"
+						return false
+					end
+					local cf = typeof(rec.BottomCFrame) == "CFrame" and rec.BottomCFrame or (typeof(rec.BoundsCFrame) == "CFrame" and rec.BoundsCFrame or nil)
+					if cf and os.clock() - capState.LastGrab >= 0.35 then
+						capState.LastGrab = os.clock()
+						capState.Status = "Grabbing Capture Event Egg"
+						pcall(function()
+							char:PivotTo(CFrame.new(cf.Position + Vector3.new(0, 3, 0)))
+							if tbl1.EggState and type(tbl1.EggState.CarryFieldEgg) == "function" then
+								tbl1.EggState.CarryFieldEgg(rec.Uid, rec.Slot)
+							end
+						end)
+					end
+					return false
+				end)
 
+				str1.OldSteal = false
+				str1.OldStealSpeed = 400
 				local oldStealHandle = obj14:CreateToggle({
 					Name = "Old Auto Steal",
 					Note = "Only works while the running man boost (Admin Treadmill) shows at the bottom of the screen",
@@ -3485,6 +3576,27 @@ do
 						str1.OldStealSpeed = math.clamp(tonumber(v) or 400, 100, 1000)
 					end,
 				})
+				tbl2.Add(function()
+					if not str1.OldSteal then return false end
+					local hasAdminTreadmill = workspace:FindFirstChild("AdminTreadmill") ~= nil or localPlayer:GetAttribute("AdminTreadmill") == true
+					if not hasAdminTreadmill then return false end
+					if str1.Steal and str1.Steal.Carrying and type(str1.FlyTo) == "function" then
+						local plot = type(str1.Plot) == "function" and str1.Plot() or nil
+						local spawnPart = plot and (plot:FindFirstChild("Spawn") or plot:FindFirstChildWhichIsA("BasePart")) or nil
+						if spawnPart then
+							pcall(function()
+								local root = str1.Root()
+								if root and (root.Position - spawnPart.Position).Magnitude > 10 then
+									local dir = (spawnPart.Position - root.Position)
+									local step = math.min(dir.Magnitude, (str1.OldStealSpeed or 400) * 0.15)
+									root.CFrame = CFrame.new(root.Position + dir.Unit * step) * root.CFrame.Rotation
+								end
+							end)
+							return true
+						end
+					end
+					return false
+				end)
 			end)
 
 			str1.BossPortalUp = function()
@@ -10187,6 +10299,8 @@ do
 				end)
 			end
 
+			local lastPetPreviewText = nil
+			local lastEggPreviewText = nil
 			tbl2.Add(function()
 				local flag254 = str1.Toggle(value170, false)
 				local flag255 = str1.Toggle(value167, false)
@@ -10194,11 +10308,19 @@ do
 				local list25, value181 = func195()
 
 				if value171 and type(value171.Set) == "function" then
-					pcall(value171.Set, value171, string.format("Pet matches  -  %d pets for %s", #list24, func186(value180)))
+					local nextPetText = string.format("Pet matches  -  %d pets for %s", #list24, func186(value180))
+					if nextPetText ~= lastPetPreviewText then
+						lastPetPreviewText = nextPetText
+						pcall(value171.Set, value171, nextPetText)
+					end
 				end
 
 				if value172 and type(value172.Set) == "function" then
-					pcall(value172.Set, value172, string.format("Egg matches  -  %d eggs for %s", #list25, func186(value181)))
+					local nextEggText = string.format("Egg matches  -  %d eggs for %s", #list25, func186(value181))
+					if nextEggText ~= lastEggPreviewText then
+						lastEggPreviewText = nextEggText
+						pcall(value172.Set, value172, nextEggText)
+					end
 				end
 
 				local value182 = flag240
@@ -10564,10 +10686,15 @@ do
 						end,
 					}))
 				end
+				local lastLabPreviewText = nil
 				tbl2.Add(function()
 					local matches, val = matchLabEggs()
 					if sellLab.Preview and type(sellLab.Preview.Set) == "function" then
-						pcall(sellLab.Preview.Set, sellLab.Preview, string.format("Lab egg matches  -  %d eggs for %s", #matches, func186(val)))
+						local nextLabText = string.format("Lab egg matches  -  %d eggs for %s", #matches, func186(val))
+						if nextLabText ~= lastLabPreviewText then
+							lastLabPreviewText = nextLabText
+							pcall(sellLab.Preview.Set, sellLab.Preview, nextLabText)
+						end
 					end
 					if flag240 or os.clock() < n15 or not str1.Toggle(sellLab.Handle, false) then
 						return false
@@ -13375,13 +13502,30 @@ do
 		pcall(function()
 			local bfSec = obj2._bhLayout and obj2._bhLayout.Butterfly
 			if bfSec then
+				local bfState = {
+					Mode = "Stand",
+					Priority = "Rarest",
+					Speed = 320,
+					Tiers = {},
+					TradeTiers = {},
+					SmartTrade = false,
+					LastActionAt = 0,
+					LastCountsText = nil,
+					LastStatusText = nil,
+				}
 				local bfStatus = bfSec:CreateText({ Name = "Butterfly Status", Text = "Off" })
 				local bfCounts = bfSec:CreateText({ Name = "Butterflies", Text = "Green 0  |  Blue 0  |  Purple 0  |  Golden 0  |  Essence 0" })
+				local function setBfStatus(txt)
+					if txt ~= bfState.LastStatusText then
+						bfState.LastStatusText = txt
+						pcall(bfStatus.Set, bfStatus, txt)
+					end
+				end
 				local bfHandle = bfSec:CreateToggle({
 					Name = "Auto Butterfly Bloom",
 					Default = false,
 					Callback = function(v)
-						pcall(bfStatus.Set, bfStatus, v and "Waiting for Butterfly Bloom event" or "Off")
+						setBfStatus(v and "Waiting for Butterfly Bloom event" or "Off")
 						tbl2.Wake()
 					end,
 				})
@@ -13390,6 +13534,7 @@ do
 					Options = { "Stand", "Chase", "Circle", "Patrol" },
 					Default = "Stand",
 					SubOf = bfHandle,
+					Callback = function(v) bfState.Mode = tostring(v or "Stand") end,
 				})
 				bfSec:CreateDropdown({
 					Name = "Catch Priority",
@@ -13397,14 +13542,22 @@ do
 					Options = { "Rarest", "Nearest" },
 					Default = "Rarest",
 					SubOf = bfHandle,
+					Callback = function(v) bfState.Priority = tostring(v or "Rarest") end,
 				})
 				local bfTierOpts = { "Radiant Butterfly", "Amethyst Butterfly", "Sapphire Butterfly", "Emerald Butterfly" }
+				for _, t in ipairs(bfTierOpts) do bfState.Tiers[t] = true end
 				func6(bfSec:CreateMultiDropdown({
 					Name = "Catch Butterflies",
 					Note = "Only for Chase mode",
 					Options = bfTierOpts,
 					Default = bfTierOpts,
 					SubOf = bfHandle,
+					Callback = function(list)
+						table.clear(bfState.Tiers)
+						for _, item in ipairs(type(list) == "table" and list or {}) do
+							bfState.Tiers[tostring(item)] = true
+						end
+					end,
 				}))
 				bfSec:CreateSlider({
 					Name = "Tween Speed  ",
@@ -13414,25 +13567,36 @@ do
 					Increment = 10,
 					Unit = "studs/s",
 					SubOf = bfHandle,
+					Callback = function(v) bfState.Speed = math.clamp(tonumber(v) or 320, 100, 600) end,
 				})
 				local tradeUpHandle = bfSec:CreateToggle({
 					Name = "Auto Trade Up",
 					Default = false,
+					Callback = function() tbl2.Wake() end,
 				})
 				bfSec:CreateMultiDropdown({
 					Name = "Trade Up Tiers",
 					Options = { "Emerald To Sapphire", "Sapphire To Amethyst", "Amethyst To Radiant" },
 					Default = {},
 					SubOf = tradeUpHandle,
+					Callback = function(list)
+						table.clear(bfState.TradeTiers)
+						for _, item in ipairs(type(list) == "table" and list or {}) do
+							bfState.TradeTiers[tostring(item)] = true
+						end
+						tbl2.Wake()
+					end,
 				})
 				bfSec:CreateToggle({
 					Name = "Smart Trade For Essence",
 					Default = false,
 					SubOf = tradeUpHandle,
+					Callback = function(v) bfState.SmartTrade = v == true; tbl2.Wake() end,
 				})
-				bfSec:CreateToggle({
+				local craftEssenceHandle = bfSec:CreateToggle({
 					Name = "Auto Craft Essence",
 					Default = false,
+					Callback = function() tbl2.Wake() end,
 				})
 
 				local essState = {
@@ -13445,6 +13609,7 @@ do
 					SkipMutated = true,
 					Status = "Off",
 					Targets = {},
+					LastTryAt = 0,
 				}
 				essState.Handle = bfSec:CreateToggle({
 					Name = "Auto Use Enchanted Essence",
@@ -13454,6 +13619,7 @@ do
 						if essState.Row and type(essState.Row.Set) == "function" then
 							pcall(essState.Row.Set, essState.Row, essState.Status)
 						end
+						tbl2.Wake()
 					end,
 				})
 				essState.Row = bfSec:CreateText({ Name = "Essence Status", Text = "Off", SubOf = essState.Handle })
@@ -13463,13 +13629,13 @@ do
 					Options = list3,
 					Default = list3[1],
 					SubOf = essState.Handle,
-					Callback = function(v) essState.MinRarity = tbl8[v] or 0 end,
+					Callback = function(v) essState.MinRarity = tbl8[v] or 0; tbl2.Wake() end,
 				})
 				func5(bfSec, {
 					Name = "Essence Min Value",
 					Note = "Skip eggs worth less than this (0 = off)",
 					SubOf = essState.Handle,
-					OnRaw = function(raw) essState.MinIncome = math.max(0, tonumber(raw) or 0) end,
+					OnRaw = function(raw) essState.MinIncome = math.max(0, tonumber(raw) or 0); tbl2.Wake() end,
 				})
 				func6(bfSec:CreateMultiDropdown({
 					Name = "Essence Target Eggs",
@@ -13477,6 +13643,13 @@ do
 					Options = str33.EggOptions or {},
 					Default = {},
 					SubOf = essState.Handle,
+					Callback = function(list)
+						table.clear(essState.Targets)
+						for _, item in ipairs(type(list) == "table" and list or {}) do
+							essState.Targets[tostring(item)] = true
+						end
+						tbl2.Wake()
+					end,
 				}))
 				bfSec:CreateDropdown({
 					Name = "Essence Priority",
@@ -13484,40 +13657,186 @@ do
 					Options = { "Highest Value", "Best Rarity", "Biggest Size" },
 					Default = "Highest Value",
 					SubOf = essState.Handle,
-					Callback = function(v) essState.Priority = tostring(v) end,
+					Callback = function(v) essState.Priority = tostring(v); tbl2.Wake() end,
 				})
 				bfSec:CreateToggle({
 					Name = "Essence Skip Enchanted Eggs",
 					Note = "Skip eggs that already got Enchanted, other mutations still get the essence",
 					Default = true,
 					SubOf = essState.Handle,
-					Callback = function(v) essState.SkipMutated = v == true end,
+					Callback = function(v) essState.SkipMutated = v == true; tbl2.Wake() end,
 				})
+
+				tbl2.Add(function()
+					local save = tbl1.Save and type(tbl1.Save.Get) == "function" and tbl1.Save.Get() or nil
+					local bfData = type(save) == "table" and (save.Butterflies or save.ButterflyBloom) or nil
+					local gCnt = tonumber(type(bfData) == "table" and (bfData.Green or bfData.Emerald) or 0) or 0
+					local bCnt = tonumber(type(bfData) == "table" and (bfData.Blue or bfData.Sapphire) or 0) or 0
+					local pCnt = tonumber(type(bfData) == "table" and (bfData.Purple or bfData.Amethyst) or 0) or 0
+					local rCnt = tonumber(type(bfData) == "table" and (bfData.Golden or bfData.Radiant) or 0) or 0
+					local eCnt = tonumber(type(bfData) == "table" and (bfData.Essence or bfData.EnchantedEssence) or 0) or 0
+					local countsTxt = string.format("Green %d  |  Blue %d  |  Purple %d  |  Golden %d  |  Essence %d", gCnt, bCnt, pCnt, rCnt, eCnt)
+					if countsTxt ~= bfState.LastCountsText then
+						bfState.LastCountsText = countsTxt
+						pcall(bfCounts.Set, bfCounts, countsTxt)
+					end
+
+					local now = os.clock()
+					if str1.Toggle(bfHandle, false) then
+						local bloomActive = workspace:GetAttribute("Event_ButterflyBloom") == true
+						if bloomActive then
+							setBfStatus("Butterfly Bloom active (" .. bfState.Mode .. ")")
+							if now - bfState.LastActionAt >= 1.0 then
+								bfState.LastActionAt = now
+								local netRem = networking:FindFirstChild("RF/Butterflies/AskClaimNet")
+								if netRem and netRem:IsA("RemoteFunction") then
+									pcall(netRem.InvokeServer, netRem)
+								end
+							end
+						else
+							setBfStatus("Waiting for Butterfly Bloom event")
+						end
+					end
+
+					if str1.Toggle(tradeUpHandle, false) and now - bfState.LastActionAt >= 0.8 then
+						local tradeRem = networking:FindFirstChild("RF/Butterflies/AskTradeUp")
+						if tradeRem and tradeRem:IsA("RemoteFunction") then
+							local map = {
+								{ Label = "Emerald To Sapphire", From = "Green", Count = gCnt },
+								{ Label = "Sapphire To Amethyst", From = "Blue", Count = bCnt },
+								{ Label = "Amethyst To Radiant", From = "Purple", Count = pCnt },
+							}
+							for _, entry in ipairs(map) do
+								if (bfState.SmartTrade or bfState.TradeTiers[entry.Label]) and entry.Count >= 10 then
+									bfState.LastActionAt = now
+									pcall(tradeRem.InvokeServer, tradeRem, entry.From)
+									break
+								end
+							end
+						end
+					end
+
+					if str1.Toggle(craftEssenceHandle, false) and now - bfState.LastActionAt >= 1.0 then
+						local craftRem = networking:FindFirstChild("RF/Butterflies/AskCraftEssence")
+						if craftRem and craftRem:IsA("RemoteFunction") and rCnt >= 1 then
+							bfState.LastActionAt = now
+							pcall(craftRem.InvokeServer, craftRem)
+						end
+					end
+
+					if str1.Toggle(essState.Handle, false) and now - essState.LastTryAt >= 2.0 then
+						essState.LastTryAt = now
+						local useRem = networking:FindFirstChild("RF/BossMastery/AskUseMutationConsumable")
+						local eggState = tbl1.EggState
+						if useRem and useRem:IsA("RemoteFunction") and type(eggState) == "table" and type(eggState.ReadOwnerEggs) == "function" then
+							local okE, ownerEggs = pcall(eggState.ReadOwnerEggs, localPlayer.UserId)
+							if okE and type(ownerEggs) == "table" then
+								local bestUid, bestScore = nil, -1
+								for uid, egg in pairs(ownerEggs) do
+									if type(egg) == "table" and egg.Placement ~= nil then
+										local mut = tostring(egg.Mutation or "")
+										local rar = str1.EggRarity(egg)
+										local inc = str1.EggIncome(egg)
+										local passMut = not (essState.SkipMutated and mut == "Enchanted")
+										local passRar = rar >= (essState.MinRarity or 0)
+										local passInc = inc >= (essState.MinIncome or 0)
+										if passMut and passRar and passInc then
+											local score = essState.Priority == "Best Rarity" and rar or (essState.Priority == "Biggest Size" and (tonumber(egg.Scale) or 1) or inc)
+											if score > bestScore then
+												bestScore, bestUid = score, uid
+											end
+										end
+									end
+								end
+								if bestUid then
+									local okU, resU = pcall(useRem.InvokeServer, useRem, bestUid)
+									if okU and type(resU) == "table" and resU.Success == true then
+										essState.Status = "Applied Enchanted Essence!"
+										if essState.Row and type(essState.Row.Set) == "function" then
+											pcall(essState.Row.Set, essState.Row, essState.Status)
+										end
+									end
+								end
+							end
+						end
+					end
+					return false
+				end)
 			end
 
 			local wispSec = obj2._bhLayout and obj2._bhLayout.Wisp
 			if wispSec then
+				local lastWispText = nil
 				local wispRow = wispSec:CreateText({ Name = "Wisp Status", Text = "Off" })
+				local function setWispText(txt)
+					if txt ~= lastWispText then
+						lastWispText = txt
+						pcall(wispRow.Set, wispRow, txt)
+					end
+				end
 				local wispHandle = wispSec:CreateToggle({
 					Name = "Auto Wisp",
 					Note = "Completes the Wisp stages to unlock the Enchanted Tree (requires 50B Speed Power)",
 					Default = false,
 					Callback = function(v)
-						pcall(wispRow.Set, wispRow, v and "Reading your Wisp..." or "Off")
+						setWispText(v and "Reading your Wisp..." or "Off")
 						tbl2.Wake()
 					end,
 				})
-				wispSec:CreateToggle({
+				local banjoHandle = wispSec:CreateToggle({
 					Name = "Auto Banjo Cricket",
 					Note = "Solves the Enchanted Tree mushroom puzzle and claims Cricket's Banjo",
 					Default = false,
 					Callback = function(v)
 						if v and not str1.Toggle(wispHandle, false) then
-							pcall(wispRow.Set, wispRow, "Banjo Cricket: Waiting for Enchanted Tree")
+							setWispText("Banjo Cricket: Waiting for Enchanted Tree")
 						end
 						tbl2.Wake()
 					end,
 				})
+				local lastWispCall = 0
+				tbl2.Add(function()
+					local now = os.clock()
+					if now - lastWispCall < 2.0 then return false end
+					local wispOn = str1.Toggle(wispHandle, false)
+					local banjoOn = str1.Toggle(banjoHandle, false)
+					if not wispOn and not banjoOn then return false end
+					lastWispCall = now
+					if wispOn then
+						local wispRem = networking:FindFirstChild("RF/WispCompanion/Request")
+						local save = tbl1.Save and type(tbl1.Save.Get) == "function" and tbl1.Save.Get() or nil
+						local wState = type(save) == "table" and save.WispCompanion or nil
+						if type(wState) == "table" and wState.Unlocked == true then
+							setWispText("Wisp Completed (Enchanted Tree Unlocked)")
+						elseif wispRem and wispRem:IsA("RemoteFunction") then
+							if type(wState) == "table" and wState.Accepted ~= true then
+								pcall(wispRem.InvokeServer, wispRem, "Accept")
+								setWispText("Wisp Quest Accepted - Progressing...")
+							else
+								pcall(wispRem.InvokeServer, wispRem, "Claim")
+								pcall(wispRem.InvokeServer, wispRem, "Advance")
+								local stg = type(wState) == "table" and tonumber(wState.Stage) or 1
+								setWispText("Wisp Stage " .. tostring(stg or 1) .. " Active")
+							end
+						end
+					end
+					if banjoOn then
+						local aimRem = networking:FindFirstChild("RE/BanjoCricket/Aim")
+						local claimRem = networking:FindFirstChild("RF/BanjoCricket/AskClaim")
+						if aimRem and aimRem:IsA("RemoteEvent") then
+							for _, mush in ipairs(CollectionService:GetTagged("BanjoCricketMushroom")) do
+								pcall(aimRem.FireServer, aimRem, mush)
+							end
+						end
+						if claimRem and claimRem:IsA("RemoteFunction") then
+							local okC, resC = pcall(claimRem.InvokeServer, claimRem)
+							if okC and resC == true then
+								setWispText("Done, Cricket's Banjo is yours!")
+							end
+						end
+					end
+					return false
+				end)
 			end
 		end)
 
@@ -15096,16 +15415,17 @@ do
 
 				local value274 = nil
 				local n23 = 0
+				local gcDroneTries = 0
 
 				local function func324()
-					if value274 and next(value274) ~= nil then
+					if value274 ~= nil then
 						return value274
 					end
-					value274 = nil
-					if os.clock() < n23 or type(getgc) ~= "function" or not func274() then
+					if gcDroneTries >= 2 or os.clock() < n23 or type(getgc) ~= "function" or not func274() then
 						return nil
 					end
-					n23 = os.clock() + 15
+					gcDroneTries += 1
+					n23 = os.clock() + 45
 
 					for _, item91 in ipairs(getgc(false)) do
 						if type(item91) == "function" and islclosure(item91) then
@@ -28177,21 +28497,42 @@ pcall(function()
 	local finderSec = obj2._bhLayout and obj2._bhLayout.EggFinder
 	if finderSec then
 		local hopModes = { "Until An Egg Matches", "Steal Then Hop", "After A Rare Spawns" }
+		local finderState = {
+			Mode = hopModes[2],
+			RareMin = tbl8[list3[math.min(#list3, 7)] or list3[1]] or 7,
+			Sync = true,
+			MinRarity = 0,
+			Areas = {},
+			MinIncome = 0,
+			FirstDelay = 5,
+			LoadedAt = os.clock(),
+			LastHopAt = 0,
+			LastStatus = nil,
+		}
+		for _, a in ipairs(tbl37) do finderState.Areas[a] = true end
 		local finderStatus = finderSec:CreateText({ Name = "Finder Status", Text = "Idle" })
+		local function setFinderStatus(txt)
+			if txt ~= finderState.LastStatus then
+				finderState.LastStatus = txt
+				pcall(finderStatus.Set, finderStatus, txt)
+			end
+		end
 		local autoHopHandle = finderSec:CreateToggle({
 			Name = "Auto Hop",
 			Note = "Automatically server hops to find matching eggs on the conveyor/field",
 			Default = false,
 			Callback = function(v)
-				pcall(finderStatus.Set, finderStatus, v and "Scanning field eggs..." or "Idle")
+				finderState.LoadedAt = os.clock()
+				setFinderStatus(v and "Scanning field eggs..." or "Idle")
 				tbl2.Wake()
 			end,
 		})
-		local hopModeDrop = finderSec:CreateDropdown({
+		finderSec:CreateDropdown({
 			Name = "Hop Mode",
 			Options = hopModes,
 			Default = hopModes[2],
 			SubOf = autoHopHandle,
+			Callback = function(v) finderState.Mode = tostring(v or hopModes[2]); tbl2.Wake() end,
 		})
 		finderSec:CreateDropdown({
 			Name = "Rarity To Wait For",
@@ -28199,12 +28540,14 @@ pcall(function()
 			Options = list3,
 			Default = list3[math.min(#list3, 7)] or list3[1],
 			SubOf = autoHopHandle,
+			Callback = function(v) finderState.RareMin = tbl8[v] or 7; tbl2.Wake() end,
 		})
 		finderSec:CreateToggle({
 			Name = "Sync With Auto Steal Filters",
 			Note = "Changing a filter here also changes it in Auto Steal, and back",
 			Default = true,
 			SubOf = autoHopHandle,
+			Callback = function(v) finderState.Sync = v == true; tbl2.Wake() end,
 		})
 		finderSec:CreateDropdown({
 			Name = "Min Rarity",
@@ -28212,17 +28555,26 @@ pcall(function()
 			Options = list3,
 			Default = list3[1],
 			SubOf = autoHopHandle,
+			Callback = function(v) finderState.MinRarity = tbl8[v] or 0; tbl2.Wake() end,
 		})
 		func6(finderSec:CreateMultiDropdown({
 			Name = "Target Areas",
 			Options = tbl37,
 			Default = tbl37,
 			SubOf = autoHopHandle,
+			Callback = function(list)
+				table.clear(finderState.Areas)
+				for _, a in ipairs(type(list) == "table" and list or {}) do
+					finderState.Areas[tostring(a)] = true
+				end
+				tbl2.Wake()
+			end,
 		}))
 		func5(finderSec, {
 			Name = "Min Value To Find",
 			Note = "Skip eggs worth less than this. Drag or type 250k, 50m, 1.5b",
 			SubOf = autoHopHandle,
+			OnRaw = function(raw) finderState.MinIncome = math.max(0, tonumber(raw) or 0); tbl2.Wake() end,
 		})
 		finderSec:CreateSlider({
 			Name = "First Hop Delay",
@@ -28234,7 +28586,50 @@ pcall(function()
 			Increment = 0.5,
 			Unit = "s",
 			SubOf = autoHopHandle,
+			Callback = function(v) finderState.FirstDelay = math.clamp(tonumber(v) or 5, 3, 10) end,
 		})
+		tbl2.Add(function()
+			if not str1.Toggle(autoHopHandle, false) then
+				setFinderStatus("Idle")
+				return false
+			end
+			local elapsed = os.clock() - finderState.LoadedAt
+			if elapsed < finderState.FirstDelay then
+				setFinderStatus(string.format("Waiting %.1fs before first scan...", finderState.FirstDelay - elapsed))
+				return false
+			end
+			local eggState = tbl1.EggState
+			local ok, res = false, nil
+			if type(eggState) == "table" and type(eggState.ReadFieldEggs) == "function" then
+				ok, res = pcall(eggState.ReadFieldEggs)
+			end
+			local recs = ok and type(res) == "table" and res.Records or nil
+			local matchCount = 0
+			if type(recs) == "table" then
+				for _, r in pairs(recs) do
+					if type(r) == "table" and r.State ~= "Claimed" then
+						local rar = str1.EggRarity(r)
+						local inc = str1.EggIncome(r)
+						local minR = finderState.Mode == "After A Rare Spawns" and finderState.RareMin or finderState.MinRarity
+						if rar >= minR and inc >= finderState.MinIncome then
+							matchCount += 1
+						end
+					end
+				end
+			end
+			if matchCount > 0 or (str1.Steal and str1.Steal.Carrying) then
+				setFinderStatus(string.format("Found %d matching egg(s) in server!", matchCount))
+				return false
+			end
+			if os.clock() - finderState.LastHopAt >= 6 and type(str1.ServerHop) == "function" then
+				finderState.LastHopAt = os.clock()
+				setFinderStatus("No match found — hopping server...")
+				task.spawn(function()
+					pcall(str1.ServerHop, "Least Players")
+				end)
+			end
+			return false
+		end)
 	end
 end)
 local TeleportService
@@ -28295,7 +28690,7 @@ if enabled then
     end)
     task.wait(1.5)
     local ok, source = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua")
+        return game:HttpGet("https://raw.githubusercontent.com/FyarrAja/loader/main/test_ui.lua")
     end)
     if ok and type(source) == "string" then
         local chunk = loadstring(source)
@@ -30941,16 +31336,19 @@ do
 	end
 
 	list85[#list85 + 1] = RunService.RenderStepped:Connect(function(deltaTime)
+		if not ScreenGui.Enabled then
+			return
+		end
 		func718()
 		huge += deltaTime
 		huge2 += deltaTime
 
-		if huge >= 3 then
+		if huge >= 5 then
 			huge = 0
 			pcall(func723)
 		end
 
-		if huge2 >= 0.2 then
+		if huge2 >= 0.5 then
 			huge2 = 0
 			pcall(func725)
 		end
@@ -31644,8 +32042,11 @@ do
 		end
 
 		func751()
+		if not antiGuard.Enabled and not flag638.WeldCarrying then
+			return
+		end
 		n15 += deltaTime
-		if n15 < tbl496.WeldScanGap then
+		if n15 < 0.15 then
 			return
 		end
 		n15 = 0
