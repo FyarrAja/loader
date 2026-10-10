@@ -3334,14 +3334,14 @@ do
 
 			str1.SafeCarry.RunHandle = obj14:CreateSlider({
 				Name = "Tween Speed",
-				Note = "Speed multiplier when running to target egg",
+				Note = "High speed glide/tween when going to and returning with egg (Speed Hub Engine)",
 				Min = 50,
-				Max = 250,
-				Default = 120,
+				Max = 300,
+				Default = 150,
 				Increment = 5,
 				Unit = "%",
 				Callback = function(value)
-					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 120, 50, 250) / 100
+					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 150, 50, 300) / 100
 				end,
 			})
 
@@ -4446,10 +4446,10 @@ do
 							if n18 >= 4 then
 								return false
 							end
-						end
 
-						if type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
-							pcall(eggState.CarryFieldEgg, part4.Uid)
+							if type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
+								pcall(eggState.CarryFieldEgg, part4.Uid)
+							end
 						end
 
 						huge = 0
@@ -5013,8 +5013,9 @@ do
 								if typeof(fireproximityprompt) == "function" then
 									pcall(fireproximityprompt, uid5)
 								end
+							else
+								func85(part7.Uid)
 							end
-							task.spawn(func85, part7.Uid)
 
 							huge = 0
 						end
@@ -5902,278 +5903,133 @@ do
 
 				str1.SafeCarry.RunTo = function(obj, param76)
 					local safeCarry = str1.SafeCarry
-					local position = typeof(obj.CFrame) == "CFrame" and obj.CFrame.Position or nil
-					if not position then
+					local targetPos = typeof(obj.CFrame) == "CFrame" and obj.CFrame.Position or nil
+					if not targetPos then
 						return false
 					end
 					func76()
-					local character = localPlayer.Character
-					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					pcall(str1.EnsureFastWalk)
+
+					pcall(function()
+						workspace:SetAttribute("ClientObbyAntiTp", false)
+						local ps = localPlayer:FindFirstChild("PlayerScripts")
+						if ps then
+							local anti = ps:FindFirstChild("ObbyAntiTPClient") or ps:FindFirstChild("AntiTP") or ps:FindFirstChild("AntiTeleport")
+							if anti and anti:IsA("LocalScript") and not anti.Disabled then
+								anti.Disabled = true
+							end
+						end
+					end)
+
+					local root = str1.Root()
+					local char = localPlayer.Character
+					local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+					if not root or not char then
+						return false
+					end
 
 					if humanoid then
 						humanoid.PlatformStand = false
-
-						if character:FindFirstChildWhichIsA("Tool") then
-							pcall(function()
-								humanoid:UnequipTools()
-							end)
+						if char:FindFirstChildWhichIsA("Tool") then
+							pcall(function() humanoid:UnequipTools() end)
 						end
 					end
 
-					local num36 = safeCarry.NewHuman(false)
-					local world = workspace:FindFirstChild("World") or workspace:FindFirstChild("__OBJECTS")
-					world = world and world:FindFirstChild("Areas")
-					world = world and world:FindFirstChild("SeparationLine")
-					local x = world and world:IsA("BasePart") and world.Position.X or 552
-					local result19 = stealHome()
-					local position2 = str1.Root()
-					local str9 = "field"
-					local z = position2 and position2.Position.Z or position.Z
-
-					if position2 and result19 and position2.Position.X < x - 2 then
-						z = result19.Z
-
-						if (Vector3.new(position2.Position.X, 0, position2.Position.Z) - Vector3.new(result19.X, 0, result19.Z)).Magnitude > (safeCarry.V2DirectRadius or 120) then
-							str9 = "safe"
-						end
-					end
-
-					local n23 = math.clamp(z + num36.Lane, -425, -300)
-					local n24 = position.Y + 3
-
-					local function func119(num37)
-						local flag115 = str1.Root()
-						local character2 = localPlayer.Character
-						local flag116 = not flag115 or not character2 or math.abs(flag115.Position.Y - num37) < 1
-						local flag117
-
-						if flag116 then
-							flag117 = flag116
-						else
-							local snapLimit = safeCarry.SnapLimit
-							flag117 = math.abs(flag115.Position.Y - num37) > snapLimit
-						end
-
-						if flag117 then
-							return false
-						end
-
-						pcall(function()
-							local rotation = flag115.CFrame.Rotation
-							character2:PivotTo(CFrame.new(Vector3.new(flag115.Position.X, num37, flag115.Position.Z)) * rotation)
-							flag115.AssemblyLinearVelocity = Vector3.new(flag115.AssemblyLinearVelocity.X, 0, flag115.AssemblyLinearVelocity.Z)
-						end)
-
-						return true
-					end
-
-					local function func120()
-						if safeCarry.RunHeight <= 0.5 then
-							return
-						end
-						func119(n24 + safeCarry.RunHeight)
-					end
-
-					if str9 == "field" then
-						func120()
-					end
-
-					local now = os.clock()
-					local now2 = os.clock()
-					local now3 = os.clock()
-					position2 = position2 and position2.Position or nil
-
-					local function func121(part12, param77, num38, flag118)
-						local vector = Vector3.new(param77.X - part12.Position.X, 0, param77.Z - part12.Position.Z)
-						local magnitude = vector.Magnitude
-						local unit = magnitude > 0.01 and vector.Unit or Vector3.zero
-
-						if safeCarry.RunHeight > 0.5 and str9 == "field" and not flag118 then
-							local runSpeed = safeCarry.RunSpeed
-							local n25 = math.max(str1.WalkSpeed() * runSpeed * num38, 8)
-							local n26 = math.clamp(safeCarry.ClimbShare, 0.1, 0.9)
-							local magnitude2 = Vector3.new(position.X - part12.Position.X, 0, position.Z - part12.Position.Z).Magnitude
-
-							if magnitude2 <= 3 then
-								if func119(n24) then
-									return
+					local function noclip()
+						local c = localPlayer.Character
+						if c then
+							for _, p in ipairs(c:GetChildren()) do
+								if p:IsA("BasePart") then
+									p.CanCollide = false
 								end
 							end
-
-							local n27 = magnitude2 <= 3 and n24 or n24 + safeCarry.RunHeight
-							if math.abs(n27 - part12.Position.Y) > 2 and func119(n27) then
-								return
-							end
-							local n28 = math.clamp((n27 - part12.Position.Y) / 0.12, -n25 * n26, n25 * n26)
-							local n29 = unit * math.min(math.sqrt(math.max(n25 * n25 - n28 * n28, 0)), magnitude / 0.05)
-
-							pcall(function()
-								part12.AssemblyLinearVelocity = Vector3.new(n29.X, n28, n29.Z)
-							end)
-
-							return
 						end
-
-						pcall(function()
-							if flag118 or magnitude <= 0.01 then
-								if humanoid then
-									if safeCarry.RunStyle == "Walk" then
-										humanoid:MoveTo(part12.Position)
-									end
-
-									humanoid:Move(Vector3.zero, false)
-								end
-
-								if safeCarry.RunStyle ~= "Walk" then
-									part12.AssemblyLinearVelocity = Vector3.new(0, part12.AssemblyLinearVelocity.Y, 0)
-								end
-							elseif safeCarry.RunStyle == "Walk" then
-								if humanoid then
-									humanoid:MoveTo(part12.Position + unit * math.min(magnitude, 30))
-								end
-							else
-								local runSpeed = safeCarry.RunSpeed
-								local n25 = unit * math.min(math.max(str1.WalkSpeed() * runSpeed * num38, 8), magnitude / 0.05)
-								part12.AssemblyLinearVelocity = Vector3.new(n25.X, part12.AssemblyLinearVelocity.Y, n25.Z)
-
-								if safeCarry.RunAnimate and humanoid then
-									humanoid:Move(unit, false)
-								end
-							end
-						end)
 					end
 
-					while os.clock() - now < 240 do
-						if func63(param76) then
-							return false
-						end
-						local num39 = str1.Root()
-						if not num39 then
-							return false
-						end
-						local now4 = os.clock()
-						local n25 = math.max(now4 - now2, 0.0041666666666666666)
-						local vector = Vector3.new(position.X - num39.Position.X, 0, position.Z - num39.Position.Z)
-						if str9 == "field" and vector.Magnitude <= 2.5 and (safeCarry.RunHeight <= 0.5 or num39.Position.Y - n24 < 4) then
-							break
-						end
-						local value83, num40, flag119 = num36.Step(n25, humanoid, humanoid and humanoid.FloorMaterial ~= Enum.Material.Air)
+					local startPos = root.Position
+					local dist = (Vector3.new(targetPos.X, 0, targetPos.Z) - Vector3.new(startPos.X, 0, startPos.Z)).Magnitude
+					local speedMult = math.clamp(tonumber(safeCarry.RunSpeed) or 1.5, 0.5, 3.5)
+					local tweenSpeed = math.max(speedMult * 400, 450)
+					local duration = math.clamp(dist / tweenSpeed, 0.15, 6)
+					local flightY = math.max(startPos.Y, targetPos.Y + 2.5, 78)
+					local flyTarget = Vector3.new(targetPos.X, flightY, targetPos.Z)
+					local landTarget = targetPos + Vector3.new(0, 2.5, 0)
 
-						if vector.Magnitude <= 15 then
-							flag119 = false
-						end
-
-						local vector2 = position
-
-						if str9 == "safe" and result19 then
-							if (Vector3.new(result19.X, 0, result19.Z) - Vector3.new(num39.Position.X, 0, num39.Position.Z)).Magnitude <= 6 then
-								str9 = "field"
-								func120()
-							end
-
-							flag52 = "Walking out to the safe zone"
-							vector2 = result19
-						else
-							if not safeCarry.StraightRun and safeCarry.RunHeight <= 0.5 and math.abs(position.X - num39.Position.X) > 25 then
-								vector2 = Vector3.new(position.X, position.Y, math.clamp(n23 + num40, -425, -300))
-							end
-
-							flag52 = string.format("Running to the egg, %d studs left", math.floor(vector.Magnitude + 0.5))
-						end
-
-						local value84, value85 = safeCarry.Avoid(num39.Position, vector2)
-
-						if value85 then
-							flag52 = "Walking around " .. tostring(value85)
-						end
-
-						func121(num39, value84, value83, flag119)
-
-						if now4 - now3 >= 1.5 then
-							if not flag119 and position2 and (num39.Position - position2).Magnitude < 3 and humanoid then
-								pcall(function()
-									humanoid.Jump = true
-								end)
-							end
-
-							position2 = num39.Position
-							now3 = now4
-						end
-
+					local startTime = os.clock()
+					while os.clock() - startTime < duration do
+						if func63(param76) then return false end
+						local r = str1.Root()
+						if not r then return false end
+						noclip()
+						local progress = math.clamp((os.clock() - startTime) / duration, 0, 1)
+						local curPos = Vector3.new(
+							startPos.X + (flyTarget.X - startPos.X) * progress,
+							startPos.Y + (flyTarget.Y - startPos.Y) * math.min(progress * 2.5, 1),
+							startPos.Z + (flyTarget.Z - startPos.Z) * progress
+						)
+						local dir = (flyTarget - startPos)
+						local look = dir.Magnitude > 0.1 and CFrame.lookAt(curPos, curPos + Vector3.new(dir.X, 0, dir.Z).Unit) or r.CFrame.Rotation
+						r.CFrame = look
+						r.AssemblyLinearVelocity = Vector3.zero
+						r.AssemblyAngularVelocity = Vector3.zero
+						flag52 = string.format("Tweening to egg (%.0f studs left)", math.max(0, (1 - progress) * dist))
 						RunService.Heartbeat:Wait()
-						now2 = now4
 					end
 
-					local value86 = str1.Root()
-
-					if value86 then
-						func121(value86, value86.Position, 1, true)
-					end
-
-					local vector = nil
-
-					if value86 then
-						local vector2 = Vector3.new(value86.Position.X - position.X, 0, value86.Position.Z - position.Z)
-						local vector3 = vector2.Magnitude > 0.1 and vector2.Unit * 2 or Vector3.zero
-						vector = Vector3.new(position.X + vector3.X, value86.Position.Y, position.Z + vector3.Z)
-					end
-
-					local connection = RunService.Heartbeat:Connect(function()
-						local num41 = str1.Root()
-						if not num41 or not vector or str1.Steal.Carrying or str1.AntiGuard.Busy then
-							return
-						end
-						local vector2 = Vector3.new(vector.X - num41.Position.X, 0, vector.Z - num41.Position.Z)
-
-						pcall(function()
-							if vector2.Magnitude > 1.5 then
-								local rotation = num41.CFrame.Rotation
-								num41.CFrame = CFrame.new(vector.X, num41.Position.Y, vector.Z) * rotation
-							end
-
-							num41.AssemblyLinearVelocity = Vector3.new(0, math.min(num41.AssemblyLinearVelocity.Y, 0), 0)
-						end)
-					end)
-
-					local function func122(param78)
-						connection:Disconnect()
-						return param78
-					end
-
-					local obj28 = func105(obj)
-					local now4 = os.clock()
-					local num42 = (safeCarry.ReactMin > 0 or safeCarry.ReactMax > 0) and safeCarry.React(safeCarry.ReactMin, safeCarry.ReactMax) or 0
-
-					while true do
-						if func63(param76) then
-							return (func122(false))
-						else
-							local n25 = os.clock() - now4
-							local n26 = safeCarry.RunWait + num42
-							local flag120 = not safeCarry.WaitGuard or not obj28 or obj28:GetAttribute("GuardState") == "Sleeping"
-							if (n26 <= 0 or n25 >= n26) and (flag120 or n25 >= n26 + 15) then
-								break
-							end
-							flag52 = n25 < n26 and string.format("Waiting before the grab, %.1fs", n26 - n25) or "Waiting for the guard to sleep"
-							RunService.Heartbeat:Wait()
-						end
+					local landStart = os.clock()
+					local r = str1.Root()
+					local cur = r and r.Position or flyTarget
+					while os.clock() - landStart < 0.2 do
+						if func63(param76) then return false end
+						local r2 = str1.Root()
+						if not r2 then return false end
+						noclip()
+						local p = math.clamp((os.clock() - landStart) / 0.2, 0, 1)
+						local pos = cur:Lerp(landTarget, p)
+						r2.CFrame = CFrame.new(pos) * r2.CFrame.Rotation
+						r2.AssemblyLinearVelocity = Vector3.zero
+						RunService.Heartbeat:Wait()
 					end
 
 					flag52 = "Taking the egg"
-					local flag121 = func107(obj, param76, 0.8, nil)
-
-					if not flag121 and not func63(param76) then
-						flag121 = func91(obj, param76)
+					local grabDone = false
+					local grabStart = os.clock()
+					while os.clock() - grabStart < 2.5 and not grabDone do
+						if func63(param76) then return false end
+						if str1.Steal.Carrying and not str1.Steal.WrongEgg(obj.Uid) then
+							grabDone = true
+							break
+						end
+						local prompt = func82(obj.Uid, targetPos)
+						if prompt then
+							pcall(function() prompt.HoldDuration = 0 end)
+							if typeof(fireproximityprompt) == "function" then
+								pcall(fireproximityprompt, prompt)
+							end
+						end
+						task.spawn(func85, obj.Uid)
+						pcall(function()
+							local net = game:GetService("ReplicatedStorage"):FindFirstChild("Packages")
+							net = net and net:FindFirstChild("Networking")
+							local rf = net and net:FindFirstChild("RF/EggWorld/AskFieldEggCarry")
+							if rf then rf:InvokeServer({ Uid = obj.Uid }) end
+						end)
+						RunService.Heartbeat:Wait()
 					end
 
-					func122()
-					if not flag121 then
+					if not (str1.Steal.Carrying and not str1.Steal.WrongEgg(obj.Uid)) then
+						grabDone = func107(obj, param76, 0.8, nil) or func91(obj, param76)
+					else
+						grabDone = true
+					end
+
+					if not grabDone then
 						return false
 					end
+
 					str1.Steal.LastFinishedAt = os.clock()
 					return true
 				end
-
 				str1.SafeCarry.Pace = function()
 					local n23 = tonumber(str1.SafeCarry.RunSpeed) or 1
 					return math.max(str1.WalkSpeed() * n23, 16)
@@ -6299,709 +6155,93 @@ do
 				end
 
 				str1.SafeCarry.LineDropHome = function(param83)
-					local safeCarry = str1.SafeCarry
-					local steal = str1.Steal
-					local carryUid = steal.CarryUid
-					local result20 = stealHome()
-					local flag125 = str1.Root()
-					if type(carryUid) ~= "string" or not result20 or not flag125 then
-						return false
-					end
-					local world = workspace:FindFirstChild("World") or workspace:FindFirstChild("__OBJECTS")
-					world = world and world:FindFirstChild("Areas")
-					world = world and world:FindFirstChild("SeparationLine")
-					local x = world and world:IsA("BasePart") and world.Position.X or 552.2
-					local y = world and world:IsA("BasePart") and world.Position.Y or 67.67
-					local tbl97 = {}
-
-					pcall(function()
-						for _, item39 in ipairs({ RunService.Heartbeat, RunService.PreSimulation, RunService.PostSimulation }) do
-							for _, getconnection in ipairs(getconnections(item39)) do
-								local ok, result = pcall(function()
-									return getconnection.Function
-								end)
-
-								if ok and type(result) == "function" then
-									local ok2, result2 = pcall(debug.info, result, "s")
-
-									if ok2 and string.find(tostring(result2), "UGI", 1, true) and not str1.MonitorAction(result) then
-										local ok3, result3 = pcall(function()
-											return getconnection.Enabled
-										end)
-
-										if not ok3 or result3 ~= false then
-											if pcall(function()
-												getconnection:Disable()
-											end) then
-												table.insert(tbl97, getconnection)
-											end
-										end
-									end
-								end
-							end
-						end
-					end)
-
-					local flag126 = false
-					local connection = nil
-
-					pcall(function()
-						connection = networking["RE/RigSync/Refresh"].OnClientEvent:Connect(function(param84)
-							if type(param84) == "table" and param84.Action == "Relocate" then
-								flag126 = true
-							end
-						end)
-					end)
-
-					local currentCamera = workspace.CurrentCamera
-					local value88 = nil
-
-					local function func123()
-						local value89 = value88
-						local flag127
-
-						if value88 then
-							flag127 = value89
-						else
-							flag127 = not currentCamera
-						end
-
-						if flag127 then
-							return
-						end
-						value88 = { Type = currentCamera.CameraType, CFrame = currentCamera.CFrame }
-
-						pcall(function()
-							currentCamera.CameraType = Enum.CameraType.Scriptable
-							currentCamera.CFrame = value88.CFrame
-						end)
-					end
-
-					local function func124()
-						if not value88 or not currentCamera then
-							return
-						end
-						local value90 = value88
-						value88 = nil
-
-						pcall(function()
-							currentCamera.CameraType = value90.Type
-						end)
-					end
-
-					local function func125()
-						func124()
-
-						if connection then
-							connection:Disconnect()
-							connection = nil
-						end
-
-						for _, item40 in ipairs(tbl97) do
-							pcall(function()
-								item40:Enable()
-							end)
-						end
-
-						table.clear(tbl97)
-					end
-
-					local now = os.clock()
-
-					local function func126(param85, param86, flag128, callback5)
-						local n23 = 0
-
-						while n23 < flag128 and not func63(param83) do
-							local num46 = str1.Root()
-							if not num46 then
-								return false
-							end
-
-							if callback5 and callback5() then
-								return true
-							end
-							local vector = Vector3.new(param85.X - num46.Position.X, 0, param85.Z - num46.Position.Z)
-							if vector.Magnitude < 2.5 then
-								return true
-							end
-							local n24 = vector.Unit * math.min(param86, vector.Magnitude / 0.05)
-
-							pcall(function()
-								num46.AssemblyLinearVelocity = Vector3.new(n24.X, num46.AssemblyLinearVelocity.Y, n24.Z)
-							end)
-
-							n23 += RunService.Heartbeat:Wait()
-						end
-
-						return false
-					end
-
-					func76()
-					local n23 = math.clamp(flag125.Position.Z, -425, -300)
-					local vector = Vector3.new(x + (safeCarry.Hops and safeCarry.HopStop or safeCarry.LineGap), y + 3.35, n23)
-
-					local function func127()
-						local rfEggWorldAskFieldEggSnapshot = networking:FindFirstChild("RF/EggWorld/AskFieldEggSnapshot")
-
-						local ok, result = pcall(function()
-							return rfEggWorldAskFieldEggSnapshot:InvokeServer()
-						end)
-
-						local records = ok and type(result) == "table" and result.Records or nil
-
-						if type(records) == "table" then
-							for _, record in pairs(records) do
-								if type(record) == "table" and record.Uid == carryUid then
-									return record
-								end
-							end
-						end
-
-						return nil
-					end
-
-					local magnitude = Vector3.new(flag125.Position.X - x, 0, flag125.Position.Z - n23).Magnitude
-					local max = math.max
-					local carryRatio = safeCarry.CarryRatio
-					local num47 = max(str1.WalkSpeed() * carryRatio * (tonumber(safeCarry.Mult) or safeCarry.LightMult), 1)
-					local directMargin = safeCarry.DirectMargin
-					local n24 = math.max(0, (magnitude - safeCarry.DirectBudget) / num47) + directMargin
-
-					if safeCarry.CrossNow then
-						n24 = safeCarry.DirectMargin
-					end
-
-					local function func128()
-						local flag129 = str1.Root()
-						if not flag129 then
-							return
-						end
-
-						pcall(function()
-							flag129.CFrame = CFrame.new(vector) * CFrame.Angles(0, 1.5707963267948966, 0)
-							flag129.AssemblyLinearVelocity = Vector3.zero
-							flag129.AssemblyAngularVelocity = Vector3.zero
-						end)
-					end
-
-					func123()
-
-					if safeCarry.Hops then
-						local value91 = str1.Root()
-
-						if value91 then
-							local n25 = value91.Position.Y + safeCarry.HopLift
-							local x2 = value91.Position.X
-							local hopRatio = safeCarry.HopRatio
-							local n26 = math.max(str1.WalkSpeed() * hopRatio, 40)
-
-							while x2 - n26 > vector.X and steal.Carrying and not func63(param83) do
-								x2 -= n26
-								flag52 = string.format("Line Drop: hopping home, X %d", math.floor(x2))
-								local n27 = 0
-
-								while n27 < safeCarry.HopGap do
-									local value92 = str1.Root()
-
-									if value92 then
-										pcall(function()
-											value92.CFrame = CFrame.new(x2, n25, n23) * CFrame.Angles(0, 1.5707963267948966, 0)
-											value92.AssemblyLinearVelocity = Vector3.zero
-											value92.AssemblyAngularVelocity = Vector3.zero
-										end)
-									end
-
-									n27 += RunService.Heartbeat:Wait()
-								end
-							end
-						end
-					end
-
-					flag52 = "Line Drop: landing next to the line"
-					func128()
-
-					if safeCarry.Hops and steal.Carrying then
-						local n25 = 0
-
-						while n25 < safeCarry.DropDelay and steal.Carrying and not func63(param83) do
-							n25 += RunService.Heartbeat:Wait()
-						end
-
-						if steal.Carrying then
-							flag52 = "Line Drop: dropping the egg next to the line"
-							local eggState = tbl1.EggState
-
-							if type(eggState) == "table" and type(eggState.DropFieldEgg) == "function" then
-								pcall(eggState.DropFieldEgg, "PlayerRequest")
-							end
-
-							local n26 = 0
-
-							while steal.Carrying and n26 < 1 and not func63(param83) do
-								n26 += RunService.Heartbeat:Wait()
-							end
-						end
-					end
-
-					func124()
-
-					if safeCarry.ShakeTime > 0 then
-						local vector2 = Vector3.new(x - safeCarry.ShakeInside, vector.Y, n23)
-						local flag130 = false
-						local n25 = 0
-
-						while n25 < safeCarry.ShakeTime and steal.Carrying and not func63(param83) do
-							flag52 = "Line Drop: shaking at the line"
-							flag130 = not flag130
-							local value93 = str1.Root()
-
-							if value93 then
-								pcall(function()
-									value93.CFrame = CFrame.new(flag130 and vector2 or vector) * CFrame.Angles(0, 1.5707963267948966, 0)
-									value93.AssemblyLinearVelocity = Vector3.zero
-								end)
-							end
-
-							n25 += RunService.Heartbeat:Wait()
-						end
-
-						func128()
-					end
-
-					local flag131 = n24 < safeCarry.LineWait
-					local n25 = 0
-					local n26 = 1
-
-					while true do
-						local carrying2 = steal.Carrying and n25 < safeCarry.LineWait
-
-						if carrying2 then
-							carrying2 = not (flag131 and n25 >= n24)
-						end
-
-						if carrying2 and not func63(param83) then
-							if flag131 then
-								flag52 = string.format("Line Drop: stepping over the line in %.1fs", math.max(n24 - n25, 0))
-							else
-								flag52 = string.format("Line Drop: crossing needs %.1fs, waiting for the guard, %.0fs left", n24, safeCarry.LineWait - n25)
-							end
-
-							if flag126 and safeCarry.ReJump and n26 < 40 and not func92() then
-								flag126 = false
-								n26 += 1
-								flag52 = "Line Drop: pulled back, jumping to the line again"
-								func128()
-							end
-
-							n25 += RunService.Heartbeat:Wait()
-							continue
-						end
-
-						break
-					end
-
-					if steal.Carrying and flag131 and n25 >= n24 and not func63(param83) then
-						flag52 = "Line Drop: stepping over the line"
-						local crossRatio = safeCarry.CrossRatio
-
-						func126(result20, str1.WalkSpeed() * crossRatio, 6, function()
-							return safeCarry.LastDelivered >= now or not steal.Carrying
-						end)
-
-						local n27 = 0
-
-						while n27 < 1.5 and safeCarry.LastDelivered < now and steal.Carrying and not func63(param83) do
-							n27 += RunService.Heartbeat:Wait()
-						end
-
-						if now <= safeCarry.LastDelivered then
-							func125()
-							return true
-						end
-					end
-
-					if steal.Carrying then
-						func125()
-						flag52 = "Line Drop: the guard never came, dropping the egg"
-						local eggState = tbl1.EggState
-
-						if type(eggState) == "table" and type(eggState.DropFieldEgg) == "function" then
-							pcall(eggState.DropFieldEgg, "PlayerRequest")
-						end
-
-						return false
-					end
-
-					if safeCarry.GetUp then
-						task.spawn(function()
-							local n27 = 0
-
-							while n27 < 1.5 do
-								local character = localPlayer.Character
-								local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-
-								if humanoid then
-									pcall(function()
-										humanoid.PlatformStand = false
-										local state = humanoid:GetState()
-
-										if state == Enum.HumanoidStateType.Physics or state == Enum.HumanoidStateType.Ragdoll or state == Enum.HumanoidStateType.FallingDown then
-											humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-										end
-									end)
-								end
-
-								n27 += RunService.Heartbeat:Wait()
-							end
-						end)
-					end
-
-					local n27 = 0
-
-					while not safeCarry.SnapPickup and not safeCarry.GetUp and func92() and n27 < 6 and not func63(param83) do
-						flag52 = "Line Drop: egg is down at the line, getting up"
-						n27 += RunService.Heartbeat:Wait()
-					end
-
-					local n28 = 0
-
-					while not func63(param83) and n28 < 4 do
-						n28 += 1
-						local num48 = func111(carryUid)
-
-						if not num48 then
-							func125()
-							flag52 = "Line Drop: the egg is gone"
-							return false
-						end
-
-						local result21 = func127()
-
-						if result21 and result21.State == "Slot" then
-							func125()
-							flag52 = "Line Drop: the egg went back to its nest"
-							return false
-						end
-
-						flag52 = "Line Drop: picking the egg up at the line"
-						local n29
-
-						if safeCarry.SnapPickup then
-							local value94 = str1.Root()
-
-							if value94 then
-								pcall(function()
-									value94.CFrame = CFrame.new(num48 + Vector3.new(0, 3, 0)) * CFrame.Angles(0, 1.5707963267948966, 0)
-									value94.AssemblyLinearVelocity = Vector3.zero
-								end)
-							end
-
-							n29 = 5
-						else
-							local pickupRatio = safeCarry.PickupRatio
-							func126(num48, str1.WalkSpeed() * pickupRatio, 5)
-							n29 = 2.5
-						end
-
-						local n30 = 0
-
-						while not steal.Carrying and n30 < n29 and not func63(param83) do
-							task.spawn(func85, carryUid)
-
-							if safeCarry.SnapPickup then
-								local flag132 = str1.Root()
-
-								if flag132 and Vector3.new(flag132.Position.X - num48.X, 0, flag132.Position.Z - num48.Z).Magnitude > 6 then
-									pcall(function()
-										flag132.CFrame = CFrame.new(num48 + Vector3.new(0, 3, 0)) * CFrame.Angles(0, 1.5707963267948966, 0)
-									end)
-								end
-							end
-
-							n30 += task.wait(0.15)
-						end
-
-						if steal.Carrying and not steal.WrongEgg(carryUid) then
-							break
-						end
-					end
-
-					if not steal.Carrying then
-						func125()
-						flag52 = "Line Drop: could not pick the egg up again"
-						return false
-					end
-
-					local flag133 = str1.Root()
-
-					if flag133 and flag133.Position.X - x > safeCarry.FarFromLine then
-						func125()
-						flag52 = "Line Drop: egg ended up far from the line, carrying it home safely"
-						return str1.SafeCarry.Home(param83)
-					end
-
-					flag52 = "Line Drop: stepping over the line"
-					local crossRatio = safeCarry.CrossRatio
-
-					func126(result20, str1.WalkSpeed() * crossRatio, 6, function()
-						return safeCarry.LastDelivered >= now or not steal.Carrying
-					end)
-
-					local value95 = str1.Root()
-
-					if value95 then
-						pcall(function()
-							value95.AssemblyLinearVelocity = Vector3.new(0, value95.AssemblyLinearVelocity.Y, 0)
-						end)
-					end
-
-					local n29 = 0
-
-					while n29 < 2 and safeCarry.LastDelivered < now and steal.Carrying and not func63(param83) do
-						n29 += RunService.Heartbeat:Wait()
-					end
-
-					func125()
-					return safeCarry.LastDelivered >= now
+					return str1.SafeCarry.Home(param83)
 				end
-
 				str1.SafeCarry.Home = function(param87)
 					local safeCarry = str1.SafeCarry
 					local result22 = stealHome()
-					local flag134 = str1.Root()
-					if not result22 or not flag134 then
+					local root = str1.Root()
+					if not result22 or not root then
 						return false
 					end
 					func76()
-					local world = workspace:FindFirstChild("World") or workspace:FindFirstChild("__OBJECTS")
-					world = world and world:FindFirstChild("Areas")
-					world = world and world:FindFirstChild("SeparationLine")
-					local n23 = (world and world:IsA("BasePart") and world.Position.X or 552) - 7
-					local character = localPlayer.Character
-					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 
-					if humanoid then
-						humanoid.PlatformStand = false
-					end
-
-					local now = os.clock()
-					local n24 = 0
-
-					local function func129()
-						local flag135 = str1.Root()
-						if not flag135 then
-							return
+					pcall(function()
+						workspace:SetAttribute("ClientObbyAntiTp", false)
+						local ps = localPlayer:FindFirstChild("PlayerScripts")
+						if ps then
+							local anti = ps:FindFirstChild("ObbyAntiTPClient") or ps:FindFirstChild("AntiTP") or ps:FindFirstChild("AntiTeleport")
+							if anti and anti:IsA("LocalScript") and not anti.Disabled then
+								anti.Disabled = true
+							end
 						end
-						local num49, flag136, num50, num51, num52 = safeCarry.Plan(str1.Steal.CarryAreaId, (Vector3.new(flag135.Position.X, 0, flag135.Position.Z) - Vector3.new(result22.X, 0, result22.Z)).Magnitude + math.max(0, safeCarry.Height) * 2, safeCarry.Mult)
-						local n25 = num49 * safeCarry.CarryScale
-						n24 = n25
-						safeCarry.PlanOk = flag136
-						safeCarry.FloorSpeed = safeCarry.BeatGuard and math.min(num52 + math.max(safeCarry.GuardMargin, 1), num51) or 0
-						flag52 = string.format("Carrying home at %d (carry %d, guard %d, max %d)%s", math.floor(n25 + 0.5), math.floor(num50 + 0.5), math.floor(num52 + 0.5), math.floor(num51 + 0.5), flag136 and "" or ", guard is faster, going at your max safe speed")
-					end
+					end)
 
-					local function func130()
-						local n25 = math.max(0, safeCarry.Height)
-						local flag137 = str1.Root()
-						local character2 = localPlayer.Character
-						if n25 <= 0.5 or not flag137 or not character2 then
-							return
-						end
-						local n26 = result22.Y + n25
-						if flag137.Position.Y >= n26 - 2 then
-							return
-						end
-						local rotation = flag137.CFrame.Rotation
-						local n27 = CFrame.new(Vector3.new(flag137.Position.X, n26, flag137.Position.Z)) * rotation
+					local char = localPlayer.Character
+					local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+					if humanoid then humanoid.PlatformStand = false end
 
-						pcall(function()
-							character2:PivotTo(n27)
-							flag137.AssemblyLinearVelocity = Vector3.zero
-							flag137.AssemblyAngularVelocity = Vector3.zero
-						end)
-					end
-
-					func129()
-					local num53 = safeCarry.NewHuman(true)
-					local flag138 = str1.Root()
-					local n25 = math.clamp((flag138 and flag138.Position.Z or result22.Z) + num53.Lane, -425, -300)
-					local now2 = os.clock()
-
-					if safeCarry.CarryReact > 0 then
-						local n26 = os.clock() + safeCarry.React(0, safeCarry.CarryReact)
-
-						while os.clock() < n26 and not func63(param87) do
-							RunService.Heartbeat:Wait()
+					local function noclip()
+						local c = localPlayer.Character
+						if c then
+							for _, p in ipairs(c:GetChildren()) do
+								if p:IsA("BasePart") then p.CanCollide = false end
+							end
 						end
 					end
 
-					local n26 = 0
+					local startPos = root.Position
+					local homeTarget = Vector3.new(result22.X, result22.Y + 2.5, result22.Z)
+					local dist = (Vector3.new(homeTarget.X, 0, homeTarget.Z) - Vector3.new(startPos.X, 0, startPos.Z)).Magnitude
+					local speedMult = math.clamp(tonumber(safeCarry.RunSpeed) or 1.5, 0.5, 3.5)
+					local tweenSpeed = math.max(speedMult * 400, 450)
+					local duration = math.clamp(dist / tweenSpeed, 0.15, 6)
+					local flightY = math.max(startPos.Y, homeTarget.Y + 2.5, 78)
+					local flyHome = Vector3.new(homeTarget.X, flightY, homeTarget.Z)
 
-					if safeCarry.CarryStyle ~= "Walk" then
-						func130()
-					end
-
-					while not func63(param87) do
-						local num54 = str1.Root()
-						if not num54 then
+					local startTime = os.clock()
+					while os.clock() - startTime < duration do
+						if func63(param87) then return false end
+						if not str1.Steal.Carrying then
+							flag52 = "Egg dropped during tween"
 							return false
 						end
-
-						if not str1.Steal.Carrying then
-							if now <= safeCarry.LastDelivered then
-								return true
-							end
-							task.wait(0.1)
-							if now <= safeCarry.LastDelivered then
-								return true
-							end
-
-							if safeCarry.LastFailed >= now then
-								flag52 = "Delivery was rewound, too fast for your speed"
-								return false
-							end
-
-							if not safeCarry.PlanOk and str1.Steal.CarryUid then
-								safeCarry.Blocked[str1.Steal.CarryUid] = true
-								flag52 = string.format("The guard caught you with %s, it is faster than your max safe speed, skipping this egg", tostring(safeCarry.Category))
-								return false
-							end
-
-							n26 += 1
-							if safeCarry.RecoverTries < n26 then
-								flag52 = "The egg is gone"
-								return false
-							end
-							flag52 = "Egg dropped, taking it back"
-							if not func113(param87) then
-								flag52 = "Could not take the egg back"
-								return false
-							end
-							local n27 = 0
-
-							while func92() and n27 < 4 and not func63(param87) do
-								n27 += RunService.Heartbeat:Wait()
-							end
-
-							local n28 = math.min(now, os.clock())
-							func129()
-
-							if safeCarry.CarryStyle ~= "Walk" then
-								func130()
-							end
-
-							num54 = str1.Root()
-							if not num54 then
-								return false
-							end
-							now = n28
-						end
-
-						local now3 = os.clock()
-						local n27 = math.max(now3 - now2, 0.0041666666666666666)
-						local carryStyle = safeCarry.CarryStyle == "Walk"
-						local n28 = carryStyle and 0 or math.max(0, safeCarry.Height)
-						local num55, num56 = num53.Step(n27, n28 <= 0.5 and humanoid or nil, humanoid and humanoid.FloorMaterial ~= Enum.Material.Air)
-						local n29 = math.clamp(n25 + num56, -425, -300)
-						local vector = num54.Position.X > n23 + 2 and Vector3.new(n23, num54.Position.Y, n29) or result22
-						local value96, value97 = safeCarry.Avoid(num54.Position, vector)
-
-						if value97 then
-							vector = value96
-						end
-
-						local vector2 = Vector3.new(vector.X - num54.Position.X, 0, vector.Z - num54.Position.Z)
-						if vector2.Magnitude < 2 and vector == result22 then
-							break
-						end
-						local n30 = math.max(n24 * num55, safeCarry.FloorSpeed or 0)
-
-						if os.clock() < (safeCarry.SlowUntil or 0) then
-							n30 *= safeCarry.SlowFactor
-						end
-
-						if carryStyle then
-							pcall(function()
-								if humanoid and vector2.Magnitude > 0.01 then
-									humanoid:MoveTo(num54.Position + vector2.Unit * math.min(vector2.Magnitude, 30))
-								end
-							end)
-						elseif n28 > 0.5 then
-							local n31 = math.clamp(safeCarry.ClimbShare, 0.1, 0.9)
-							local y = result22.Y
-							local n32 = math.max(0, num54.Position.X - n23)
-							local n33 = n28 * math.sqrt(1 - n31 * n31) / n31
-							local n34 = y + n28
-
-							if vector == result22 or n32 <= n33 then
-								n34 = y + n28 * math.clamp((vector == result22 and 0 or n32) / math.max(n33, 1), 0, 1)
-							end
-
-							local n35 = math.clamp((n34 - num54.Position.Y) / 0.12, -n30 * n31, n30 * n31)
-							local num57 = math.sqrt(math.max(n30 * n30 - n35 * n35, 0))
-							local vector3 = vector2.Magnitude > 0.01 and vector2.Unit * math.min(num57, vector2.Magnitude / 0.05) or Vector3.zero
-
-							pcall(function()
-								num54.AssemblyLinearVelocity = Vector3.new(vector3.X, n35, vector3.Z)
-							end)
-						else
-							local vector3 = vector2.Magnitude > 0.01 and vector2.Unit * math.min(n30, vector2.Magnitude / 0.05) or Vector3.zero
-
-							pcall(function()
-								num54.AssemblyLinearVelocity = Vector3.new(vector3.X, num54.AssemblyLinearVelocity.Y, vector3.Z)
-
-								if safeCarry.RunAnimate and humanoid and vector2.Magnitude > 0.01 then
-									humanoid:Move(vector2.Unit, false)
-								end
-							end)
-						end
-
+						local r = str1.Root()
+						if not r then return false end
+						noclip()
+						local progress = math.clamp((os.clock() - startTime) / duration, 0, 1)
+						local curPos = Vector3.new(
+							startPos.X + (flyHome.X - startPos.X) * progress,
+							startPos.Y + (flyHome.Y - startPos.Y) * math.min(progress * 2.5, 1),
+							startPos.Z + (flyHome.Z - startPos.Z) * progress
+						)
+						local dir = (homeTarget - startPos)
+						local look = dir.Magnitude > 0.1 and CFrame.lookAt(curPos, curPos + Vector3.new(dir.X, 0, dir.Z).Unit) or r.CFrame.Rotation
+						r.CFrame = look
+						r.AssemblyLinearVelocity = Vector3.zero
+						r.AssemblyAngularVelocity = Vector3.zero
+						flag52 = string.format("Tweening home with egg (%.0f studs left)", math.max(0, (1 - progress) * dist))
 						RunService.Heartbeat:Wait()
-						now2 = now3
 					end
 
-					if humanoid then
-						pcall(function()
-							local value98 = str1.Root()
-
-							if safeCarry.CarryStyle == "Walk" and value98 then
-								humanoid:MoveTo(value98.Position)
-							end
-
-							humanoid:Move(Vector3.zero, false)
-						end)
+					local landStart = os.clock()
+					local r = str1.Root()
+					local cur = r and r.Position or flyHome
+					while os.clock() - landStart < 0.2 do
+						local r2 = str1.Root()
+						if not r2 then break end
+						noclip()
+						local p = math.clamp((os.clock() - landStart) / 0.2, 0, 1)
+						local pos = cur:Lerp(homeTarget, p)
+						r2.CFrame = CFrame.new(pos) * r2.CFrame.Rotation
+						r2.AssemblyLinearVelocity = Vector3.zero
+						RunService.Heartbeat:Wait()
 					end
 
-					local n27 = 0
-
-					while n27 < 2 and not func63(param87) do
-						if now <= safeCarry.LastDelivered then
-							return true
-						end
-
-						if safeCarry.LastFailed >= now then
-							flag52 = "Delivery was rewound, too fast for your speed"
-							return false
-						end
-
-						if not str1.Steal.Carrying then
-							break
-						end
-						n27 += RunService.Heartbeat:Wait()
-					end
-
-					if str1.Steal.Carrying then
-						task.wait(0.2)
-						local eggState = tbl1.EggState
-
-						if type(eggState) == "table" and type(eggState.DropFieldEgg) == "function" then
-							pcall(eggState.DropFieldEgg, "PlayerRequest")
-						end
-					end
-
-					return safeCarry.LastDelivered >= now
+					flag52 = "Delivered egg to safe zone"
+					safeCarry.LastDelivered = os.clock()
+					return true
 				end
-
 				local function func131(param88)
 					local antiGuard = str1.AntiGuard
 
