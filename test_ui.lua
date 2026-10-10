@@ -929,13 +929,13 @@ do
 					StraightRun = true,
 					RunStyle = "Velocity",
 					CarryStyle = "Velocity",
-					SpeedJitter = 0.08,
+					SpeedJitter = 0,
 					Wobble = 0,
 					LaneOffset = 0,
 					JumpsPerMinute = 0,
 					PausesPerMinute = 0,
-					ReactMin = 0.2,
-					ReactMax = 0.6,
+					ReactMin = 0,
+					ReactMax = 0,
 					CarryReact = 0,
 					SpeedRatio = 1.5,
 					ExcessSeconds = 5.5,
@@ -1185,31 +1185,38 @@ do
 				str1.ShieldPaused = false
 
 				str1.WalkSpeed = function()
-					local character = localPlayer.Character
-					character = character and character:FindFirstChildOfClass("Humanoid")
-					character = character and character.WalkSpeed or 16
-					local original = tbl27.Original
-
-					if original and original.Health > 0 then
-						character = math.min(character, original.WalkSpeed)
-					end
-
-					local ok, result = pcall(function()
-						local leaderstats = localPlayer:FindFirstChild("leaderstats")
-						leaderstats = leaderstats and leaderstats:FindFirstChild("Speed")
-						local TreadmillUtil = require(ReplicatedStorage.Shared.Util.TreadmillUtil)
-						return leaderstats and TreadmillUtil.SpeedPowerToWalkSpeed(leaderstats.Value) or nil
+					pcall(function()
+						workspace:SetAttribute("ClientObbyAntiTp", false)
+						local ps = localPlayer:FindFirstChild("PlayerScripts")
+						if ps then
+							local anti = ps:FindFirstChild("ObbyAntiTPClient") or ps:FindFirstChild("AntiTP") or ps:FindFirstChild("AntiTeleport")
+							if anti and anti:IsA("LocalScript") and not anti.Disabled then
+								anti.Disabled = true
+							end
+						end
 					end)
 
-					local n9
+					local character = localPlayer.Character
+					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					local humSpeed = humanoid and humanoid.WalkSpeed or 16
 
-					if ok and tonumber(result) and result > 0 then
-						n9 = math.min(character, result)
-					else
-						n9 = character
+					local treadmillSpeed = nil
+					pcall(function()
+						local leaderstats = localPlayer:FindFirstChild("leaderstats")
+						local speedVal = leaderstats and leaderstats:FindFirstChild("Speed")
+						local TreadmillUtil = require(ReplicatedStorage.Shared.Util.TreadmillUtil)
+						if speedVal and TreadmillUtil and TreadmillUtil.SpeedPowerToWalkSpeed then
+							treadmillSpeed = TreadmillUtil.SpeedPowerToWalkSpeed(speedVal.Value)
+						end
+					end)
+
+					local speed = humSpeed
+					if tonumber(treadmillSpeed) and treadmillSpeed > speed then
+						speed = treadmillSpeed
 					end
 
-					return n9
+					local runMult = tonumber(str1.SafeCarry and str1.SafeCarry.RunSpeed) or 1
+					return math.max(speed, 150) * runMult
 				end
 
 				local function func35()
@@ -3312,14 +3319,14 @@ do
 
 			str1.SafeCarry.RunHandle = obj14:CreateSlider({
 				Name = "Tween Speed",
-				Note = "Over 100% may glitch",
+				Note = "Egg steal glide & carry speed",
 				Min = 50,
-				Max = 120,
+				Max = 250,
 				Default = 100,
-				Increment = 1,
+				Increment = 5,
 				Unit = "%",
 				Callback = function(value)
-					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 100, 50, 120) / 100
+					str1.SafeCarry.RunSpeed = math.clamp(tonumber(value) or 100, 50, 250) / 100
 				end,
 			})
 
@@ -4270,9 +4277,61 @@ do
 				end
 
 				func82 = function(param43, param44, flag83)
-					local n18 = flag83 or 14
+					local n18 = flag83 or 35
 					local value63 = nil
 					local value64 = nil
+
+					local areaEggSlotsClient = workspace:FindFirstChild("AreaEggSlotsClient")
+					if areaEggSlotsClient and type(param43) == "string" then
+						local eggModel = areaEggSlotsClient:FindFirstChild(param43)
+						if eggModel then
+							for _, desc in ipairs(eggModel:GetDescendants()) do
+								if desc:IsA("ProximityPrompt") then
+									return desc, desc.Parent or eggModel
+								end
+							end
+						end
+					end
+
+					if areaEggSlotsClient and param44 then
+						for _, eggModel in ipairs(areaEggSlotsClient:GetChildren()) do
+							for _, desc in ipairs(eggModel:GetDescendants()) do
+								if desc:IsA("ProximityPrompt") then
+									local p = desc.Parent:IsA("BasePart") and desc.Parent.Position or (desc.Parent:IsA("Model") and desc.Parent:GetPivot().Position) or nil
+									if p then
+										local dist = (Vector3.new(p.X, 0, p.Z) - Vector3.new(param44.X, 0, param44.Z)).Magnitude
+										if dist < n18 then
+											n18 = dist
+											value63 = desc
+											value64 = desc.Parent
+										end
+									end
+								end
+							end
+						end
+					end
+
+					if value63 and value64 then
+						return value63, value64
+					end
+
+					if param44 then
+						local container = workspace:FindFirstChild("PlacedEggRenders") or workspace:FindFirstChild("World") or workspace
+						for _, desc in ipairs(container:GetDescendants()) do
+							if desc:IsA("ProximityPrompt") and desc.Parent and desc.Parent:IsA("BasePart") then
+								local dist = (Vector3.new(desc.Parent.Position.X, 0, desc.Parent.Position.Z) - Vector3.new(param44.X, 0, param44.Z)).Magnitude
+								if dist < n18 then
+									n18 = dist
+									value63 = desc
+									value64 = desc.Parent
+								end
+							end
+						end
+					end
+
+					if value63 and value64 then
+						return value63, value64
+					end
 
 					for _, child in ipairs(workspace:GetChildren()) do
 						if child.Name == "SmartPromptPart" and child:IsA("BasePart") then
@@ -4290,13 +4349,6 @@ do
 						end
 					end
 
-					if not value63 or not value64 then
-						return nil
-					end
-
-					if type(param43) == "string" and not func81(value64, param43, param44) then
-						return nil
-					end
 					return value63, value64
 				end
 			end
@@ -4308,6 +4360,23 @@ do
 
 				if type(param45) == "string" and type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
 					pcall(eggState.CarryFieldEgg, param45)
+				end
+
+				if type(param45) == "string" then
+					pcall(function()
+						local net = game:GetService("ReplicatedStorage"):FindFirstChild("Packages")
+						net = net and net:FindFirstChild("Networking")
+						local rf = net and net:FindFirstChild("RF/EggWorld/AskFieldEggCarry")
+						if rf then
+							rf:InvokeServer({ Uid = param45 })
+						end
+					end)
+					pcall(function()
+						local sharedRemotes = require(game:GetService("ReplicatedStorage").Shared.Remotes)
+						if sharedRemotes and sharedRemotes.EggWorld and sharedRemotes.EggWorld.AskFieldEggCarry then
+							sharedRemotes.EggWorld.AskFieldEggCarry:InvokeServer({ Uid = param45 })
+						end
+					end)
 				end
 			end
 
@@ -4362,7 +4431,17 @@ do
 				func86 = function(param49, param50)
 					local n17 = 0
 
-					while not str1.Steal.Carrying and n17 < n16 and not func63(param50) do
+					while not str1.Steal.Carrying and n17 < 1.8 and not func63(param50) do
+						local char = localPlayer.Character
+						if char then
+							for _, item in ipairs(char:GetChildren()) do
+								if item:IsA("Tool") and (item:GetAttribute("IsEgg") or string.find(item.Name, "Egg", 1, true)) then
+									str1.Steal.Carrying = true
+									str1.Steal.CarryUid = item:GetAttribute("EggUid") or param49
+									break
+								end
+							end
+						end
 						n17 += RunService.Heartbeat:Wait()
 					end
 
@@ -4406,7 +4485,7 @@ do
 						return true
 					end
 
-					if huge >= 0.06 then
+					if huge >= 0.05 then
 						local uid4 = func82(part4.Uid, position)
 
 						if uid4 then
@@ -4414,21 +4493,11 @@ do
 								uid4.HoldDuration = 0
 							end)
 
-							n18 = 0
-
 							if typeof(fireproximityprompt) == "function" then
 								pcall(fireproximityprompt, uid4)
 							end
-						else
-							n18 += 1
-							if n18 >= 4 then
-								return false
-							end
-
-							if type(eggState) == "table" and type(eggState.CarryFieldEgg) == "function" then
-								pcall(eggState.CarryFieldEgg, part4.Uid)
-							end
 						end
+						func85(part4.Uid)
 
 						huge = 0
 					end
@@ -4980,7 +5049,7 @@ do
 							return true
 						end
 
-						if huge >= 0.1 then
+						if huge >= 0.05 then
 							local uid5 = func82(part7.Uid, position)
 
 							if uid5 then
@@ -4991,9 +5060,8 @@ do
 								if typeof(fireproximityprompt) == "function" then
 									pcall(fireproximityprompt, uid5)
 								end
-							else
-								func85(part7.Uid)
 							end
+							func85(part7.Uid)
 
 							huge = 0
 						end
@@ -6130,7 +6198,7 @@ do
 							local n25 = os.clock() - now4
 							local n26 = safeCarry.RunWait + num42
 							local flag120 = not safeCarry.WaitGuard or not obj28 or obj28:GetAttribute("GuardState") == "Sleeping"
-							if n25 >= n26 and (flag120 or n25 >= n26 + 15) then
+							if not safeCarry.WaitGuard or (n25 >= n26 and (flag120 or n25 >= n26 + 15)) then
 								break
 							end
 							flag52 = n25 < n26 and string.format("Waiting before the grab, %.1fs", n26 - n25) or "Waiting for the guard to sleep"
