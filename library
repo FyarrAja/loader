@@ -16079,6 +16079,7 @@ end
 Runtime.startBlueHavenLoading = function(window)
     if Runtime.isSystemLoadingActive then return end
     Runtime.isSystemLoadingActive = true
+    _G.BH_IsLoading = true
 
     task.spawn(function()
         mainFrame.Visible = false
@@ -16622,6 +16623,7 @@ Runtime.startBlueHavenLoading = function(window)
                     end
                 end)
                 Runtime.isSystemLoadingActive = false
+                _G.BH_IsLoading = false
 
                 task.wait(0.15)
 
@@ -16714,6 +16716,7 @@ ApiImpl[106] = function(self, config)
         Runtime.startBlueHavenLoading(window)
     else
         Runtime.isSystemLoadingActive = false
+        _G.BH_IsLoading = false
         Runtime.chilliIsOpen = false
         mainFrame.Visible = true
         playOpenAnimation()

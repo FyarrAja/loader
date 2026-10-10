@@ -24,6 +24,7 @@ do
 				end
 			end
 
+			_G.BH_IsLoading = true
 			_G.BH_CatMascotId = _G.BH_CatMascotId or nil
 			_G.BH_LoadingIconId = _G.BH_LoadingIconId or nil
 			_G.BH_GoodbyeIconId = _G.BH_GoodbyeIconId or nil
@@ -71,7 +72,7 @@ do
 				pcall(func13)
 
 				local _loadstring = rawloadstring or (syn and syn.loadstring) or (clonefunction and clonefunction(loadstring)) or loadstring
-				local url = "https://raw.githubusercontent.com/FyarrAja/loader/3e700f8/library"
+				local url = "https://raw.githubusercontent.com/FyarrAja/loader/main/library"
 				local cacheBuster = (url:find("%?") and "&" or "?") .. "t=" .. tostring(tick()):gsub("%.", "")
 				local finalUrl = url .. cacheBuster
 				local content = nil
@@ -595,6 +596,7 @@ do
 				}
 
 				local connection = RunService.Heartbeat:Connect(function(deltaTime)
+					if _G.BH_IsLoading then return end
 					local count = #tbl22
 					if count == 0 then return end
 					for i = 1, count do
@@ -1216,7 +1218,11 @@ do
 					end
 
 					local runMult = tonumber(str1.SafeCarry and str1.SafeCarry.RunSpeed) or 1
-					return math.max(speed, 150) * runMult
+					if str1.Steal and str1.Steal.Carrying then
+						return math.max(speed, 16) * math.clamp(runMult, 0.5, 1.15)
+					else
+						return math.max(speed, 150) * runMult
+					end
 				end
 
 				local function func35()
@@ -4794,11 +4800,12 @@ do
 						end
 
 						if obj22 and obj22:IsA("BasePart") then
-							return obj22.CFrame:PointToWorldSpace(item36.Offset)
+							local p = obj22.CFrame:PointToWorldSpace(item36.Offset)
+							return Vector3.new(p.X, math.clamp(p.Y, 68, 70.5), p.Z)
 						end
 					end
 
-					return Vector3.new(528.7, 70.57, -364.11)
+					return Vector3.new(518, 69.5, -364.11)
 				end
 
 				str1.StealHome = stealHome
@@ -7007,21 +7014,28 @@ do
 						now2 = now3
 					end
 
+					-- Ensure touchdown onto the safe zone floor
+					local rootPart = str1.Root()
+					local character3 = localPlayer.Character
+					local groundY = (result22 and result22.Y) or 69.5
+					if groundY > 73 then groundY = 69.5 end
+					if rootPart and character3 then
+						pcall(function()
+							local landPos = Vector3.new(result22.X, groundY + 2.5, result22.Z)
+							character3:PivotTo(CFrame.new(landPos) * rootPart.CFrame.Rotation)
+							rootPart.AssemblyLinearVelocity = Vector3.zero
+							rootPart.AssemblyAngularVelocity = Vector3.zero
+						end)
+					end
 					if humanoid then
 						pcall(function()
-							local value98 = str1.Root()
-
-							if safeCarry.CarryStyle == "Walk" and value98 then
-								humanoid:MoveTo(value98.Position)
-							end
-
+							humanoid.PlatformStand = false
 							humanoid:Move(Vector3.zero, false)
 						end)
 					end
 
 					local n27 = 0
-
-					while n27 < 2 and not func63(param87) do
+					while n27 < 3.5 and not func63(param87) do
 						if now <= safeCarry.LastDelivered then
 							return true
 						end
@@ -7032,21 +7046,37 @@ do
 						end
 
 						if not str1.Steal.Carrying then
-							break
+							return true
 						end
+
+						local char = localPlayer.Character
+						local hasEggTool = false
+						if char then
+							for _, item in ipairs(char:GetChildren()) do
+								if item:IsA("Tool") and (item:GetAttribute("IsEgg") or string.find(item.Name, "Egg", 1, true)) then
+									hasEggTool = true
+									break
+								end
+							end
+						end
+						if not hasEggTool then
+							str1.Steal.Carrying = false
+							return true
+						end
+
 						n27 += RunService.Heartbeat:Wait()
 					end
 
-					if str1.Steal.Carrying then
+					-- Never drop egg inside safe zone!
+					if str1.Steal.Carrying and not str1.InsideBase() then
 						task.wait(0.2)
 						local eggState = tbl1.EggState
-
 						if type(eggState) == "table" and type(eggState.DropFieldEgg) == "function" then
 							pcall(eggState.DropFieldEgg, "PlayerRequest")
 						end
 					end
 
-					return safeCarry.LastDelivered >= now
+					return safeCarry.LastDelivered >= now or not str1.Steal.Carrying
 				end
 
 				local function func131(param88)
@@ -30423,7 +30453,14 @@ do
 		frame2.Parent = frame
 		value554 = createTextLabel(frame, 82, 30, color3)
 		createTextLabel(frame, 113, 14, color6).Text = "ms"
+		screenGui.Enabled = not (_G.BH_IsLoading == true)
 		screenGui.Parent = value1
+		if _G.BH_IsLoading then
+			task.spawn(function()
+				while _G.BH_IsLoading do task.wait(0.1) end
+				if screenGui and flag635 then screenGui.Enabled = true end
+			end)
+		end
 		local currentCamera = workspace.CurrentCamera
 
 		if currentCamera then
@@ -31448,11 +31485,20 @@ do
 end
 
 antiGuard.ShowPanel = function(enabled4)
-	ScreenGui.Enabled = enabled4 == true
+	ScreenGui.Enabled = (enabled4 == true) and not (_G.BH_IsLoading == true)
 end
 
-ScreenGui.Enabled = antiGuard.PanelShown == true
+ScreenGui.Enabled = false
 ScreenGui.Parent = hui
+
+task.spawn(function()
+	while _G.BH_IsLoading do
+		task.wait(0.1)
+	end
+	if ScreenGui and antiGuard.PanelShown == true then
+		ScreenGui.Enabled = true
+	end
+end)
 func712(UIScale2, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
 
 do
@@ -32193,6 +32239,9 @@ end
 obj1:Finalize({ Window = obj2, MainTab = defaultTab, ShowMainTab = true })
 
 task.defer(function()
+	while _G.BH_IsLoading do
+		task.wait(0.1)
+	end
 	if #list1 == 0 or type(readfile) ~= "function" then
 		return
 	end
@@ -32275,6 +32324,9 @@ task.defer(function()
 end)
 
 task.defer(function()
+	while _G.BH_IsLoading do
+		task.wait(0.1)
+	end
 	for i = 1, 3 do
 		RunService.Heartbeat:Wait()
 	end
